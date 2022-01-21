@@ -5,7 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/example/bunnymark/helper"
+	"github.com/yohamta/donburi/examples/bunnymark/helper"
 )
 
 type SettingsData struct {

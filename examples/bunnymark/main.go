@@ -9,10 +9,10 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/example/bunnymark/assets"
-	"github.com/yohamta/donburi/example/bunnymark/component"
-	"github.com/yohamta/donburi/example/bunnymark/helper"
-	"github.com/yohamta/donburi/example/bunnymark/system"
+	"github.com/yohamta/donburi/examples/bunnymark/assets"
+	"github.com/yohamta/donburi/examples/bunnymark/component"
+	"github.com/yohamta/donburi/examples/bunnymark/helper"
+	"github.com/yohamta/donburi/examples/bunnymark/system"
 
 	_ "net/http/pprof"
 )
@@ -52,7 +52,7 @@ func (g *Game) createWorld() {
 			Objects:  helper.NewPlot(20, 60000),
 			Sprite:   assets.LoadSprite(),
 			Colorful: false,
-			Amount:   100,
+			Amount:   1000,
 		}))
 
 	metrics := system.NewMetrics(&g.bounds)
@@ -90,7 +90,7 @@ func (g *Game) Layout(width, height int) (int, int) {
 }
 
 func main() {
-	ebiten.SetWindowSize(300, 200)
+	ebiten.SetWindowSize(800, 600)
 	ebiten.SetWindowSizeLimits(300, 200, -1, -1)
 	ebiten.SetFPSMode(ebiten.FPSModeVsyncOffMaximum)
 	ebiten.SetWindowResizable(true)

@@ -2,7 +2,7 @@ package system
 
 import (
 	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/example/bunnymark/component"
+	"github.com/yohamta/donburi/examples/bunnymark/component"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
 )

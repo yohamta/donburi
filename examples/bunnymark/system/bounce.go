@@ -4,8 +4,8 @@ import (
 	"image"
 
 	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/example/bunnymark/component"
-	"github.com/yohamta/donburi/example/bunnymark/helper"
+	"github.com/yohamta/donburi/examples/bunnymark/component"
+	"github.com/yohamta/donburi/examples/bunnymark/helper"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
 )

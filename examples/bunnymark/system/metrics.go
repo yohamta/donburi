@@ -9,7 +9,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/example/bunnymark/component"
+	"github.com/yohamta/donburi/examples/bunnymark/component"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
 	"golang.org/x/image/colornames"
