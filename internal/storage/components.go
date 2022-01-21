@@ -1,0 +1,47 @@
+package storage
+
+import (
+	"github.com/yohamta/donburi/internal/component"
+)
+
+// ComponentIndex represents the index of component in a archetype.
+type ComponentIndex int
+
+// Components is a structure that stores data of components.
+type Components struct {
+	storages         []*SimpleStorage
+	componentIndices map[ArchetypeIndex]ComponentIndex
+}
+
+// NewComponents creates a new empty structure that stores data of components.
+func NewComponents() *Components {
+	return &Components{
+		storages:         make([]*SimpleStorage, 512), // TODO: expand as the number of component types increases
+		componentIndices: make(map[ArchetypeIndex]ComponentIndex),
+	}
+}
+
+// PUshComponent stores the new data of the component in the archetype.
+func (cs *Components) PushComponents(components []*component.ComponentType, archetypeIndex ArchetypeIndex) ComponentIndex {
+	for _, componentType := range components {
+		if v := cs.storages[componentType.Id()]; v == nil {
+			cs.storages[componentType.Id()] = NewSimpleStorage()
+		}
+		cs.storages[componentType.Id()].PushComponent(componentType, archetypeIndex)
+	}
+	if _, ok := cs.componentIndices[archetypeIndex]; !ok {
+		cs.componentIndices[archetypeIndex] = 0
+	} else {
+		cs.componentIndices[archetypeIndex]++
+	}
+	return cs.componentIndices[archetypeIndex]
+}
+
+// Storage returns the pointer to data of the component in the archetype.
+func (cs *Components) Storage(c *component.ComponentType) *SimpleStorage {
+	if storage := cs.storages[c.Id()]; storage != nil {
+		return storage
+	}
+	cs.storages[c.Id()] = NewSimpleStorage()
+	return cs.storages[c.Id()]
+}
