@@ -9,3 +9,7 @@ type VelocityData struct {
 }
 
 var Velocity = donburi.NewComponentType(VelocityData{})
+
+func GetVelocityData(entry *donburi.Entry) *VelocityData {
+	return (*VelocityData)(entry.Component(Velocity))
+}

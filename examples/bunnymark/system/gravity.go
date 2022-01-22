@@ -19,8 +19,8 @@ func NewGravity() *Gravity {
 
 func (g *Gravity) Update(w donburi.World) {
 	g.query.EachEntity(w, func(entry *donburi.Entry) {
-		var gravity *component.GravityData = (*component.GravityData)(entry.Component(component.Gravity))
-		var velocity *component.VelocityData = (*component.VelocityData)(entry.Component(component.Velocity))
+		gravity := component.GetGravityData(entry)
+		velocity := component.GetVelocityData(entry)
 
 		velocity.Y += gravity.Value
 	})

@@ -31,7 +31,7 @@ func (m *Metrics) Update(w donburi.World) {
 	if m.settings == nil {
 		query := query.NewQuery(filter.Contains(component.Settings))
 		query.EachEntity(w, func(entry *donburi.Entry) {
-			m.settings = (*component.SettingsData)(entry.Component(component.Settings))
+			m.settings = component.GetSettingsData(entry)
 		})
 	}
 	select {

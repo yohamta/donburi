@@ -47,7 +47,7 @@ func (s *Spawn) addBunnies(w donburi.World) {
 	if s.settings == nil {
 		query := query.NewQuery(filter.Contains(component.Settings))
 		query.EachEntity(w, func(entry *donburi.Entry) {
-			s.settings = (*component.SettingsData)(entry.Component(component.Settings))
+			s.settings = component.GetSettingsData(entry)
 		})
 	}
 
@@ -61,22 +61,22 @@ func (s *Spawn) addBunnies(w donburi.World) {
 	)
 	for i, entity := range entities {
 		entry := w.Entry(entity)
-		position := (*component.PositionData)(entry.Component(component.Position))
+		position := component.GetPositionData(entry)
 		*position = component.PositionData{
 			X: float64(i % 2), // Alternate screen edges
 		}
-		velocity := (*component.VelocityData)(entry.Component(component.Velocity))
+		velocity := component.GetVelocityData(entry)
 		*velocity = component.VelocityData{
 			X: helper.RangeFloat(0, 0.005),
 			Y: helper.RangeFloat(0.0025, 0.005)}
-		hue := (*component.HueData)(entry.Component(component.Hue))
+		hue := component.GetHueData(entry)
 		*hue = component.HueData{
 			Colorful: &s.settings.Colorful,
 			Value:    helper.RangeFloat(0, 2*math.Pi),
 		}
-		gravity := (*component.GravityData)(entry.Component(component.Gravity))
+		gravity := component.GetGravityData(entry)
 		*gravity = component.GravityData{Value: 0.00095}
-		sprite := (*component.SpriteData)(entry.Component(component.Sprite))
+		sprite := component.GetSpriteData(entry)
 		*sprite = component.SpriteData{Image: s.settings.Sprite}
 	}
 }
