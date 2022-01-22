@@ -8,9 +8,8 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
 
 - [Features](#features)
 - [Installation](#installation)
-- [Getting Started](#getting-started)
-- [Usage](#usage)
 - [Examples](#examples)
+- [Getting Started](#getting-started)
 
 ## Features
 
@@ -69,8 +68,8 @@ entity = world.Create(Position, Velocity);
 // which allows you to access the components that belong to the entity.
 entry := world.Entry(entity)
 
-position := (*component.PositionData)(entry.Component(component.Position))
-velocity := (*component.VelocityData)(entry.Component(component.Velocity))
+position := (*PositionData)(entry.Component(Position))
+velocity := (*VelocityData)(entry.Component(Velocity))
 position.X += velocity.X
 position.Y += velocity.y
 ```
@@ -84,6 +83,32 @@ func GetPositionData(entry *donburi.Entry) *PositionData {
 
 func GetVelocityData(entry *donburi.Entry) *VelocityData {
   return (*VelocityData)(entry.Component(Velocity))
+}
+```
+
+Components can be added and removed through Entry objects.
+
+```go
+// Fetch the first entity with PlayerTag component
+query := query.NewQuery(filter.Contains(PlayerTag))
+// Query.FirstEntity() returns only the first entity that 
+// matches the query.
+if entry, ok := query.FirstEntity(world); ok {
+  entry.AddComponent(Position)
+  entry.RemoveComponent(Velocity)
+}
+```
+
+Entities can be removed from World with the World.Remove() as follows:
+
+```go
+if SomeLogic.IsDead(world, someEntity) {
+  // World.Remove() removes the entity from the world.
+  world.Remove(someEntity)
+  // Deleted entities become invalid immediately.
+  if world.Valid(someEntity) == false {
+    println("this entity is invalid")
+  }
 }
 ```
 
@@ -117,6 +142,31 @@ For example:
 query := query.NewQuery(filter.And(
   filter.Contains(NpcTag),
   filter.Not(filter.Contains(Position))))
+```
+
+### Tags
+
+You can attach "Tag" component to entity, which is just a component with no data.
+
+Here is the utility function to create a tag component.
+
+```go
+// This is the utility function to make tag component
+func NewTag() *ComponentType {
+  return NewComponentType(struct{}{})
+}
+```
+Since "Tags" are just components, they can be used in queries in the same way as components as follows:
+
+```go
+var EnemyTag = donburi.NewTag()
+world.CreateMany(100, EnemyTag, Position, Velocity)
+
+// Search entities with EnemyTag
+query := query.NewQuery(filter.Contains(EnemyTag))
+query.EachEntity(world, func(entry *donburi.Entry) {
+  // Perform some operation on the Entities with the EnemyTag component.
+}
 ```
 
 ### Systems
