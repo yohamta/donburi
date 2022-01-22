@@ -14,7 +14,7 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
 
 ## Features
 
-- It introduces the concept of archetype, which allows us to query entities very efficiently based on the components layout.
+- It introduces the concept of [Archetype](https://docs.unity3d.com/Packages/com.unity.entities@0.2/manual/ecs_core.html), which allows us to query entities very efficiently based on the components layout.
 - It is possible to combine And, Or, and Not conditions to perform complex queries for components.
 - It avoids reflection on every frame and uses unsafe.Pointer for performance.
 - Ability to dynamically add or remove components from an entity
@@ -68,10 +68,23 @@ entity = world.Create(Position, Velocity);
 // You can use entity (it's a wrapper of int64) to get an Entry object from World
 // which allows you to access the components that belong to the entity.
 entry := world.Entry(entity)
+
 position := (*component.PositionData)(entry.Component(component.Position))
 velocity := (*component.VelocityData)(entry.Component(component.Velocity))
 position.X += velocity.X
 position.Y += velocity.y
+```
+
+You can define helper functions to get components for better readability. This was advice from [eliasdaler](https://github.com/eliasdaler).
+
+```go
+func GetPositionData(entry *donburi.Entry) *PositionData {
+  return (*PositionData)(entry.Component(Position))
+}
+
+func GetVelocityData(entry *donburi.Entry) *VelocityData {
+  return (*VelocityData)(entry.Component(Velocity))
+}
 ```
 
 ### Queries
@@ -85,7 +98,7 @@ You can search for entities which have all of a set of components.
 query := query.NewQuery(filter.Contains(component.Position, component.Velocity))
 
 // You can then iterate through the entity found in the world
-query.EachEntity(w, func(entry *donburi.Entry) {
+query.EachEntity(world, func(entry *donburi.Entry) {
   // An entry is an accessor to entity and its components.
   var position *component.PositionData = (*component.PositionData)(entry.Component(component.Position))
   var velocity *component.VelocityData = (*component.VelocityData)(entry.Component(component.Velocity))
@@ -95,7 +108,7 @@ query.EachEntity(w, func(entry *donburi.Entry) {
 })
 ```
 
-There are other type of query filters such as `And`, `Or`, `Exact` and `Not`. You can combine them to find the target entities.
+There are other types of filters such as `And`, `Or`, `Exact` and `Not`. You can combine them to find the target entities.
 
 For example:
 
@@ -108,4 +121,4 @@ query := query.NewQuery(filter.And(
 
 ### Systems
 
-As of today, there is no function for the concept of a "System" in ECS. It is assumed that operations are performed on entities using queries.
+As of today, there is no function for the concept of "Systems" in ECS. It is assumed that operations are performed on entities using queries.
