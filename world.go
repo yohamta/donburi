@@ -107,11 +107,13 @@ func (w *world) createEntry(e Entity) {
 	if int(id) >= len(w.entries) {
 		w.entries = append(w.entries, nil)
 	}
-	w.entries[id] = &Entry{
+	loc := w.entities.Location(id)
+	entry := &Entry{
 		entity: e,
-		loc:    w.entities.LocationMap[id],
+		loc:    loc,
 		world:  w,
 	}
+	w.entries[id] = entry
 }
 
 func (w *world) Valid(e Entity) bool {
@@ -130,8 +132,10 @@ func (w *world) Valid(e Entity) bool {
 }
 
 func (w *world) Entry(entity Entity) *Entry {
-	entry := w.entries[entity.Id()]
+	id := entity.Id()
+	entry := w.entries[id]
 	entry.entity = entity
+	entry.loc = w.entities.LocationMap[id]
 	return entry
 }
 

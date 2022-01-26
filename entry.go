@@ -47,7 +47,6 @@ func (e *Entry) AddComponent(ctype *component.ComponentType, components ...unsaf
 	e.world.TransferArchetype(a, target_arc, c)
 
 	e.loc = e.world.Entry(e.entity).loc
-
 	if len(components) == 1 {
 		e.SetComponent(ctype, components[0])
 	}
