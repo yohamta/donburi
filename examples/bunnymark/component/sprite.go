@@ -11,6 +11,6 @@ type SpriteData struct {
 
 var Sprite = donburi.NewComponentType(SpriteData{})
 
-func GetSpriteData(entry *donburi.Entry) *SpriteData {
+func GetSprite(entry *donburi.Entry) *SpriteData {
 	return (*SpriteData)(entry.Component(Sprite))
 }

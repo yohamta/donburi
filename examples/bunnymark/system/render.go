@@ -24,9 +24,9 @@ func NewRender() *Render {
 
 func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
 	r.query.EachEntity(w, func(entry *donburi.Entry) {
-		position := component.GetPositionData(entry)
-		hue := component.GetHueData(entry)
-		sprite := component.GetSpriteData(entry)
+		position := component.GetPosition(entry)
+		hue := component.GetHue(entry)
+		sprite := component.GetSprite(entry)
 
 		op := &ebiten.DrawImageOptions{}
 		sw, sh := float64(screen.Bounds().Dx()), float64(screen.Bounds().Dy())

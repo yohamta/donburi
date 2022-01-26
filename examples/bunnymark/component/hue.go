@@ -11,6 +11,6 @@ type HueData struct {
 
 var Hue = donburi.NewComponentType(HueData{})
 
-func GetHueData(entry *donburi.Entry) *HueData {
+func GetHue(entry *donburi.Entry) *HueData {
 	return (*HueData)(entry.Component(Hue))
 }

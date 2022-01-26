@@ -35,26 +35,8 @@ type Game struct {
 func NewGame() *Game {
 	g := &Game{
 		bounds: image.Rectangle{},
+		world:  createWorld(),
 	}
-	g.createWorld()
-	return g
-}
-
-func (g *Game) createWorld() {
-	g.world = donburi.NewWorld()
-	setting := g.world.Create(component.Settings)
-	g.world.Entry(setting).SetComponent(component.Settings,
-		unsafe.Pointer(&component.SettingsData{
-			Ticker:   time.NewTicker(500 * time.Millisecond),
-			Gpu:      helper.GpuInfo(),
-			Tps:      helper.NewPlot(20, 60),
-			Fps:      helper.NewPlot(20, 60),
-			Objects:  helper.NewPlot(20, 60000),
-			Sprite:   assets.LoadSprite(),
-			Colorful: false,
-			Amount:   1000,
-		}))
-
 	metrics := system.NewMetrics(&g.bounds)
 	g.systems = []System{
 		system.NewSpawn(),
@@ -68,6 +50,24 @@ func (g *Game) createWorld() {
 		system.NewRender(),
 		metrics,
 	}
+	return g
+}
+
+func createWorld() donburi.World {
+	world := donburi.NewWorld()
+	setting := world.Create(component.Settings)
+	world.Entry(setting).SetComponent(component.Settings,
+		unsafe.Pointer(&component.SettingsData{
+			Ticker:   time.NewTicker(500 * time.Millisecond),
+			Gpu:      helper.GpuInfo(),
+			Tps:      helper.NewPlot(20, 60),
+			Fps:      helper.NewPlot(20, 60),
+			Objects:  helper.NewPlot(20, 60000),
+			Sprite:   assets.LoadSprite(),
+			Colorful: false,
+			Amount:   1000,
+		}))
+	return world
 }
 
 func (g *Game) Update() error {
