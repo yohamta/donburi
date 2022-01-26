@@ -4,14 +4,21 @@ import (
 	"unsafe"
 
 	"github.com/yohamta/donburi/internal/component"
+	"github.com/yohamta/donburi/internal/entity"
 	"github.com/yohamta/donburi/internal/storage"
 )
 
 // Entry is a struct that contains an entity and a location in an archetype.
 type Entry struct {
+	id     entity.EntityId
 	entity Entity
 	loc    *storage.EntityLocation
 	world  *world
+}
+
+// Id returns the entity id.
+func (e *Entry) Id() entity.EntityId {
+	return e.id
 }
 
 // Entity returns the entity.

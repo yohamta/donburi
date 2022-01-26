@@ -109,6 +109,7 @@ func (w *world) createEntry(e Entity) {
 	}
 	loc := w.entities.Location(id)
 	entry := &Entry{
+		id:     id,
 		entity: e,
 		loc:    loc,
 		world:  w,
