@@ -2,8 +2,8 @@ package component
 
 import (
 	"fmt"
-
-	reflect "github.com/goccy/go-reflect"
+	"reflect"
+	"unsafe"
 )
 
 type ComponentTypeId int
@@ -11,8 +11,8 @@ type ComponentTypeId int
 // CompnentType represents a type of component. It is used to identify
 // a component when getting or setting components of an entity.
 type ComponentType struct {
-	id   ComponentTypeId
-	zero reflect.Value
+	id  ComponentTypeId
+	typ reflect.Type
 }
 
 var nextComponentTypeId ComponentTypeId = 1
@@ -24,8 +24,8 @@ func NewComponentType(s interface{}) *ComponentType {
 		panic(err)
 	}
 	componentType := &ComponentType{
-		id:   nextComponentTypeId,
-		zero: reflect.Zero(reflect.TypeOf(s)),
+		id:  nextComponentTypeId,
+		typ: reflect.TypeOf(s),
 	}
 	nextComponentTypeId++
 	return componentType
@@ -36,9 +36,10 @@ func (c *ComponentType) Id() ComponentTypeId {
 	return c.id
 }
 
-// New creates a new component value of the stored type.
-func (c *ComponentType) New() reflect.Value {
-	return c.zero
+func (c *ComponentType) New() unsafe.Pointer {
+	val := reflect.New(c.typ)
+	v := reflect.Indirect(val)
+	return unsafe.Pointer(v.UnsafeAddr())
 }
 
 func validate(s interface{}) error {

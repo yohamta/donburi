@@ -29,7 +29,7 @@ func (cs *SimpleStorage) PushComponent(component *component.ComponentType, arche
 	}
 	// TODO: optimize to avoid allocation
 	componentValue := component.New()
-	cs.storages[archetypeIndex] = append(cs.storages[archetypeIndex], unsafe.Pointer(&componentValue))
+	cs.storages[archetypeIndex] = append(cs.storages[archetypeIndex], componentValue)
 }
 
 // Component returns the pointer to data of the component in the archetype.
