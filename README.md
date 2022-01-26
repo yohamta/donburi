@@ -77,11 +77,11 @@ position.Y += velocity.y
 You can define helper functions to get components for better readability. This was advice from [eliasdaler](https://github.com/eliasdaler).
 
 ```go
-func GetPositionData(entry *donburi.Entry) *PositionData {
+func GetPosition(entry *donburi.Entry) *PositionData {
   return (*PositionData)(entry.Component(Position))
 }
 
-func GetVelocityData(entry *donburi.Entry) *VelocityData {
+func GetVelocity(entry *donburi.Entry) *VelocityData {
   return (*VelocityData)(entry.Component(Velocity))
 }
 ```
@@ -120,13 +120,13 @@ You can search for entities which have all of a set of components.
 
 ```go
 // You can define a query by declaring what componet you want to find.
-query := query.NewQuery(filter.Contains(component.Position, component.Velocity))
+query := query.NewQuery(filter.Contains(Position, Velocity))
 
 // You can then iterate through the entity found in the world
 query.EachEntity(world, func(entry *donburi.Entry) {
   // An entry is an accessor to entity and its components.
-  var position *component.PositionData = (*component.PositionData)(entry.Component(component.Position))
-  var velocity *component.VelocityData = (*component.VelocityData)(entry.Component(component.Velocity))
+  var position *PositionData = (*PositionData)(entry.Component(Position))
+  var velocity *VelocityData = (*VelocityData)(entry.Component(Velocity))
   
   position.X += velocity.X
   position.Y += velocity.Y
