@@ -49,6 +49,19 @@ func (q *Query) EachEntity(w donburi.World, callback func(*donburi.Entry)) {
 	}
 }
 
+// Count returns the number of entities that match the query.
+func (q *Query) Count(w donburi.World) int {
+	accessor := w.StorageAccessor()
+	result := q.evaluateQuery(w, &accessor)
+	iter := storage.NewEntityListIterator(0, accessor.Archetypes, result)
+	ret := 0
+	for iter.HasNext() {
+		entities := iter.Next()
+		ret += len(entities)
+	}
+	return ret
+}
+
 // FirstEntity returns the first entity that matches the query.
 func (q *Query) FirstEntity(w donburi.World) (entry *donburi.Entry, ok bool) {
 	accessor := w.StorageAccessor()
