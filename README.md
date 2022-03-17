@@ -14,9 +14,9 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
 ## Features
 
 - It introduces the concept of [Archetype](https://docs.unity3d.com/Packages/com.unity.entities@0.2/manual/ecs_core.html), which allows us to query entities very efficiently based on the components layout.
-- It is possible to combine And, Or, and Not conditions to perform complex queries for components.
-- It avoids reflection on every frame and uses unsafe.Pointer for performance.
-- Ability to dynamically add or remove components from an entity
+- It is possible to combine `And`, `Or`, and `Not` conditions to perform complex queries for components.
+- It avoids reflection on every frame and uses `unsafe.Pointer` for performance.
+- Ability to dynamically add or remove components from an entity.
 
 There are many features that need to be added in the future (e.g., parent-child relationship, event-notification system etc).
 
@@ -44,7 +44,7 @@ import "github.com/yohamta/donburi"
 world := donburi.NewWorld()
 ```
 
-Entities can be inserted via either `Create` (for a single entity) or `CreateMany` (for a collection of entities with the same component types). The world will create a unique ID for each entity upon insertion that you can use to refer to that entity later.
+Entities can be created via either `Create` (for a single entity) or `CreateMany` (for a collection of entities with the same component types). The world will create a unique ID for each entity upon insertion that you can use to refer to that entity later.
 
 ```go
 // Component is any struct that holds some kind of data.
@@ -74,7 +74,7 @@ position.X += velocity.X
 position.Y += velocity.y
 ```
 
-You can define helper functions to get components for better readability. This was advice from [eliasdaler](https://github.com/eliasdaler).
+We can define helper functions to get components for better readability. This was advice from [eliasdaler](https://github.com/eliasdaler).
 
 ```go
 func GetPosition(entry *donburi.Entry) *PositionData {
@@ -114,9 +114,9 @@ if SomeLogic.IsDead(world, someEntity) {
 
 ### Queries
 
-Queries allow for high performance and expressive iteration through the entities in a world, to find out what types of components are attached to it, to get component references, or to add and remove components.
+Queries allow for high performance and expressive iteration through the entities in a world, to get component references, or to add and remove components.
 
-You can search for entities which have all of a set of components.
+You can search for entities that have all of a set of components.
 
 ```go
 // You can define a query by declaring what componet you want to find.
@@ -146,7 +146,7 @@ query := query.NewQuery(filter.And(
 
 ### Tags
 
-You can attach "Tag" component to entity, which is just a component with no data.
+You can attach one or multiple "Tag" components to an entity. "Tag"s are just components with no data.
 
 Here is the utility function to create a tag component.
 
@@ -156,7 +156,7 @@ func NewTag() *ComponentType {
   return NewComponentType(struct{}{})
 }
 ```
-Since "Tags" are just components, they can be used in queries in the same way as components as follows:
+Since "Tags" are components, they can be used in queries in the same way as components as follows:
 
 ```go
 var EnemyTag = donburi.NewTag()
