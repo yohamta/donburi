@@ -15,7 +15,7 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
     - [Tags](#tags)
     - [Systems](#systems)
   - [Internal Architecture](#internal-architecture)
-    - [How to contribute?](#how-to-contribute)
+  - [How to contribute?](#how-to-contribute)
   - [Contributors](#contributors)
 
 ## Features
