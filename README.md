@@ -6,10 +6,17 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
 
 ## Contents
 
-- [Features](#features)
-- [Installation](#installation)
-- [Examples](#examples)
-- [Getting Started](#getting-started)
+  - [Features](#features)
+  - [Examples](#examples)
+  - [Installation](#installation)
+  - [Getting Started](#getting-started)
+    - [Worlds](#worlds)
+    - [Queries](#queries)
+    - [Tags](#tags)
+    - [Systems](#systems)
+  - [Internal Architecture](#internal-architecture)
+    - [How to contribute?](#how-to-contribute)
+  - [Contributors](#contributors)
 
 ## Features
 
@@ -172,3 +179,21 @@ query.EachEntity(world, func(entry *donburi.Entry) {
 ### Systems
 
 As of today, there is no function for the concept of "Systems" in ECS. It is assumed that operations are performed on entities using queries.
+
+## Internal Architecture
+
+The internal architecture is a bit complex, so please refer to the following diagram to understand it.
+
+![arch](assets/architecture.png)
+
+### How to contribute?
+
+Feel free to contribute in any way you want. Share ideas, questions, submit issues, and create pull requests. Thanks!
+
+## Contributors
+
+<a href="https://github.com/yohamta/donburi/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=yohamta/donburi" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).

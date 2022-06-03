@@ -145,12 +145,11 @@ func (w *world) Len() int {
 }
 
 func (w *world) Remove(ent Entity) {
-	if !w.Valid(ent) {
-		return
+	if w.Valid(ent) {
+		loc := w.entities.LocationMap[ent.Id()]
+		w.entities.Remove(ent.Id())
+		w.removeAtLocation(ent, loc)
 	}
-	loc := w.entities.LocationMap[ent.Id()]
-	w.entities.Remove(ent.Id())
-	w.removeAtLocation(ent, loc)
 }
 
 func (w *world) removeAtLocation(ent Entity, loc *storage.EntityLocation) {
@@ -158,10 +157,7 @@ func (w *world) removeAtLocation(ent Entity, loc *storage.EntityLocation) {
 	component_index := loc.Component
 	archetype := w.archetypes[arch_index]
 	archetype.SwapRemove(int(component_index))
-	for _, component_type := range archetype.Layout().Components() {
-		storage := w.components.Storage(component_type)
-		storage.SwapRemove(arch_index, component_index)
-	}
+	w.components.Remove(archetype, component_index)
 	if int(component_index) < len(archetype.Entities()) {
 		swapped := archetype.Entities()[component_index]
 		w.entities.Set(swapped.Id(), loc)

@@ -34,6 +34,12 @@ func (cs *SimpleStorage) PushComponent(component *component.ComponentType, arche
 
 // Component returns the pointer to data of the component in the archetype.
 func (cs *SimpleStorage) Component(archetypeIndex ArchetypeIndex, componentIndex ComponentIndex) unsafe.Pointer {
+	if int(archetypeIndex) >= len(cs.storages) {
+		panic("archetypeIndex out of range")
+	}
+	if int(componentIndex) >= len(cs.storages[archetypeIndex]) {
+		panic("componentIndex out of range")
+	}
 	return cs.storages[archetypeIndex][componentIndex]
 }
 
