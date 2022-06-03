@@ -45,3 +45,17 @@ func (cs *Components) Storage(c *component.ComponentType) *SimpleStorage {
 	cs.storages[c.Id()] = NewSimpleStorage()
 	return cs.storages[c.Id()]
 }
+
+// Remove removes the component from the storage.
+func (cs *Components) Remove(a *Archetype, ci ComponentIndex) {
+	for _, ct := range a.Layout().Components() {
+		cs.remove(ct, a.index, ci)
+	}
+	cs.componentIndices[a.index]--
+}
+
+func (cs *Components) remove(ct *component.ComponentType,
+	ai ArchetypeIndex, ci ComponentIndex) {
+	storage := cs.Storage(ct)
+	storage.SwapRemove(ai, ci)
+}

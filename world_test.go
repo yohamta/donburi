@@ -4,8 +4,11 @@ import (
 	"testing"
 	"unsafe"
 
+	"github.com/stretchr/testify/require"
 	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/internal/entity"
+	"github.com/yohamta/donburi/query"
 )
 
 type Vec2f struct {
@@ -179,4 +182,20 @@ func TestDeleteEntity(t *testing.T) {
 		})
 	}
 
+}
+
+func TestRemoveAndCreateEntity(t *testing.T) {
+	world := donburi.NewWorld()
+	e := world.Create(PlayerTag)
+	world.Remove(e)
+	require.False(t, world.Valid(e))
+
+	e2 := world.Create(PlayerTag)
+	query := query.NewQuery(filter.Contains(PlayerTag))
+	entry, ok := query.FirstEntity(world)
+	require.True(t, ok)
+
+	require.Equal(t, entry.Entity(), e2)
+	tf := entry.Component(PlayerTag)
+	require.NotNil(t, tf)
 }
