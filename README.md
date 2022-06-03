@@ -186,7 +186,7 @@ The internal architecture is a bit complex, so please refer to the following dia
 
 ![arch](assets/architecture.png)
 
-### How to contribute?
+## How to contribute?
 
 Feel free to contribute in any way you want. Share ideas, questions, submit issues, and create pull requests. Thanks!
 
