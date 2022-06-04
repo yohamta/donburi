@@ -14,7 +14,7 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
     - [Queries](#queries)
     - [Tags](#tags)
     - [Systems](#systems)
-  - [Internal Architecture](#internal-architecture)
+  - [Internal Design](#internal-design)
   - [How to contribute?](#how-to-contribute)
   - [Contributors](#contributors)
 
@@ -180,9 +180,9 @@ query.EachEntity(world, func(entry *donburi.Entry) {
 
 As of today, there is no function for the concept of "Systems" in ECS. It is assumed that operations are performed on entities using queries.
 
-## Internal Architecture
+## Internal Design
 
-The internal architecture is a bit complex, so please refer to the following diagram to understand it.
+It is a bit complex, so please refer to the following diagram to understand it.
 
 ![arch](assets/architecture.png)
 
