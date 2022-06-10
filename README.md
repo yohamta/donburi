@@ -1,6 +1,6 @@
 # <img align="right" width="150" src="https://user-images.githubusercontent.com/1475839/150521755-977f545b-4436-4059-87ac-1129541ad236.png" alt="donburi" title="donburi" /> Donburi
 
-Donburi is just another Entity Component System library for Ebiten inspired by [legion](https://github.com/amethyst/legion).
+Donburi is just another Entity Component System library for Ebitengin inspired by [legion](https://github.com/amethyst/legion).
 
 It aims to be a feature rich and high performance [ECS Library](https://en.wikipedia.org/wiki/Entity_component_system).
 
