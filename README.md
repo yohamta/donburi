@@ -22,8 +22,9 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
 
 - It introduces the concept of [Archetype](https://docs.unity3d.com/Packages/com.unity.entities@0.2/manual/ecs_core.html), which allows us to query entities very efficiently based on the components layout.
 - It is possible to combine `And`, `Or`, and `Not` conditions to perform complex queries for components.
-- It avoids reflection on every frame and uses `unsafe.Pointer` for performance.
+- It avoids reflection on every frame for performance.
 - Ability to dynamically add or remove components from an entity.
+- APIs with Go Generics
 
 There are many features that need to be added in the future (e.g., parent-child relationship, event-notification system etc).
 
@@ -64,8 +65,8 @@ type VelocityData struct {
 }
 
 // ComponentType represents kind of component which is used to create or query entities.
-var Position = donburi.NewComponentType(PositionData{})
-var Velocity = donburi.NewComponentType(VelocityData{})
+var Position = donburi.NewComponentType[PositionData]()
+var Velocity = donburi.NewComponentType[VelocityData]()
 
 // Create an entity by specifying components that the entity will have.
 // Component data will be initialized by default value of the struct.
@@ -75,8 +76,8 @@ entity = world.Create(Position, Velocity);
 // which allows you to access the components that belong to the entity.
 entry := world.Entry(entity)
 
-position := (*PositionData)(entry.Component(Position))
-velocity := (*VelocityData)(entry.Component(Velocity))
+position := donburi.Get[PositionData](entry, Position)
+velocity := donburi.Get[VelocityData](entry, Velocity)
 position.X += velocity.X
 position.Y += velocity.y
 ```
@@ -85,11 +86,11 @@ We can define helper functions to get components for better readability. This wa
 
 ```go
 func GetPosition(entry *donburi.Entry) *PositionData {
-  return (*PositionData)(entry.Component(Position))
+  return donburi.Get[PositionData](entry, Position)
 }
 
 func GetVelocity(entry *donburi.Entry) *VelocityData {
-  return (*VelocityData)(entry.Component(Velocity))
+  return donburi.Get[VelocityData](entry, Velocity)
 }
 ```
 
@@ -101,8 +102,11 @@ query := query.NewQuery(filter.Contains(PlayerTag))
 // Query.FirstEntity() returns only the first entity that 
 // matches the query.
 if entry, ok := query.FirstEntity(world); ok {
-  entry.AddComponent(Position)
-  entry.RemoveComponent(Velocity)
+  donburi.Add(entry, Position, &PositionData{
+    X: 100,
+    Y: 100,
+  })
+  donburi.Remove(entry, Velocity)
 }
 ```
 
@@ -132,8 +136,8 @@ query := query.NewQuery(filter.Contains(Position, Velocity))
 // You can then iterate through the entity found in the world
 query.EachEntity(world, func(entry *donburi.Entry) {
   // An entry is an accessor to entity and its components.
-  var position *PositionData = (*PositionData)(entry.Component(Position))
-  var velocity *VelocityData = (*VelocityData)(entry.Component(Velocity))
+  position := donburi.Get[PositionData](entry, Position)
+  velocity := donburi.Get[VelocityData](entry, Velocity)
   
   position.X += velocity.X
   position.Y += velocity.Y
