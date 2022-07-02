@@ -58,7 +58,7 @@ func TestMutateComponent(t *testing.T) {
 	donburi.Get[TransformData](e_entry, Transform).Position.Y = 40
 
 	e2_entry := world.Entry(enemy2)
-	donburi.Set(e2_entry, Transform, &TransformData{
+	donburi.Add(e2_entry, Transform, &TransformData{
 		Position: Vec2f{40, 50},
 	})
 

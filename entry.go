@@ -21,11 +21,6 @@ func Get[T any](e *Entry, ctype *component.ComponentType) *T {
 	return (*T)(e.Component(ctype))
 }
 
-// Set returns the component from the entry
-func Set[T any](e *Entry, ctype *component.ComponentType, component *T) {
-	e.SetComponent(ctype, unsafe.Pointer(component))
-}
-
 // Add adds the component to the entry.
 func Add[T any](e *Entry, ctype *component.ComponentType, component *T) {
 	e.AddComponent(ctype, unsafe.Pointer(component))
@@ -65,15 +60,16 @@ func (e *Entry) AddComponent(ctype *component.ComponentType, components ...unsaf
 	if len(components) > 1 {
 		panic("AddComponent: component argument must be a single value")
 	}
+	if !e.HasComponent(ctype) {
+		c := e.loc.Component
+		a := e.loc.Archetype
 
-	c := e.loc.Component
-	a := e.loc.Archetype
+		base_layout := e.world.archetypes[a].Layout().Components()
+		target_arc := e.world.getArchetypeForComponents(append(base_layout, ctype))
+		e.world.TransferArchetype(a, target_arc, c)
 
-	base_layout := e.world.archetypes[a].Layout().Components()
-	target_arc := e.world.getArchetypeForComponents(append(base_layout, ctype))
-	e.world.TransferArchetype(a, target_arc, c)
-
-	e.loc = e.world.Entry(e.entity).loc
+		e.loc = e.world.Entry(e.entity).loc
+	}
 	if len(components) == 1 {
 		e.SetComponent(ctype, components[0])
 	}
