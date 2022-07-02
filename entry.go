@@ -26,6 +26,17 @@ func Add[T any](e *Entry, ctype *component.ComponentType, component *T) {
 	e.AddComponent(ctype, unsafe.Pointer(component))
 }
 
+// Set sets the comopnent of the entry.
+func Set[T any](e *Entry, ctype *component.ComponentType, component *T) {
+	e.SetComponent(ctype, unsafe.Pointer(component))
+}
+
+// SetValue sets the value of the component.
+func SetValue[T any](e *Entry, ctype *component.ComponentType, value T) {
+	c := Get[T](e, ctype)
+	*c = value
+}
+
 // Remove removes the component from the entry.
 func Remove(e *Entry, ctype *component.ComponentType) {
 	e.RemoveComponent(ctype)
