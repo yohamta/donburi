@@ -8,8 +8,8 @@ type GravityData struct {
 	Value float64
 }
 
-var Gravity = donburi.NewComponentType(GravityData{})
+var Gravity = donburi.NewComponentType[GravityData]()
 
 func GetGravity(entry *donburi.Entry) *GravityData {
-	return (*GravityData)(entry.Component(Gravity))
+	return donburi.Get[GravityData](entry, Gravity)
 }

@@ -9,8 +9,8 @@ type SpriteData struct {
 	Image *ebiten.Image
 }
 
-var Sprite = donburi.NewComponentType(SpriteData{})
+var Sprite = donburi.NewComponentType[SpriteData]()
 
 func GetSprite(entry *donburi.Entry) *SpriteData {
-	return (*SpriteData)(entry.Component(Sprite))
+	return donburi.Get[SpriteData](entry, Sprite)
 }
