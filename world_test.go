@@ -23,8 +23,8 @@ type VelocityData struct {
 	Velocity Vec2f
 }
 
-var Transform = donburi.NewComponentType(TransformData{})
-var Velocity = donburi.NewComponentType(VelocityData{})
+var Transform = donburi.NewComponentType[TransformData]()
+var Velocity = donburi.NewComponentType[VelocityData]()
 var PlayerTag = donburi.NewTag()
 var SecondaryTag = donburi.NewTag()
 var EnemyTag = donburi.NewTag()
@@ -106,7 +106,7 @@ func TestAddComponent(t *testing.T) {
 	entry := world.Entry(entities[1])
 	old_arch := entry.Archetype()
 
-	donburi.Add[VelocityData](entry, Velocity, &VelocityData{
+	donburi.Add(entry, Velocity, &VelocityData{
 		Velocity: Vec2f{10, 20},
 	})
 	entry.AddComponent(EnemyTag)
