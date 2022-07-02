@@ -2,7 +2,6 @@ package donburi_test
 
 import (
 	"testing"
-	"unsafe"
 
 	"github.com/stretchr/testify/require"
 	"github.com/yohamta/donburi"
@@ -51,29 +50,29 @@ func TestMutateComponent(t *testing.T) {
 	enemy2 := world.Create(EnemyTag, Transform, Velocity)
 
 	p_entry := world.Entry(player)
-	((*TransformData)(p_entry.Component(Transform))).Position.X = 10
-	((*TransformData)(p_entry.Component(Transform))).Position.Y = 20
+	donburi.Get[TransformData](p_entry, Transform).Position.X = 10
+	donburi.Get[TransformData](p_entry, Transform).Position.Y = 20
 
 	e_entry := world.Entry(enemy)
-	((*TransformData)(e_entry.Component(Transform))).Position.X = 30
-	((*TransformData)(e_entry.Component(Transform))).Position.Y = 40
+	donburi.Get[TransformData](e_entry, Transform).Position.X = 30
+	donburi.Get[TransformData](e_entry, Transform).Position.Y = 40
 
 	e2_entry := world.Entry(enemy2)
-	e2_entry.SetComponent(Transform, unsafe.Pointer(&TransformData{
+	donburi.Set(e2_entry, Transform, &TransformData{
 		Position: Vec2f{40, 50},
-	}))
+	})
 
-	p_tr := (*TransformData)(p_entry.Component(Transform))
+	p_tr := donburi.Get[TransformData](p_entry, Transform)
 	if p_tr.Position.X != 10 || p_tr.Position.Y != 20 {
 		t.Errorf("%s: Position should be (10, 20), but got (%f, %f)", nm, p_tr.Position.X, p_tr.Position.Y)
 	}
 
-	e_tr := (*TransformData)(e_entry.Component(Transform))
+	e_tr := donburi.Get[TransformData](e_entry, Transform)
 	if e_tr.Position.X != 30 || e_tr.Position.Y != 40 {
 		t.Errorf("%s: Position should be (30, 40), but got (%f, %f)", nm, e_tr.Position.X, e_tr.Position.Y)
 	}
 
-	e2_tr := (*TransformData)(e2_entry.Component(Transform))
+	e2_tr := donburi.Get[TransformData](e2_entry, Transform)
 	if e2_tr.Position.X != 40 || e2_tr.Position.Y != 50 {
 		t.Errorf("%s: Position should be (40, 50), but got (%f, %f)", nm, e2_tr.Position.X, e2_tr.Position.Y)
 	}
@@ -107,9 +106,9 @@ func TestAddComponent(t *testing.T) {
 	entry := world.Entry(entities[1])
 	old_arch := entry.Archetype()
 
-	entry.AddComponent(Velocity, unsafe.Pointer(&VelocityData{
+	donburi.Add[VelocityData](entry, Velocity, &VelocityData{
 		Velocity: Vec2f{10, 20},
-	}))
+	})
 	entry.AddComponent(EnemyTag)
 
 	new_arch := entry.Archetype()

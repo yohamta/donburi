@@ -16,6 +16,26 @@ type Entry struct {
 	world  *world
 }
 
+// Get returns the component from the entry
+func Get[T any](e *Entry, ctype *component.ComponentType) *T {
+	return (*T)(e.Component(ctype))
+}
+
+// Set returns the component from the entry
+func Set[T any](e *Entry, ctype *component.ComponentType, component *T) {
+	e.SetComponent(ctype, unsafe.Pointer(component))
+}
+
+// Add adds the component to the entry.
+func Add[T any](e *Entry, ctype *component.ComponentType, component *T) {
+	e.AddComponent(ctype, unsafe.Pointer(component))
+}
+
+// Remove removes the component from the entry.
+func Remove(e *Entry, ctype *component.ComponentType) {
+	e.RemoveComponent(ctype)
+}
+
 // Id returns the entity id.
 func (e *Entry) Id() entity.EntityId {
 	return e.id
