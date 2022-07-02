@@ -88,3 +88,8 @@ func (e *Entry) Archetype() *storage.Archetype {
 	a := e.loc.Archetype
 	return e.world.archetypes[a]
 }
+
+// HasComponent returns true if the entity has the given component type.
+func (e *Entry) HasComponent(componentType *component.ComponentType) bool {
+	return e.Archetype().Layout().HasComponent(componentType)
+}
