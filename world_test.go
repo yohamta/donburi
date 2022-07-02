@@ -37,7 +37,7 @@ func TestEntry(t *testing.T) {
 	player := world.Create(PlayerTag, Transform, Velocity)
 
 	entry := world.Entry(player)
-	if entry.Archetype().Layout().HasComponent(PlayerTag) == false {
+	if entry.HasComponent(PlayerTag) == false {
 		t.Errorf("%s: PlayerTag should be in player archetype", nm)
 	}
 }
@@ -86,10 +86,10 @@ func TestArchetype(t *testing.T) {
 	player := world.Create(PlayerTag, Transform, Velocity)
 
 	entry := world.Entry(player)
-	if entry.Archetype().Layout().HasComponent(PlayerTag) == false {
+	if entry.HasComponent(PlayerTag) == false {
 		t.Errorf("%s: PlayerTag should be in player archetype", nm)
 	}
-	if entry.Archetype().Layout().HasComponent(EnemyTag) == true {
+	if entry.HasComponent(EnemyTag) == true {
 		t.Errorf("%s: EnemyTag should not be in player archetype", nm)
 	}
 }
