@@ -19,8 +19,8 @@ type SettingsData struct {
 	Objects  *helper.Plot
 }
 
-var Settings = donburi.NewComponentType(SettingsData{})
+var Settings = donburi.NewComponentType[SettingsData]()
 
 func GetSettings(entry *donburi.Entry) *SettingsData {
-	return (*SettingsData)(entry.Component(Settings))
+	return donburi.Get[SettingsData](entry, Settings)
 }

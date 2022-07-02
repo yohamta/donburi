@@ -9,8 +9,8 @@ type HueData struct {
 	Value    float64
 }
 
-var Hue = donburi.NewComponentType(HueData{})
+var Hue = donburi.NewComponentType[HueData]()
 
 func GetHue(entry *donburi.Entry) *HueData {
-	return (*HueData)(entry.Component(Hue))
+	return donburi.Get[HueData](entry, Hue)
 }

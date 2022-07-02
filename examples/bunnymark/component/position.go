@@ -8,8 +8,8 @@ type PositionData struct {
 	X, Y float64
 }
 
-var Position = donburi.NewComponentType(PositionData{})
+var Position = donburi.NewComponentType[PositionData]()
 
 func GetPosition(entry *donburi.Entry) *PositionData {
-	return (*PositionData)(entry.Component(Position))
+	return donburi.Get[PositionData](entry, Position)
 }

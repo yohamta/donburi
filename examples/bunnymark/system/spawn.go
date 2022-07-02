@@ -65,18 +65,19 @@ func (s *Spawn) addBunnies(w donburi.World) {
 		*position = component.PositionData{
 			X: float64(i % 2), // Alternate screen edges
 		}
-		velocity := component.GetVelocity(entry)
-		*velocity = component.VelocityData{
-			X: helper.RangeFloat(0, 0.005),
-			Y: helper.RangeFloat(0.0025, 0.005)}
-		hue := component.GetHue(entry)
-		*hue = component.HueData{
-			Colorful: &s.settings.Colorful,
-			Value:    helper.RangeFloat(0, 2*math.Pi),
-		}
-		gravity := component.GetGravity(entry)
-		*gravity = component.GravityData{Value: 0.00095}
-		sprite := component.GetSprite(entry)
-		*sprite = component.SpriteData{Image: s.settings.Sprite}
+		donburi.SetValue(
+			entry, component.Velocity, component.VelocityData{
+				X: helper.RangeFloat(0, 0.005),
+				Y: helper.RangeFloat(0.0025, 0.005),
+			})
+		donburi.SetValue(
+			entry, component.Hue, component.HueData{
+				Colorful: &s.settings.Colorful,
+				Value:    helper.RangeFloat(0, 2*math.Pi),
+			})
+		donburi.SetValue(entry, component.Gravity,
+			component.GravityData{Value: 0.00095})
+		donburi.SetValue(entry, component.Sprite,
+			component.SpriteData{Image: s.settings.Sprite})
 	}
 }

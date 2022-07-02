@@ -8,8 +8,8 @@ type VelocityData struct {
 	X, Y float64
 }
 
-var Velocity = donburi.NewComponentType(VelocityData{})
+var Velocity = donburi.NewComponentType[VelocityData]()
 
 func GetVelocity(entry *donburi.Entry) *VelocityData {
-	return (*VelocityData)(entry.Component(Velocity))
+	return donburi.Get[VelocityData](entry, Velocity)
 }
