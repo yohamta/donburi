@@ -4,6 +4,8 @@ Donburi is just another Entity Component System library for Ebitengin inspired b
 
 It aims to be a feature rich and high performance [ECS Library](https://en.wikipedia.org/wiki/Entity_component_system).
 
+[GoDoc](https://pkg.go.dev/github.com/yohamta/donburi)
+
 ## Contents
 
   - [Features](#features)
