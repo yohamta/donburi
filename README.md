@@ -176,7 +176,7 @@ query := query.NewQuery(
 
 // In our query we can check if the entity has some of the optional components before attempting to retrieve them
 query.EachEntity(world, func(entry *donburi.Entry) {
-  // Ac
+  // We'll always be able to access Position and Size
   position := donburi.Get[PositionData](entry, Position)
   size := donburi.Get[SizeData](entry, Size)
   
