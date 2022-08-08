@@ -127,7 +127,7 @@ if SomeLogic.IsDead(world, someEntity) {
 
 ### Queries
 
-Queries allow for high performance and expressive iteration through the entities in a world, to get component references, or to add and remove components.
+Queries allow for high performance and expressive iteration through the entities in a world, to get component references, test if an entity has a component or to add and remove components.
 
 You can search for entities that have all of a set of components.
 
@@ -155,6 +155,49 @@ For example:
 query := query.NewQuery(filter.And(
   filter.Contains(NpcTag),
   filter.Not(filter.Contains(Position))))
+```
+
+If you need to determine if an entity has a component, there is `entry.HasComponent`
+
+For example:
+
+```go
+// We have a query for all entities that have Position and Size, but also any of Sprite, Text or Shape.
+query := query.NewQuery(
+  filter.And(
+    filter.Contains(Position, Size),
+    filter.Or(
+      filter.Contains(Sprite),
+      filter.Contains(Text),
+      filter.Contains(Shape),
+    )
+  )
+)
+
+// In our query we can check if the entity has some of the optional components before attempting to retrieve them
+query.EachEntity(world, func(entry *donburi.Entry) {
+  // We'll always be able to access Position and Size
+  position := donburi.Get[PositionData](entry, Position)
+  size := donburi.Get[SizeData](entry, Size)
+  
+  
+  if entry.HasComponent(Sprite) {
+    sprite := donburi.Get[SpriteData](entry, Sprite)
+    // .. do sprite things
+  }
+  
+  if entry.HasComponent(Text) {
+    text := donburi.Get[TextData](entry, Text)
+    // .. do text things
+  }
+  
+  if entry.HasComponent(Shape) {
+    shape := donburi.Get[ShapeData](entry, Shape)
+    // .. do shape things
+  }
+  
+})
+
 ```
 
 ### Tags
