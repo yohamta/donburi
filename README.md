@@ -183,17 +183,17 @@ query.EachEntity(world, func(entry *donburi.Entry) {
   
   if entry.HasComponent(Sprite) {
     sprite := donburi.Get[SpriteData](entry, Sprite)
-    .. do sprite things
+    // .. do sprite things
   }
   
   if entry.HasComponent(Text) {
     text := donburi.Get[TextData](entry, Text)
-    .. do text things
+    // .. do text things
   }
   
   if entry.HasComponent(Shape) {
     shape := donburi.Get[ShapeData](entry, Shape)
-    .. do shape things
+    // .. do shape things
   }
   
 })
