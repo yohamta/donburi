@@ -43,6 +43,7 @@ func (cs *Components) MoveComponent(c *component.ComponentType, src ArchetypeInd
 	storage := cs.Storage(c)
 	storage.MoveComponent(src, idx, dst)
 	cs.componentIndices[src]--
+	cs.componentIndices[dst]++
 }
 
 // Storage returns the pointer to data of the component in the archetype.
