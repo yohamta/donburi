@@ -7,6 +7,7 @@ import (
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/internal/entity"
+	"github.com/yohamta/donburi/internal/storage"
 	"github.com/yohamta/donburi/query"
 )
 
@@ -202,4 +203,56 @@ func TestRemoveAndCreateEntity(t *testing.T) {
 	if !entry.HasComponent(tagA) {
 		t.Errorf("TagA should be in the archetype")
 	}
+}
+
+type archeTest struct {
+	name          string
+	archetype     *storage.Archetype
+	expectedCount int
+}
+
+func TestCreateEntityAndExtend(t *testing.T) {
+	testFunc := func(tests []archeTest) {
+		t.Helper()
+		for _, tt := range tests {
+			if len(tt.archetype.Entities()) != tt.expectedCount {
+				t.Errorf("%s archetype should have %d entities", tt.name, tt.expectedCount)
+			}
+		}
+	}
+	world := donburi.NewWorld()
+
+	entity := world.Create(velocity)
+	entry := world.Entry(entity)
+
+	oldArchtype := entry.Archetype()
+
+	testFunc([]archeTest{
+		{"old", oldArchtype, 1},
+	})
+
+	// Add new component
+	donburi.Add(entry, transform, &transformData{})
+	newArchtype := entry.Archetype()
+
+	testFunc([]archeTest{
+		{"old", oldArchtype, 0},
+		{"new", newArchtype, 1},
+	})
+
+	// Create another entity
+	anotherEntity := world.Create(velocity)
+	anotherEntry := world.Entry(anotherEntity)
+
+	testFunc([]archeTest{
+		{"old", oldArchtype, 1},
+		{"new", newArchtype, 1},
+	})
+
+	donburi.Add(anotherEntry, transform, &transformData{})
+
+	testFunc([]archeTest{
+		{"old", oldArchtype, 0},
+		{"new", newArchtype, 2},
+	})
 }

@@ -9,7 +9,8 @@ type ComponentIndex int
 
 // Components is a structure that stores data of components.
 type Components struct {
-	storages         []*SimpleStorage
+	storages []*SimpleStorage
+	// TODO: optimize to use slice instead of map for performance
 	componentIndices map[ArchetypeIndex]ComponentIndex
 }
 
@@ -35,6 +36,13 @@ func (cs *Components) PushComponents(components []*component.ComponentType, arch
 		cs.componentIndices[archetypeIndex]++
 	}
 	return cs.componentIndices[archetypeIndex]
+}
+
+// MoveComponent moves the pointer to data of the component in the archetype.
+func (cs *Components) MoveComponent(c *component.ComponentType, src ArchetypeIndex, idx ComponentIndex, dst ArchetypeIndex) {
+	storage := cs.Storage(c)
+	storage.MoveComponent(src, idx, dst)
+	cs.componentIndices[src]--
 }
 
 // Storage returns the pointer to data of the component in the archetype.
