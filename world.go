@@ -152,7 +152,7 @@ func (w *world) Remove(ent Entity) {
 	}
 }
 
-func (w *world) removeAtLocation(ent Entity, loc *storage.EntityLocation) {
+func (w *world) removeAtLocation(ent Entity, loc *storage.Location) {
 	arch_index := loc.Archetype
 	component_index := loc.Component
 	archetype := w.archetypes[arch_index]

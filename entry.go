@@ -12,7 +12,7 @@ import (
 type Entry struct {
 	id     entity.EntityId
 	entity Entity
-	loc    *storage.EntityLocation
+	loc    *storage.Location
 	world  *world
 }
 

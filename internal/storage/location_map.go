@@ -6,14 +6,14 @@ import (
 
 // LocationMap is a storage of entity locations.
 type LocationMap struct {
-	LocationMap []*EntityLocation
+	LocationMap []*Location
 	Len         int
 }
 
 // NewLocationMap creates an empty storage.
 func NewLocationMap() *LocationMap {
 	return &LocationMap{
-		LocationMap: make([]*EntityLocation, 1, 256),
+		LocationMap: make([]*Location, 1, 256),
 		Len:         0,
 	}
 }
@@ -33,7 +33,7 @@ func (lm *LocationMap) Remove(id entity.EntityId) {
 // Insert inserts the given entity id and archetype index to the storage.
 func (lm *LocationMap) Insert(id entity.EntityId, archetype ArchetypeIndex, component ComponentIndex) {
 	if int(id) == len(lm.LocationMap) {
-		loc := NewEntityLocation(archetype, component)
+		loc := NewLocation(archetype, component)
 		lm.LocationMap = append(lm.LocationMap, loc)
 		lm.Len++
 	} else {
@@ -48,12 +48,12 @@ func (lm *LocationMap) Insert(id entity.EntityId, archetype ArchetypeIndex, comp
 }
 
 // Set sets the given entity id and archetype index to the storage.
-func (lm *LocationMap) Set(id entity.EntityId, loc *EntityLocation) {
+func (lm *LocationMap) Set(id entity.EntityId, loc *Location) {
 	lm.Insert(id, loc.Archetype, loc.Component)
 }
 
 // Location returns the location of the given entity id.
-func (lm *LocationMap) Location(id entity.EntityId) *EntityLocation {
+func (lm *LocationMap) Location(id entity.EntityId) *Location {
 	return lm.LocationMap[id]
 }
 
