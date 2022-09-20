@@ -37,7 +37,7 @@ func NewSearchIndex() *SearchIndex {
 }
 
 // Push adds an archetype to the search index.
-func (si *SearchIndex) Push(archetypeLayout *EntityLayout) {
+func (si *SearchIndex) Push(archetypeLayout *Layout) {
 	si.component_layouts = append(si.component_layouts, archetypeLayout.Components())
 }
 

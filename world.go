@@ -223,7 +223,7 @@ func (w *world) nextEntity() Entity {
 	return entity
 }
 
-func (w *world) insertArcheType(layout *storage.EntityLayout) storage.ArchetypeIndex {
+func (w *world) insertArcheType(layout *storage.Layout) storage.ArchetypeIndex {
 	w.index.Push(layout)
 	arch_index := storage.ArchetypeIndex(len(w.archetypes))
 	w.archetypes = append(w.archetypes, storage.NewArchetype(arch_index, layout))
@@ -244,7 +244,7 @@ func (w *world) getArchetypeForComponents(components []*component.ComponentType)
 	if !w.noDuplicates(components) {
 		panic(fmt.Sprintf("duplicate component types: %v", components))
 	}
-	return w.insertArcheType(storage.NewEntityLayout(components))
+	return w.insertArcheType(storage.NewLayout(components))
 }
 
 func (w *world) noDuplicates(components []*ComponentType) bool {

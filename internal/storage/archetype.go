@@ -12,11 +12,11 @@ type ArchetypeIndex int
 type Archetype struct {
 	index    ArchetypeIndex
 	entities []entity.Entity
-	layout   *EntityLayout
+	layout   *Layout
 }
 
 // NewArchetype creates a new archetype.
-func NewArchetype(index ArchetypeIndex, layout *EntityLayout) *Archetype {
+func NewArchetype(index ArchetypeIndex, layout *Layout) *Archetype {
 	return &Archetype{
 		index:    index,
 		entities: make([]entity.Entity, 0, 256),
@@ -25,7 +25,7 @@ func NewArchetype(index ArchetypeIndex, layout *EntityLayout) *Archetype {
 }
 
 // Layout is a collection of archetypes for a specific layout of components.
-func (archetype *Archetype) Layout() *EntityLayout {
+func (archetype *Archetype) Layout() *Layout {
 	return archetype.layout
 }
 
