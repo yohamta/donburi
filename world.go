@@ -37,7 +37,7 @@ type World interface {
 // StorageAccessor is an accessor for the world's storage.
 type StorageAccessor struct {
 	// Index is the search index for the world.
-	Index *storage.SearchIndex
+	Index *storage.Index
 	// Components is the component storage for the world.
 	Components *storage.Components
 	// Archetypes is the archetype storage for the world.
@@ -46,7 +46,7 @@ type StorageAccessor struct {
 
 type world struct {
 	id           WorldId
-	index        *storage.SearchIndex
+	index        *storage.Index
 	entities     *storage.LocationMap
 	components   *storage.Components
 	archetypes   []*storage.Archetype
@@ -63,7 +63,7 @@ func NewWorld() World {
 	nextWorldId++
 	w := &world{
 		id:           worldId,
-		index:        storage.NewSearchIndex(),
+		index:        storage.NewIndex(),
 		entities:     storage.NewLocationMap(),
 		components:   storage.NewComponents(),
 		archetypes:   make([]*storage.Archetype, 0),
