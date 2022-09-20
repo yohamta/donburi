@@ -6,16 +6,12 @@ import (
 	"github.com/yohamta/donburi/internal/component"
 )
 
-type testComponentData struct {
-}
-
-var testComponentType = component.NewComponentType(testComponentData{})
-
 func TestLayout(t *testing.T) {
-	components := []*component.ComponentType{testComponentType}
+	compType := component.NewComponentType(struct{}{})
+	components := []*component.ComponentType{compType}
 	layout := NewLayout(components)
 
-	if layout.HasComponent(testComponentType) == false {
+	if layout.HasComponent(compType) == false {
 		t.Errorf("layout should have the component type")
 	}
 }

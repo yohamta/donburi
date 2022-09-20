@@ -42,8 +42,11 @@ func (archetype *Archetype) SwapRemove(entity_index int) entity.Entity {
 	return removed
 }
 
-// Matches returns true if the given components match the archetype.
-func (archetype *Archetype) MatchesLayout(components []*component.ComponentType) bool {
+// LayoutMatches returns true if the given layout matches this archetype.
+func (archetype *Archetype) LayoutMatches(components []*component.ComponentType) bool {
+	if len(archetype.layout.Components()) != len(components) {
+		return false
+	}
 	for _, componentType := range components {
 		if !archetype.layout.HasComponent(componentType) {
 			return false
