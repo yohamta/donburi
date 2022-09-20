@@ -63,3 +63,14 @@ func (cs *Storage) SwapRemove(archetypeIndex ArchetypeIndex, componentIndex Comp
 	cs.storages[archetypeIndex] = cs.storages[archetypeIndex][:len(cs.storages[archetypeIndex])-1]
 	return componentValue
 }
+
+// Contains returns true if the storage contains the component.
+func (cs *Storage) Contains(archetypeIndex ArchetypeIndex, componentIndex ComponentIndex) bool {
+	if cs.storages[archetypeIndex] == nil {
+		return false
+	}
+	if len(cs.storages[archetypeIndex]) <= int(componentIndex) {
+		return false
+	}
+	return cs.storages[archetypeIndex][componentIndex] != nil
+}
