@@ -9,7 +9,7 @@ type ComponentIndex int
 
 // Components is a structure that stores data of components.
 type Components struct {
-	storages []*SimpleStorage
+	storages []*Storage
 	// TODO: optimize to use slice instead of map for performance
 	componentIndices map[ArchetypeIndex]ComponentIndex
 }
@@ -17,7 +17,7 @@ type Components struct {
 // NewComponents creates a new empty structure that stores data of components.
 func NewComponents() *Components {
 	return &Components{
-		storages:         make([]*SimpleStorage, 512), // TODO: expand as the number of component types increases
+		storages:         make([]*Storage, 512), // TODO: expand as the number of component types increases
 		componentIndices: make(map[ArchetypeIndex]ComponentIndex),
 	}
 }
@@ -26,7 +26,7 @@ func NewComponents() *Components {
 func (cs *Components) PushComponents(components []*component.ComponentType, archetypeIndex ArchetypeIndex) ComponentIndex {
 	for _, componentType := range components {
 		if v := cs.storages[componentType.Id()]; v == nil {
-			cs.storages[componentType.Id()] = NewSimpleStorage()
+			cs.storages[componentType.Id()] = NewStorage()
 		}
 		cs.storages[componentType.Id()].PushComponent(componentType, archetypeIndex)
 	}
@@ -46,11 +46,11 @@ func (cs *Components) MoveComponent(c *component.ComponentType, src ArchetypeInd
 }
 
 // Storage returns the pointer to data of the component in the archetype.
-func (cs *Components) Storage(c *component.ComponentType) *SimpleStorage {
+func (cs *Components) Storage(c *component.ComponentType) *Storage {
 	if storage := cs.storages[c.Id()]; storage != nil {
 		return storage
 	}
-	cs.storages[c.Id()] = NewSimpleStorage()
+	cs.storages[c.Id()] = NewStorage()
 	return cs.storages[c.Id()]
 }
 
