@@ -37,7 +37,7 @@ type World interface {
 // StorageAccessor is an accessor for the world's storage.
 type StorageAccessor struct {
 	// Index is the search index for the world.
-	Index *storage.SearchIndex
+	Index *storage.Index
 	// Components is the component storage for the world.
 	Components *storage.Components
 	// Archetypes is the archetype storage for the world.
@@ -46,7 +46,7 @@ type StorageAccessor struct {
 
 type world struct {
 	id           WorldId
-	index        *storage.SearchIndex
+	index        *storage.Index
 	entities     *storage.LocationMap
 	components   *storage.Components
 	archetypes   []*storage.Archetype
@@ -63,7 +63,7 @@ func NewWorld() World {
 	nextWorldId++
 	w := &world{
 		id:           worldId,
-		index:        storage.NewSearchIndex(),
+		index:        storage.NewIndex(),
 		entities:     storage.NewLocationMap(),
 		components:   storage.NewComponents(),
 		archetypes:   make([]*storage.Archetype, 0),
@@ -152,7 +152,7 @@ func (w *world) Remove(ent Entity) {
 	}
 }
 
-func (w *world) removeAtLocation(ent Entity, loc *storage.EntityLocation) {
+func (w *world) removeAtLocation(ent Entity, loc *storage.Location) {
 	arch_index := loc.Archetype
 	component_index := loc.Component
 	archetype := w.archetypes[arch_index]
@@ -194,11 +194,10 @@ func (w *world) TransferArchetype(from, to storage.ArchetypeIndex, idx storage.C
 
 	// move components
 	for _, component_type := range from_layout.Components() {
-		storage := w.components.Storage(component_type)
 		if to_layout.HasComponent(component_type) {
-			storage.MoveComponent(from, idx, to)
+			w.components.MoveComponent(component_type, from, idx, to)
 		} else {
-			storage.SwapRemove(from, idx)
+			w.components.Remove(from_arch, idx)
 		}
 	}
 
@@ -224,7 +223,7 @@ func (w *world) nextEntity() Entity {
 	return entity
 }
 
-func (w *world) insertArcheType(layout *storage.EntityLayout) storage.ArchetypeIndex {
+func (w *world) insertArcheType(layout *storage.Layout) storage.ArchetypeIndex {
 	w.index.Push(layout)
 	arch_index := storage.ArchetypeIndex(len(w.archetypes))
 	w.archetypes = append(w.archetypes, storage.NewArchetype(arch_index, layout))
@@ -245,7 +244,7 @@ func (w *world) getArchetypeForComponents(components []*component.ComponentType)
 	if !w.noDuplicates(components) {
 		panic(fmt.Sprintf("duplicate component types: %v", components))
 	}
-	return w.insertArcheType(storage.NewEntityLayout(components))
+	return w.insertArcheType(storage.NewLayout(components))
 }
 
 func (w *world) noDuplicates(components []*ComponentType) bool {

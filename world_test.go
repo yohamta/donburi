@@ -7,194 +7,252 @@ import (
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/internal/entity"
+	"github.com/yohamta/donburi/internal/storage"
 	"github.com/yohamta/donburi/query"
 )
 
-type Vec2f struct {
+type vec2f struct {
 	X float64
 	Y float64
 }
 
-type TransformData struct {
-	Position Vec2f
+type transformData struct {
+	Position vec2f
 }
 
-type VelocityData struct {
-	Velocity Vec2f
+type velocityData struct {
+	Velocity vec2f
 }
 
-var Transform = donburi.NewComponentType[TransformData]()
-var Velocity = donburi.NewComponentType[VelocityData]()
-var PlayerTag = donburi.NewTag()
-var SecondaryTag = donburi.NewTag()
-var EnemyTag = donburi.NewTag()
+var (
+	transform = donburi.NewComponentType[transformData]()
+	velocity  = donburi.NewComponentType[velocityData]()
+	tagA      = donburi.NewTag()
+	tagB      = donburi.NewTag()
+)
 
 func TestEntry(t *testing.T) {
-	nm := "TestEntry"
 	world := donburi.NewWorld()
+	ent := world.Create(tagA, transform, velocity)
+	entry := world.Entry(ent)
 
-	player := world.Create(PlayerTag, Transform, Velocity)
-
-	entry := world.Entry(player)
-	if entry.HasComponent(PlayerTag) == false {
-		t.Errorf("%s: PlayerTag should be in player archetype", nm)
+	if !entry.HasComponent(tagA) {
+		t.Fatalf("TagA should be in ent archetype")
 	}
 }
 
 func TestMutateComponent(t *testing.T) {
-	nm := "TestMutateComponent"
 	world := donburi.NewWorld()
 
-	player := world.Create(PlayerTag, Transform, Velocity)
-	enemy := world.Create(EnemyTag, Transform, Velocity)
-	enemy2 := world.Create(EnemyTag, Transform, Velocity)
+	a := world.Create(tagA, transform, velocity)
+	b := world.Create(tagB, transform, velocity)
+	c := world.Create(tagB, transform, velocity)
 
-	p_entry := world.Entry(player)
-	donburi.Get[TransformData](p_entry, Transform).Position.X = 10
-	donburi.Get[TransformData](p_entry, Transform).Position.Y = 20
+	entryA := world.Entry(a)
+	donburi.Get[transformData](entryA, transform).Position.X = 10
+	donburi.Get[transformData](entryA, transform).Position.Y = 20
 
-	e_entry := world.Entry(enemy)
-	donburi.Get[TransformData](e_entry, Transform).Position.X = 30
-	donburi.Get[TransformData](e_entry, Transform).Position.Y = 40
+	entryB := world.Entry(b)
+	donburi.Get[transformData](entryB, transform).Position.X = 30
+	donburi.Get[transformData](entryB, transform).Position.Y = 40
 
-	e2_entry := world.Entry(enemy2)
-	donburi.Add(e2_entry, Transform, &TransformData{
-		Position: Vec2f{40, 50},
-	})
+	entryC := world.Entry(c)
+	tr := &transformData{Position: vec2f{40, 50}}
+	donburi.Add(entryC, transform, tr)
 
-	p_tr := donburi.Get[TransformData](p_entry, Transform)
-	if p_tr.Position.X != 10 || p_tr.Position.Y != 20 {
-		t.Errorf("%s: Position should be (10, 20), but got (%f, %f)", nm, p_tr.Position.X, p_tr.Position.Y)
+	tests := []struct {
+		entry    *donburi.Entry
+		expected *vec2f
+	}{
+		{entryA, &vec2f{10, 20}},
+		{entryB, &vec2f{30, 40}},
+		{entryC, &vec2f{40, 50}},
 	}
 
-	e_tr := donburi.Get[TransformData](e_entry, Transform)
-	if e_tr.Position.X != 30 || e_tr.Position.Y != 40 {
-		t.Errorf("%s: Position should be (30, 40), but got (%f, %f)", nm, e_tr.Position.X, e_tr.Position.Y)
-	}
-
-	e2_tr := donburi.Get[TransformData](e2_entry, Transform)
-	if e2_tr.Position.X != 40 || e2_tr.Position.Y != 50 {
-		t.Errorf("%s: Position should be (40, 50), but got (%f, %f)", nm, e2_tr.Position.X, e2_tr.Position.Y)
+	for _, tt := range tests {
+		tf := donburi.Get[transformData](tt.entry, transform)
+		if tf.Position.X != tt.expected.X {
+			t.Errorf("X should be %f, but %f", tt.expected.X, tf.Position.X)
+		}
+		if tf.Position.Y != tt.expected.Y {
+			t.Errorf("Y should be %f, but %f", tt.expected.Y, tf.Position.Y)
+		}
 	}
 }
 
 func TestArchetype(t *testing.T) {
-	nm := "TestArchetype"
 	world := donburi.NewWorld()
+	entity := world.Create(tagA, transform, velocity)
+	entry := world.Entry(entity)
 
-	player := world.Create(PlayerTag, Transform, Velocity)
-
-	entry := world.Entry(player)
-	if entry.HasComponent(PlayerTag) == false {
-		t.Errorf("%s: PlayerTag should be in player archetype", nm)
+	if entry.HasComponent(tagA) == false {
+		t.Errorf("TagA should be in the archetype")
 	}
-	if entry.HasComponent(EnemyTag) == true {
-		t.Errorf("%s: EnemyTag should not be in player archetype", nm)
+	if entry.HasComponent(tagB) == true {
+		t.Errorf("TagB should not be in the archetype")
 	}
 }
 
 func TestAddComponent(t *testing.T) {
-	nm := "TestAddComponent"
 	world := donburi.NewWorld()
 
 	entities := []entity.Entity{
-		world.Create(PlayerTag, Transform),
-		world.Create(PlayerTag, Transform),
-		world.Create(PlayerTag, Transform),
+		world.Create(tagA, transform),
+		world.Create(tagA, transform),
+		world.Create(tagA, transform),
 	}
 
 	entry := world.Entry(entities[1])
-	old_arch := entry.Archetype()
+	archtype := entry.Archetype()
 
-	donburi.Add(entry, Velocity, &VelocityData{
-		Velocity: Vec2f{10, 20},
-	})
-	entry.AddComponent(EnemyTag)
+	vd := &velocityData{Velocity: vec2f{10, 20}}
+	donburi.Add(entry, velocity, vd)
+	entry.AddComponent(tagB)
 
-	new_arch := entry.Archetype()
-	if len(new_arch.Layout().Components()) != 4 {
-		t.Errorf("%s: Archetype should have 4 components", nm)
+	newArchtype := entry.Archetype()
+	if len(newArchtype.Layout().Components()) != 4 {
+		t.Errorf("New Archetype should have 4 components")
 	}
-	if len(old_arch.Entities()) != 2 {
-		t.Errorf("%s: Old archetype should have 2 entities", nm)
+	if len(archtype.Entities()) != 2 {
+		t.Errorf("Old archetype should have 2 entities")
 	}
-	if len(new_arch.Entities()) != 1 {
-		t.Errorf("%s: Old archetype should have 1 entities", nm)
+	if len(newArchtype.Entities()) != 1 {
+		t.Errorf("New archetype should have 1 entities")
 	}
 }
 
 func TestRemoveComponent(t *testing.T) {
-	nm := "TestRemoveComponent"
 	world := donburi.NewWorld()
 
 	entities := []entity.Entity{
-		world.Create(PlayerTag, Transform, Velocity),
-		world.Create(PlayerTag, Transform, Velocity),
-		world.Create(PlayerTag, Transform, Velocity),
+		world.Create(tagA, transform, velocity),
+		world.Create(tagA, transform, velocity),
+		world.Create(tagA, transform, velocity),
 	}
 
 	entry := world.Entry(entities[1])
-	old_arch := entry.Archetype()
+	archtype := entry.Archetype()
 
-	entry.RemoveComponent(Transform)
+	entry.RemoveComponent(transform)
 
-	new_arch := entry.Archetype()
-	if len(new_arch.Layout().Components()) != 2 {
-		t.Errorf("%s: Archetype should have 2 components", nm)
+	newArchtype := entry.Archetype()
+	if len(newArchtype.Layout().Components()) != 2 {
+		t.Errorf("Archetype should have 2 components")
 	}
-	if len(old_arch.Entities()) != 2 {
-		t.Errorf("%s: Old archetype should have 2 entities", nm)
+	if len(archtype.Entities()) != 2 {
+		t.Errorf("Old archetype should have 2 entities")
 	}
-	if len(new_arch.Entities()) != 1 {
-		t.Errorf("%s: Old archetype should have 1 entities", nm)
+	if len(newArchtype.Entities()) != 1 {
+		t.Errorf("New archetype should have 1 entities")
 	}
 }
 
 func TestDeleteEntity(t *testing.T) {
+	createWorldFunc := func() (donburi.World, []entity.Entity) {
+		world := donburi.NewWorld()
+		entities := []donburi.Entity{
+			world.Create(tagA, transform, velocity),
+			world.Create(tagA, transform, velocity),
+			world.Create(tagA, transform, velocity),
+		}
+		return world, entities
+	}
 	var tests = []struct {
-		name string
-		del  []int
-		want int
+		DeleteIndex         []int
+		expectedEntityCount int
 	}{
-		{"Delete first", []int{0}, 2},
-		{"Delete all", []int{0, 1, 2}, 0},
-		{"Delete last", []int{2}, 2},
+		{[]int{0}, 2},
+		{[]int{0, 1, 2}, 0},
+		{[]int{2}, 2},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			world := donburi.NewWorld()
-			entities := []donburi.Entity{
-				world.Create(PlayerTag, Transform, Velocity),
-				world.Create(PlayerTag, Transform, Velocity),
-				world.Create(PlayerTag, Transform, Velocity),
-			}
-			for _, del := range tt.del {
-				world.Remove(entities[del])
-				if world.Valid(entities[del]) {
-					t.Errorf("%s: Entity should be deleted", tt.name)
-				}
-			}
-			if world.Len() != tt.want {
-				t.Errorf("%s: want %d, got %d", tt.name, tt.want, world.Len())
-			}
-		})
-	}
+		world, entities := createWorldFunc()
 
+		for _, del := range tt.DeleteIndex {
+			world.Remove(entities[del])
+			if world.Valid(entities[del]) {
+				t.Errorf("Entity should be invalid")
+			}
+		}
+
+		if world.Len() != tt.expectedEntityCount {
+			t.Errorf("World should have %d entities", tt.expectedEntityCount)
+		}
+	}
 }
 
 func TestRemoveAndCreateEntity(t *testing.T) {
 	world := donburi.NewWorld()
-	e := world.Create(PlayerTag)
-	world.Remove(e)
-	require.False(t, world.Valid(e))
 
-	e2 := world.Create(PlayerTag)
-	query := query.NewQuery(filter.Contains(PlayerTag))
+	entityA := world.Create(tagA)
+
+	world.Remove(entityA)
+	require.False(t, world.Valid(entityA))
+
+	entityB := world.Create(tagA)
+
+	query := query.NewQuery(filter.Contains(tagA))
 	entry, ok := query.FirstEntity(world)
-	require.True(t, ok)
+	if !ok {
+		t.Fatalf("Entity should be found")
+	}
+	if entry.Entity() != entityB {
+		t.Errorf("Entity should be %d, but %d", entityB, entry.Entity())
+	}
+	if !entry.HasComponent(tagA) {
+		t.Errorf("TagA should be in the archetype")
+	}
+}
 
-	require.Equal(t, entry.Entity(), e2)
-	tf := entry.Component(PlayerTag)
-	require.NotNil(t, tf)
+type archeTest struct {
+	name          string
+	archetype     *storage.Archetype
+	expectedCount int
+}
+
+func TestCreateEntityAndExtend(t *testing.T) {
+	testFunc := func(tests []archeTest) {
+		t.Helper()
+		for _, tt := range tests {
+			if len(tt.archetype.Entities()) != tt.expectedCount {
+				t.Errorf("%s archetype should have %d entities", tt.name, tt.expectedCount)
+			}
+		}
+	}
+	world := donburi.NewWorld()
+
+	entity := world.Create(velocity)
+	entry := world.Entry(entity)
+
+	oldArchtype := entry.Archetype()
+
+	testFunc([]archeTest{
+		{"old", oldArchtype, 1},
+	})
+
+	// Add new component
+	donburi.Add(entry, transform, &transformData{})
+	newArchtype := entry.Archetype()
+
+	testFunc([]archeTest{
+		{"old", oldArchtype, 0},
+		{"new", newArchtype, 1},
+	})
+
+	// Create another entity
+	anotherEntity := world.Create(velocity)
+	anotherEntry := world.Entry(anotherEntity)
+
+	testFunc([]archeTest{
+		{"old", oldArchtype, 1},
+		{"new", newArchtype, 1},
+	})
+
+	donburi.Add(anotherEntry, transform, &transformData{})
+
+	testFunc([]archeTest{
+		{"old", oldArchtype, 0},
+		{"new", newArchtype, 2},
+	})
 }
