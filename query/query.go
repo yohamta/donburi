@@ -36,7 +36,7 @@ func NewQuery(filter filter.LayoutFilter) *Query {
 func (q *Query) EachEntity(w donburi.World, callback func(*donburi.Entry)) {
 	accessor := w.StorageAccessor()
 	result := q.evaluateQuery(w, &accessor)
-	iter := storage.NewEntityListIterator(0, accessor.Archetypes, result)
+	iter := storage.NewEntityIterator(0, accessor.Archetypes, result)
 	f := func(entity entity.Entity) {
 		entry := w.Entry(entity)
 		callback(entry)
@@ -53,7 +53,7 @@ func (q *Query) EachEntity(w donburi.World, callback func(*donburi.Entry)) {
 func (q *Query) Count(w donburi.World) int {
 	accessor := w.StorageAccessor()
 	result := q.evaluateQuery(w, &accessor)
-	iter := storage.NewEntityListIterator(0, accessor.Archetypes, result)
+	iter := storage.NewEntityIterator(0, accessor.Archetypes, result)
 	ret := 0
 	for iter.HasNext() {
 		entities := iter.Next()
@@ -66,7 +66,7 @@ func (q *Query) Count(w donburi.World) int {
 func (q *Query) FirstEntity(w donburi.World) (entry *donburi.Entry, ok bool) {
 	accessor := w.StorageAccessor()
 	result := q.evaluateQuery(w, &accessor)
-	iter := storage.NewEntityListIterator(0, accessor.Archetypes, result)
+	iter := storage.NewEntityIterator(0, accessor.Archetypes, result)
 	if !iter.HasNext() {
 		return nil, false
 	}
