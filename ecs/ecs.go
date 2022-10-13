@@ -23,6 +23,9 @@ type ECS struct {
 	// Sleep is the time to sleep
 	Sleep time.Duration
 
+	// UpdateCount is the number of updates
+	UpdateCount int64
+
 	// Time manages the time of the world.
 	Time *Time
 }
@@ -36,6 +39,8 @@ func NewECS(w donburi.World) *ECS {
 
 // Update calls Updater's Update() methods.
 func (ecs *ECS) Update() {
+	ecs.UpdateCount++
+	ecs.Time.Update()
 	for _, u := range ecs.Updaters {
 		u.Update(ecs)
 	}
