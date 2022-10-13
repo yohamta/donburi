@@ -17,6 +17,9 @@ type ECS struct {
 	// Time manages the time of the world.
 	Time *Time
 
+	// ScriptSystem manages the scripts of the world.
+	ScriptSystem *ScriptSystem
+
 	*innerECS
 }
 
@@ -26,13 +29,19 @@ type DrawerOpts struct {
 
 // NewECS creates a new ECS with the specified world.
 func NewECS(w donburi.World) *ECS {
-	return &ECS{
+	ecs := &ECS{
 		World: w,
 		innerECS: &innerECS{
 			updaters: []updaterEntry{},
 			drawers:  []drawerEntry{},
 		},
 	}
+
+	ecs.ScriptSystem = NewScriptSystem()
+	ecs.AddUpdater(ecs.ScriptSystem)
+	ecs.AddDrawer(ecs.ScriptSystem, nil)
+
+	return ecs
 }
 
 // AddUpdater adds an Updater to the ECS.
@@ -42,7 +51,11 @@ func (ecs *ECS) AddUpdater(u Updater) {
 
 // AddDrawer adds a Drawer to the ECS.
 func (ecs *ECS) AddDrawer(d Drawer, opts *DrawerOpts) {
-	ecs.drawers = append(ecs.drawers, drawerEntry{Drawer: d, Options: opts})
+	entry := drawerEntry{Drawer: d, Options: opts}
+	if entry.Options == nil {
+		entry.Options = &DrawerOpts{}
+	}
+	ecs.drawers = append(ecs.drawers, entry)
 }
 
 // AddUpdaterWithPriority adds an Updater to the ECS with the specified priority.
