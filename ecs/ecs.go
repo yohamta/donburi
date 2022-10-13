@@ -1,6 +1,8 @@
 package ecs
 
 import (
+	"time"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 )
@@ -14,6 +16,15 @@ type ECS struct {
 
 	// Drawers is a list of systems that draw the world.
 	Drawers []Drawer
+
+	// DeltaTime is the time between the last update and the current update
+	DeltaTime time.Duration
+
+	// Sleep is the time to sleep
+	Sleep time.Duration
+
+	// Time manages the time of the world.
+	Time *Time
 }
 
 // NewECS creates a new ECS with the specified world.
