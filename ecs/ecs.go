@@ -1,6 +1,8 @@
 package ecs
 
 import (
+	"sort"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 )
@@ -20,20 +22,6 @@ type ECS struct {
 
 type DrawerOpts struct {
 	ImageToDraw *ebiten.Image
-}
-
-type updaterEntry struct {
-	Updater Updater
-}
-
-type drawerEntry struct {
-	Drawer  Drawer
-	Options *DrawerOpts
-}
-
-type innerECS struct {
-	updaters []updaterEntry
-	drawers  []drawerEntry
 }
 
 // NewECS creates a new ECS with the specified world.
@@ -57,6 +45,19 @@ func (ecs *ECS) AddDrawer(d Drawer, opts *DrawerOpts) {
 	ecs.drawers = append(ecs.drawers, drawerEntry{Drawer: d, Options: opts})
 }
 
+// AddUpdaterWithPriority adds an Updater to the ECS with the specified priority.
+// Higher priority is executed first.
+func (ecs *ECS) AddUpdaterWithPriority(u Updater, priority int) {
+	ecs.updaters = append(ecs.updaters, updaterEntry{Updater: u, Priority: priority})
+	sortUpdaterEntries(ecs.updaters)
+}
+
+// AddDrawerWithPriority adds a Drawer to the ECS with the specified priority.
+func (ecs *ECS) AddDrawerWithPriority(d Drawer, priority int, opts *DrawerOpts) {
+	ecs.drawers = append(ecs.drawers, drawerEntry{Drawer: d, Priority: priority, Options: opts})
+	sortDrawerEntries(ecs.drawers)
+}
+
 // Update calls Updater's Update() methods.
 func (ecs *ECS) Update() {
 	ecs.UpdateCount++
@@ -75,4 +76,32 @@ func (ecs *ECS) Draw(screen *ebiten.Image) {
 		}
 		d.Drawer.Draw(ecs, screen)
 	}
+}
+
+func sortUpdaterEntries(entries []updaterEntry) {
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Priority > entries[j].Priority
+	})
+}
+
+func sortDrawerEntries(entries []drawerEntry) {
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Priority > entries[j].Priority
+	})
+}
+
+type updaterEntry struct {
+	Updater  Updater
+	Priority int
+}
+
+type drawerEntry struct {
+	Drawer   Drawer
+	Priority int
+	Options  *DrawerOpts
+}
+
+type innerECS struct {
+	updaters []updaterEntry
+	drawers  []drawerEntry
 }
