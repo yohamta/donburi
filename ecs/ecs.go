@@ -7,6 +7,7 @@ import (
 	"github.com/yohamta/donburi"
 )
 
+// ECS represents an entity-component-system.
 type ECS struct {
 	// World is the underlying world of the ECS.
 	World donburi.World
@@ -23,6 +24,7 @@ type ECS struct {
 	*innerECS
 }
 
+// DrawerOpts represents options for a Drawer.
 type DrawerOpts struct {
 	ImageToDraw *ebiten.Image
 }
