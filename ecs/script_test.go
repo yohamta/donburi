@@ -29,8 +29,8 @@ func TestScriptSystem(t *testing.T) {
 	scriptA := NewScript(queryA, &testScript{}, &ScriptOpts{Image: certainImage})
 	scriptB := NewScript(queryB, &testScript{}, nil)
 
-	ecs.AddScript(scriptA)
-	ecs.AddScript(scriptB)
+	ecs.AddScript(0, scriptA)
+	ecs.AddScript(0, scriptB)
 
 	ecs.Update()
 

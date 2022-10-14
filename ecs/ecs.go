@@ -1,11 +1,11 @@
 package ecs
 
 import (
-	"sort"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 )
+
+type Layer int
 
 // ECS represents an entity-component-system.
 type ECS struct {
@@ -13,88 +13,60 @@ type ECS struct {
 	World donburi.World
 	// Time manages the time of the world.
 	Time *Time
-	// ScriptSystem manages the scripts of the world.
-	ScriptSystem *ScriptSystem
 
-	systems []*system
-}
-
-type system struct {
-	System  System
-	Options *SystemOpts
+	layers []*layer
 }
 
 // NewECS creates a new ECS with the specified world.
 func NewECS(w donburi.World) *ECS {
 	ecs := &ECS{
-		World:   w,
-		Time:    NewTime(),
-		systems: []*system{},
-	}
+		World: w,
+		Time:  NewTime(),
 
-	ecs.ScriptSystem = NewScriptSystem()
+		layers: []*layer{},
+	}
 
 	return ecs
 }
 
-// AddSystems adds new systems either Updater or Drawer
-func (ecs *ECS) AddSystems(systems ...System) {
-	for _, system := range systems {
-		ecs.AddSystem(system, nil)
-	}
-}
-
 // AddSystem adds new system
-func (ecs *ECS) AddSystem(sys System, opts *SystemOpts) {
+func (ecs *ECS) AddSystem(layer Layer, sys System, opts *SystemOpts) {
 	if opts == nil {
 		opts = &SystemOpts{}
 	}
-	ecs.addSystem(&system{
+	ecs.getLayer(layer).addSystem(&system{
 		System:  sys,
 		Options: opts,
 	})
 }
 
-// AddScripts adds multiple scripts
-func (ecs *ECS) AddScripts(script ...*Script) {
-	for _, s := range script {
-		ecs.AddScript(s)
-	}
-}
-
 // AddScript adds a script to the entities matched by the query.
-func (ecs *ECS) AddScript(script *Script) {
-	ecs.ScriptSystem.AddScript(script)
+func (ecs *ECS) AddScript(layer Layer, script *Script) {
+	ecs.getLayer(layer).addScript(script)
 }
 
 // Update calls Updater's Update() methods.
 func (ecs *ECS) Update() {
 	ecs.Time.Update()
-	for _, u := range ecs.systems {
-		u.System.Update(ecs)
+	for _, l := range ecs.layers {
+		l.Update(ecs)
 	}
-	ecs.ScriptSystem.Update(ecs)
 }
 
 // Draw calls Drawer's Draw() methods.
 func (ecs *ECS) Draw(screen *ebiten.Image) {
-	for _, d := range ecs.systems {
-		if d.Options.Image != nil {
-			d.System.Draw(ecs, d.Options.Image)
-			continue
-		}
-		d.System.Draw(ecs, screen)
+	for _, l := range ecs.layers {
+		l.Draw(ecs, screen)
 	}
-	ecs.ScriptSystem.Draw(ecs, screen)
 }
 
-func (ecs *ECS) addSystem(sys *system) {
-	ecs.systems = append(ecs.systems, sys)
-	sortSystems(ecs.systems)
-}
-
-func sortSystems(systems []*system) {
-	sort.SliceStable(systems, func(i, j int) bool {
-		return systems[i].Options.Priority > systems[j].Options.Priority
-	})
+func (ecs *ECS) getLayer(l Layer) *layer {
+	if int(l) >= len(ecs.layers) {
+		// expand layers slice
+		ecs.layers = append(ecs.layers, make([]*layer, int(l)-len(ecs.layers)+1)...)
+	}
+	if ecs.layers[l] == nil {
+		ecs.layers[l] = newLayer()
+	}
+	return ecs.layers[l]
 }

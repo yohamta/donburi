@@ -14,19 +14,18 @@ func TestECS(t *testing.T) {
 	certainImage := ebiten.NewImage(1, 1)
 
 	systems := []struct {
-		system   *testSystem
-		image    *ebiten.Image
-		priority int
+		layer  Layer
+		system *testSystem
+		image  *ebiten.Image
 	}{
-		{&testSystem{}, nil, 0},
-		{&testSystem{}, certainImage, 0},
-		{&testSystem{}, nil, 1},
+		{1, &testSystem{}, nil},
+		{1, &testSystem{}, certainImage},
+		{0, &testSystem{}, nil},
 	}
 
 	for _, sys := range systems {
-		ecs.AddSystem(sys.system, &SystemOpts{
-			Priority: sys.priority,
-			Image:    sys.image,
+		ecs.AddSystem(sys.layer, sys.system, &SystemOpts{
+			Image: sys.image,
 		})
 	}
 
