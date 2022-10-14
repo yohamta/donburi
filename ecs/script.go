@@ -41,20 +41,20 @@ func NewScriptSystem() *ScriptSystem {
 }
 
 type entryUpdater struct {
-	Query   query.Query
+	Query   *query.Query
 	Updater EntryUpdater
 	Options *ScriptOpts
 }
 
 type entryDrawer struct {
-	Query   query.Query
+	Query   *query.Query
 	Drawer  EntryDrawer
 	Options *ScriptOpts
 }
 
 // AddScript adds a script to the system.
 // Target entities are specified by the query.
-func (ss *ScriptSystem) AddScript(q query.Query, script interface{}, opts *ScriptOpts) {
+func (ss *ScriptSystem) AddScript(q *query.Query, script interface{}, opts *ScriptOpts) {
 	if opts == nil {
 		opts = &ScriptOpts{}
 	}

@@ -96,7 +96,7 @@ func (ecs *ECS) AddSystem(system interface{}, opts *SystemOpts) {
 
 // AddScript adds a script to the specified entity.
 // the argument `script` must implement EntryUpdater or/and EntryDrawer interface.
-func (ecs *ECS) AddScript(q query.Query, script interface{}, opts *ScriptOpts) {
+func (ecs *ECS) AddScript(q *query.Query, script interface{}, opts *ScriptOpts) {
 	ecs.ScriptSystem.AddScript(q, script, opts)
 }
 
