@@ -8,15 +8,20 @@ import (
 	"github.com/yohamta/donburi/query"
 )
 
-// Script is an arbitrary script that can be executed in the world.
-type Script interface {
+// EntryUpdater is a function that updates an entry.
+type EntryUpdater interface {
 	Update(entry *donburi.Entry)
+}
+
+// EntryDrawer is a function that draws an entry.
+type EntryDrawer interface {
 	Draw(entry *donburi.Entry, screen *ebiten.Image)
 }
 
 // ScriptSystem is a built-in system that manages scripts with queries.
 type ScriptSystem struct {
-	scripts []scriptEntry
+	updaters []*entryUpdater
+	drawers  []*entryDrawer
 }
 
 // ScriptOpts represents options for a script.
@@ -30,51 +35,88 @@ type ScriptOpts struct {
 // NewScriptSystem creates a new ScriptSystem.
 func NewScriptSystem() *ScriptSystem {
 	return &ScriptSystem{
-		scripts: []scriptEntry{},
+		updaters: []*entryUpdater{},
+		drawers:  []*entryDrawer{},
 	}
 }
 
-type scriptEntry struct {
+type entryUpdater struct {
 	Query   query.Query
-	Script  Script
+	Updater EntryUpdater
+	Options *ScriptOpts
+}
+
+type entryDrawer struct {
+	Query   query.Query
+	Drawer  EntryDrawer
 	Options *ScriptOpts
 }
 
 // AddScript adds a script to the system.
 // Target entities are specified by the query.
-func (s *ScriptSystem) AddScript(q query.Query, script Script, opts *ScriptOpts) {
+func (s *ScriptSystem) AddScript(q query.Query, script interface{}, opts *ScriptOpts) {
 	if opts == nil {
 		opts = &ScriptOpts{}
 	}
-	entry := scriptEntry{q, script, opts}
-	s.scripts = append(s.scripts, entry)
-
-	// sort script entries by priority. higher priority is executed first.
-	sortScriptEntries(s.scripts)
+	flag := false
+	if script, ok := script.(EntryUpdater); ok {
+		s.addUpdater(&entryUpdater{
+			Query:   q,
+			Updater: script,
+			Options: opts,
+		})
+		flag = true
+	}
+	if script, ok := script.(EntryDrawer); ok {
+		s.addDrawer(&entryDrawer{
+			Query:   q,
+			Drawer:  script,
+			Options: opts,
+		})
+		flag = true
+	}
+	if !flag {
+		panic("script must be EntryUpdater or EntryDrawer at least")
+	}
 }
 
 func (s *ScriptSystem) Update(ecs *ECS) {
-	for _, script := range s.scripts {
-		script.Query.EachEntity(ecs.World, script.Script.Update)
+	for _, script := range s.updaters {
+		script.Query.EachEntity(ecs.World, script.Updater.Update)
 	}
 }
 
 func (s *ScriptSystem) Draw(ecs *ECS, screen *ebiten.Image) {
-	for _, script := range s.scripts {
+	for _, script := range s.drawers {
 		script.Query.EachEntity(ecs.World, func(entry *donburi.Entry) {
 			if script.Options.Image != nil {
-				script.Script.Draw(entry, script.Options.Image)
+				script.Drawer.Draw(entry, script.Options.Image)
 				return
 			}
-			script.Script.Draw(entry, screen)
+			script.Drawer.Draw(entry, screen)
 		})
 	}
 }
 
-// sortScriptEntries sorts script entries by priority. higher priority is executed first.
-func sortScriptEntries(entries []scriptEntry) {
-	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].Options.Priority > entries[j].Options.Priority
+func (ss *ScriptSystem) addUpdater(entry *entryUpdater) {
+	ss.updaters = append(ss.updaters, entry)
+	sortEntryUpdater(ss.updaters)
+}
+
+func (ss *ScriptSystem) addDrawer(entry *entryDrawer) {
+	ss.drawers = append(ss.drawers, entry)
+	sortEntryDrawer(ss.drawers)
+}
+
+func sortEntryUpdater(items []*entryUpdater) {
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].Options.Priority > items[j].Options.Priority
+	})
+}
+
+func sortEntryDrawer(items []*entryDrawer) {
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].Options.Priority > items[j].Options.Priority
 	})
 }
 
