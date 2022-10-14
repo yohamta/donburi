@@ -12,8 +12,6 @@ type System interface {
 
 // SystemOpts represents options for systems.
 type SystemOpts struct {
-	// Priority is the priority of the system.
-	Priority int
 	// Image is the image to draw the system.
 	Image *ebiten.Image
 }

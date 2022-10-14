@@ -13,6 +13,7 @@ import (
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/assets"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/helper"
+	"github.com/yohamta/donburi/examples/bunnymark_ecs/scripts"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/system"
 
 	_ "net/http/pprof"
@@ -31,21 +32,26 @@ type Game struct {
 	bounds image.Rectangle
 }
 
+const (
+	LayerBackground ecs.Layer = iota
+	LayerBunnies
+	LayerMetrics
+)
+
 func NewGame() *Game {
 	g := &Game{
 		bounds: image.Rectangle{},
 		ecs:    createECS(),
 	}
 
-	g.ecs.AddSystems(
-		system.NewSpawn(),
-		system.NewGravity(),
-		system.NewVelocity(),
-		system.NewBounce(&g.bounds),
-		&system.Background{},
-		system.NewRender(),
-		system.NewMetrics(&g.bounds),
-	)
+	g.ecs.AddSystem(LayerBackground, system.NewSpawn(), nil)
+	g.ecs.AddSystem(LayerBackground, &system.Background{}, nil)
+	g.ecs.AddSystem(LayerMetrics, system.NewMetrics(&g.bounds), nil)
+
+	g.ecs.AddScript(LayerBunnies, scripts.NewBounce(&g.bounds))
+	g.ecs.AddScript(LayerBunnies, scripts.Velocity)
+	g.ecs.AddScript(LayerBunnies, scripts.Gravity)
+	g.ecs.AddScript(LayerBunnies, scripts.Render)
 
 	return g
 }
