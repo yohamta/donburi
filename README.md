@@ -228,7 +228,7 @@ query.EachEntity(world, func(entry *donburi.Entry) {
 }
 ```
 
-## ECS package
+## ECS package (Experimental)
 
 The [ECS package](https://github.com/yohamta/donburi/tree/main/ecs) provides so-called **System** feature in ECS which can be used together with a `World` instance.
 
