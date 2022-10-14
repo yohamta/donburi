@@ -1,4 +1,4 @@
-# <img align="right" width="150" src="https://user-images.githubusercontent.com/1475839/150521755-977f545b-4436-4059-87ac-1129541ad236.png" alt="donburi" title="donburi" /> Donburi
+<img align="right" width="150" src="https://user-images.githubusercontent.com/1475839/150521755-977f545b-4436-4059-87ac-1129541ad236.png" alt="donburi" title="donburi" /> <h1>Donburi</h1>
 
 <img src="https://github.com/yohamta/donburi/actions/workflows/test.yaml/badge.svg" />
 
@@ -10,17 +10,18 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
 
 ## Contents
 
-  - [Features](#features)
-  - [Examples](#examples)
-  - [Installation](#installation)
-  - [Getting Started](#getting-started)
-    - [Worlds](#worlds)
-    - [Queries](#queries)
-    - [Tags](#tags)
-    - [Systems](#systems)
-  - [Internal Design](#internal-design)
-  - [How to contribute?](#how-to-contribute)
-  - [Contributors](#contributors)
+- [Contents](#contents)
+- [Features](#features)
+- [Examples](#examples)
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+  - [Worlds](#worlds)
+  - [Queries](#queries)
+  - [Tags](#tags)
+- [ECS package](#ecs-package)
+- [Internal Design for `World`](#internal-design-for-world)
+- [How to contribute?](#how-to-contribute)
+- [Contributors](#contributors)
 
 ## Features
 
@@ -227,11 +228,17 @@ query.EachEntity(world, func(entry *donburi.Entry) {
 }
 ```
 
-### Systems
+## ECS package
 
-As of today, there is no function for the concept of "Systems" in ECS. It is assumed that operations are performed on entities using queries.
+The [ECS package](https://github.com/yohamta/donburi/tree/main/ecs) provides so-called **System** feature in ECS which can be used together with a `World` instance.
 
-## Internal Design
+Also, it provides some convenient features:
+- ScriptSystem
+- Time
+
+See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi) for more details.
+
+## Internal Design for `World`
 
 It is a bit complex, so please refer to the following diagram to understand it.
 
