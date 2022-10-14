@@ -238,6 +238,8 @@ Also, it provides some convenient features:
 
 See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) for more details.
 
+*Note: ECS package is experimental and API is unstable*
+
 ## Internal Design for `World`
 
 It is a bit complex, so please refer to the following diagram to understand it.
