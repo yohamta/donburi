@@ -13,6 +13,7 @@ import (
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/assets"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/helper"
+	"github.com/yohamta/donburi/examples/bunnymark_ecs/scripts"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/system"
 
 	_ "net/http/pprof"
@@ -39,12 +40,15 @@ func NewGame() *Game {
 
 	g.ecs.AddSystems(
 		system.NewSpawn(),
-		system.NewGravity(),
-		system.NewVelocity(),
-		system.NewBounce(&g.bounds),
 		&system.Background{},
-		system.NewRender(),
 		system.NewMetrics(&g.bounds),
+	)
+
+	g.ecs.AddScripts(
+		scripts.NewBounce(&g.bounds),
+		scripts.Gravity,
+		scripts.Velocity,
+		scripts.Render,
 	)
 
 	return g
