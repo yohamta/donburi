@@ -33,7 +33,6 @@ func NewECS(w donburi.World) *ECS {
 	}
 
 	ecs.ScriptSystem = NewScriptSystem()
-	ecs.AddSystem(ecs.ScriptSystem, &SystemOpts{})
 
 	return ecs
 }
@@ -74,6 +73,7 @@ func (ecs *ECS) Update() {
 	for _, u := range ecs.systems {
 		u.System.Update(ecs)
 	}
+	ecs.ScriptSystem.Update(ecs)
 }
 
 // Draw calls Drawer's Draw() methods.
@@ -85,6 +85,7 @@ func (ecs *ECS) Draw(screen *ebiten.Image) {
 		}
 		d.System.Draw(ecs, screen)
 	}
+	ecs.ScriptSystem.Draw(ecs, screen)
 }
 
 func (ecs *ECS) addSystem(sys *system) {
