@@ -12,22 +12,25 @@ import (
 type ECS struct {
 	// World is the underlying world of the ECS.
 	World donburi.World
-
-	// UpdateCount is the number of updates
-	UpdateCount int64
-
 	// Time manages the time of the world.
 	Time *Time
-
 	// ScriptSystem manages the scripts of the world.
 	ScriptSystem *ScriptSystem
 
 	*innerECS
 }
 
+// SystemOpts represents options for systems.
 type SystemOpts struct {
-	ImageToDraw *ebiten.Image
-	Priority    int
+	// Image is the image to draw the system.
+	Image *ebiten.Image
+	// Priority is the priority of the system.
+	Priority int
+}
+
+type innerECS struct {
+	updaters []*updaterEntry
+	drawers  []*drawerEntry
 }
 
 type updaterEntry struct {
@@ -36,14 +39,9 @@ type updaterEntry struct {
 }
 
 type drawerEntry struct {
-	Drawer      Drawer
-	Priority    int
-	ImageToDraw *ebiten.Image
-}
-
-type innerECS struct {
-	updaters []*updaterEntry
-	drawers  []*drawerEntry
+	Drawer   Drawer
+	Priority int
+	Image    *ebiten.Image
 }
 
 // NewECS creates a new ECS with the specified world.
@@ -78,9 +76,9 @@ func (ecs *ECS) AddSystem(system interface{}, opts *SystemOpts) {
 	}
 	if system, ok := system.(Drawer); ok {
 		ecs.addDrawer(&drawerEntry{
-			Drawer:      system,
-			Priority:    opts.Priority,
-			ImageToDraw: opts.ImageToDraw,
+			Drawer:   system,
+			Priority: opts.Priority,
+			Image:    opts.Image,
 		})
 		flag = true
 	}
@@ -92,6 +90,14 @@ func (ecs *ECS) AddSystem(system interface{}, opts *SystemOpts) {
 // AddScript adds a script to the specified entity.
 func (ecs *ECS) AddScript(q query.Query, script Script, opts *ScriptOpts) {
 	ecs.ScriptSystem.AddScript(q, script, opts)
+}
+
+// Update calls Updater's Update() methods.
+func (ecs *ECS) Update() {
+	ecs.Time.Update()
+	for _, u := range ecs.updaters {
+		u.Updater.Update(ecs)
+	}
 }
 
 // AddUpdaterWithPriority adds an Updater to the ECS with the specified priority.
@@ -107,20 +113,11 @@ func (ecs *ECS) addDrawer(entry *drawerEntry) {
 	sortDrawerEntries(ecs.drawers)
 }
 
-// Update calls Updater's Update() methods.
-func (ecs *ECS) Update() {
-	ecs.UpdateCount++
-	ecs.Time.Update()
-	for _, u := range ecs.updaters {
-		u.Updater.Update(ecs)
-	}
-}
-
 // Draw calls Drawer's Draw() methods.
 func (ecs *ECS) Draw(screen *ebiten.Image) {
 	for _, d := range ecs.drawers {
-		if d.ImageToDraw != nil {
-			d.Drawer.Draw(ecs, d.ImageToDraw)
+		if d.Image != nil {
+			d.Drawer.Draw(ecs, d.Image)
 			continue
 		}
 		d.Drawer.Draw(ecs, screen)
