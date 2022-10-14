@@ -14,9 +14,9 @@ func TestECS(t *testing.T) {
 	certainImage := ebiten.NewImage(1, 1)
 
 	systems := []struct {
-		system    interface{}
-		imgToDraw *ebiten.Image
-		priority  int
+		system   interface{}
+		image    *ebiten.Image
+		priority int
 	}{
 		{&testSystem{}, nil, 0},
 		{&testSystem{}, certainImage, 0},
@@ -26,8 +26,8 @@ func TestECS(t *testing.T) {
 
 	for _, s := range systems {
 		opts := &SystemOpts{
-			Priority:    s.priority,
-			ImageToDraw: s.imgToDraw,
+			Priority: s.priority,
+			Image:    s.image,
 		}
 		ecs.AddSystem(s.system, opts)
 	}

@@ -8,7 +8,7 @@ import (
 	"github.com/yohamta/donburi/query"
 )
 
-// Script is a arbitrary script that can be executed in the world.
+// Script is an arbitrary script that can be executed in the world.
 type Script interface {
 	Update(entry *donburi.Entry)
 	Draw(entry *donburi.Entry, screen *ebiten.Image)
@@ -20,10 +20,11 @@ type ScriptSystem struct {
 }
 
 // ScriptOpts represents options for a script.
-// The Priority is the priority of the script. higher priority is executed first.
 type ScriptOpts struct {
-	ImageToDraw *ebiten.Image
-	Priority    int
+	// Image is the image that the script draws to.
+	Image *ebiten.Image
+	// Priority is the priority of the script. higher priority is executed first.
+	Priority int
 }
 
 // NewScriptSystem creates a new ScriptSystem.
@@ -61,8 +62,8 @@ func (s *ScriptSystem) Update(ecs *ECS) {
 func (s *ScriptSystem) Draw(ecs *ECS, screen *ebiten.Image) {
 	for _, script := range s.scripts {
 		script.Query.EachEntity(ecs.World, func(entry *donburi.Entry) {
-			if script.Options.ImageToDraw != nil {
-				script.Script.Draw(entry, script.Options.ImageToDraw)
+			if script.Options.Image != nil {
+				script.Script.Draw(entry, script.Options.Image)
 				return
 			}
 			script.Script.Draw(entry, screen)

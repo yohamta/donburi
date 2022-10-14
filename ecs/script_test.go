@@ -29,7 +29,7 @@ func TestScriptSystem(t *testing.T) {
 	ecs.AddScript(*query.NewQuery(
 		filter.Contains(testEntityA),
 	), scriptA, &ScriptOpts{
-		ImageToDraw: certainImage,
+		Image: certainImage,
 	})
 
 	ecs.AddScript(*query.NewQuery(
