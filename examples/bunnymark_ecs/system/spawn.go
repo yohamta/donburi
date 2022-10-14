@@ -44,6 +44,8 @@ func (s *Spawn) Update(ecs *ecs.ECS) {
 	}
 }
 
+func (s *Spawn) Draw(ecs *ecs.ECS, image *ebiten.Image) {}
+
 func (s *Spawn) addBunnies(w donburi.World) {
 	if s.settings == nil {
 		query := query.NewQuery(filter.Contains(component.Settings))

@@ -14,47 +14,36 @@ func TestECS(t *testing.T) {
 	certainImage := ebiten.NewImage(1, 1)
 
 	systems := []struct {
-		system   interface{}
+		system   *testSystem
 		image    *ebiten.Image
 		priority int
 	}{
 		{&testSystem{}, nil, 0},
 		{&testSystem{}, certainImage, 0},
-		{&testDrawSystem{&testSystem{}}, nil, 1},
-		{&testUpdateSystem{&testSystem{}}, nil, 1},
+		{&testSystem{}, nil, 1},
 	}
 
-	for _, s := range systems {
-		opts := &SystemOpts{
-			Priority: s.priority,
-			Image:    s.image,
-		}
-		ecs.AddSystem(s.system, opts)
+	for _, sys := range systems {
+		ecs.AddSystem(sys.system, &SystemOpts{
+			Priority: sys.priority,
+			Image:    sys.image,
+		})
 	}
 
 	ecs.Update()
 
 	updateTests := []struct {
-		system               interface{}
+		system               *testSystem
 		ExpectedUpdateCount  int
 		ExpectedUpdatedIndex int
 	}{
 		{systems[0].system, 1, 1},
 		{systems[1].system, 1, 2},
-		{systems[3].system, 1, 0},
+		{systems[2].system, 1, 0},
 	}
 
 	for idx, test := range updateTests {
-		var sys *testSystem
-		switch s := test.system.(type) {
-		case *testSystem:
-			sys = s
-		case *testUpdateSystem:
-			sys = s.system
-		default:
-			panic("invalid system")
-		}
-
+		sys := test.system
 		if sys.UpdateCount != test.ExpectedUpdateCount {
 			t.Errorf("test %d: expected update count %d, got %d", idx, test.ExpectedUpdateCount, sys.UpdateCount)
 		}
@@ -67,7 +56,7 @@ func TestECS(t *testing.T) {
 	ecs.Draw(defaultImage)
 
 	drawTests := []struct {
-		system              interface{}
+		system              *testSystem
 		ExpectedDrawCount   int
 		ExpectedDrawedIndex int
 		ExpectedImage       *ebiten.Image
@@ -78,16 +67,7 @@ func TestECS(t *testing.T) {
 	}
 
 	for idx, test := range drawTests {
-		var sys *testSystem
-		switch s := test.system.(type) {
-		case *testSystem:
-			sys = s
-		case *testDrawSystem:
-			sys = s.system
-		default:
-			panic("invalid system")
-		}
-
+		sys := test.system
 		if sys.DrawCount != test.ExpectedDrawCount {
 			t.Errorf("test %d: expected draw count %d, got %d", idx, test.ExpectedDrawCount, sys.DrawCount)
 		}
@@ -126,20 +106,4 @@ func (ts *testSystem) Draw(ecs *ECS, image *ebiten.Image) {
 	ts.DrawCount++
 
 	testDrawedIndex++
-}
-
-type testUpdateSystem struct {
-	system *testSystem
-}
-
-func (ts *testUpdateSystem) Update(ecs *ECS) {
-	ts.system.Update(ecs)
-}
-
-type testDrawSystem struct {
-	system *testSystem
-}
-
-func (ts *testDrawSystem) Draw(ecs *ECS, image *ebiten.Image) {
-	ts.system.Draw(ecs, image)
 }

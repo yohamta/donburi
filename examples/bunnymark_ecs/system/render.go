@@ -23,6 +23,8 @@ func NewRender() *Render {
 		))}
 }
 
+func (r *Render) Update(ecs *ecs.ECS) {}
+
 func (r *Render) Draw(ecs *ecs.ECS, screen *ebiten.Image) {
 	r.query.EachEntity(ecs.World, func(entry *donburi.Entry) {
 		position := component.GetPosition(entry)

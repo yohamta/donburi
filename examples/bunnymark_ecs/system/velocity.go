@@ -1,6 +1,7 @@
 package system
 
 import (
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
@@ -27,3 +28,5 @@ func (v *Velocity) Update(ecs *ecs.ECS) {
 		position.Y += velocity.Y
 	})
 }
+
+func (v *Velocity) Draw(ecs *ecs.ECS, image *ebiten.Image) {}

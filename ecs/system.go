@@ -4,12 +4,16 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// Updater is a system that updates the world.
-type Updater interface {
+// System is a system that updates the world.
+type System interface {
 	Update(ecs *ECS)
+	Draw(ecs *ECS, screen *ebiten.Image)
 }
 
-// Drawer is a system that draws the world.
-type Drawer interface {
-	Draw(ecs *ECS, screen *ebiten.Image)
+// SystemOpts represents options for systems.
+type SystemOpts struct {
+	// Priority is the priority of the system.
+	Priority int
+	// Image is the image to draw the system.
+	Image *ebiten.Image
 }
