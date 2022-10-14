@@ -37,15 +37,15 @@ func NewGame() *Game {
 		ecs:    createECS(),
 	}
 
-	metrics := system.NewMetrics(&g.bounds)
-
-	g.ecs.AddSystem(system.NewSpawn(), nil)
-	g.ecs.AddSystem(system.NewGravity(), nil)
-	g.ecs.AddSystem(system.NewVelocity(), nil)
-	g.ecs.AddSystem(system.NewBounce(&g.bounds), nil)
-	g.ecs.AddSystem(&system.Background{}, nil)
-	g.ecs.AddSystem(system.NewRender(), nil)
-	g.ecs.AddSystem(metrics, nil)
+	g.ecs.AddSystems(
+		system.NewSpawn(),
+		system.NewGravity(),
+		system.NewVelocity(),
+		system.NewBounce(&g.bounds),
+		&system.Background{},
+		system.NewRender(),
+		system.NewMetrics(&g.bounds),
+	)
 
 	return g
 }
