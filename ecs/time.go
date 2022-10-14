@@ -18,20 +18,14 @@ type Time struct {
 	prevTime time.Time
 }
 
+// NewTIme creates a new Time.
 func NewTime() *Time {
 	return &Time{
 		prevTime: time.Now(),
 	}
 }
 
-func (t *Time) SetPaused(paused bool) {
-	t.IsPaused = paused
-}
-
-func (t *Time) SetTimeScale(scale float64) {
-	t.TimeScale = scale
-}
-
+// Update updates the time.
 func (t *Time) Update() {
 	now := time.Now()
 	if t.IsPaused {
