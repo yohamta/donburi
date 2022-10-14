@@ -46,6 +46,26 @@ func NewECS(w donburi.World) *ECS {
 	return ecs
 }
 
+type SystemOpts struct {
+	DrawerOpts *DrawerOpts
+}
+
+// AddSystem adds new system either Updater or Drawer
+func (ecs *ECS) AddSystem(system interface{}, opts *SystemOpts) {
+	flag := false
+	if system, ok := system.(Updater); ok {
+		ecs.AddUpdater(system)
+		flag = true
+	}
+	if system, ok := system.(Drawer); ok {
+		ecs.AddDrawer(system, opts.DrawerOpts)
+		flag = true
+	}
+	if !flag {
+		panic("ECS system should be either Updater or Drawer at least.")
+	}
+}
+
 // AddUpdater adds an Updater to the ECS.
 func (ecs *ECS) AddUpdater(u Updater) {
 	ecs.updaters = append(ecs.updaters, updaterEntry{Updater: u})
