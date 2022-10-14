@@ -24,9 +24,25 @@ type ECS struct {
 	*innerECS
 }
 
-// DrawerOpts represents options for a Drawer.
-type DrawerOpts struct {
+type SystemOpts struct {
 	ImageToDraw *ebiten.Image
+	Priority    int
+}
+
+type updaterEntry struct {
+	Updater  Updater
+	Priority int
+}
+
+type drawerEntry struct {
+	Drawer      Drawer
+	Priority    int
+	ImageToDraw *ebiten.Image
+}
+
+type innerECS struct {
+	updaters []*updaterEntry
+	drawers  []*drawerEntry
 }
 
 // NewECS creates a new ECS with the specified world.
@@ -34,31 +50,35 @@ func NewECS(w donburi.World) *ECS {
 	ecs := &ECS{
 		World: w,
 		innerECS: &innerECS{
-			updaters: []updaterEntry{},
-			drawers:  []drawerEntry{},
+			updaters: []*updaterEntry{},
+			drawers:  []*drawerEntry{},
 		},
 	}
 
 	ecs.ScriptSystem = NewScriptSystem()
-	ecs.AddUpdater(ecs.ScriptSystem)
-	ecs.AddDrawer(ecs.ScriptSystem, nil)
+	ecs.AddSystem(ecs.ScriptSystem, &SystemOpts{})
 
 	return ecs
-}
-
-type SystemOpts struct {
-	DrawerOpts *DrawerOpts
 }
 
 // AddSystem adds new system either Updater or Drawer
 func (ecs *ECS) AddSystem(system interface{}, opts *SystemOpts) {
 	flag := false
+	if opts == nil {
+		opts = &SystemOpts{}
+	}
 	if system, ok := system.(Updater); ok {
-		ecs.AddUpdater(system)
+		ecs.addUpdater(&updaterEntry{
+			Updater:  system,
+			Priority: opts.Priority,
+		})
 		flag = true
 	}
 	if system, ok := system.(Drawer); ok {
-		ecs.AddDrawer(system, opts.DrawerOpts)
+		ecs.addDrawer(&drawerEntry{
+			Drawer:   system,
+			Priority: opts.Priority,
+		})
 		flag = true
 	}
 	if !flag {
@@ -66,30 +86,16 @@ func (ecs *ECS) AddSystem(system interface{}, opts *SystemOpts) {
 	}
 }
 
-// AddUpdater adds an Updater to the ECS.
-func (ecs *ECS) AddUpdater(u Updater) {
-	ecs.updaters = append(ecs.updaters, updaterEntry{Updater: u})
-}
-
-// AddDrawer adds a Drawer to the ECS.
-func (ecs *ECS) AddDrawer(d Drawer, opts *DrawerOpts) {
-	entry := drawerEntry{Drawer: d, Options: opts}
-	if entry.Options == nil {
-		entry.Options = &DrawerOpts{}
-	}
-	ecs.drawers = append(ecs.drawers, entry)
-}
-
 // AddUpdaterWithPriority adds an Updater to the ECS with the specified priority.
 // Higher priority is executed first.
-func (ecs *ECS) AddUpdaterWithPriority(u Updater, priority int) {
-	ecs.updaters = append(ecs.updaters, updaterEntry{Updater: u, Priority: priority})
+func (ecs *ECS) addUpdater(entry *updaterEntry) {
+	ecs.updaters = append(ecs.updaters, entry)
 	sortUpdaterEntries(ecs.updaters)
 }
 
-// AddDrawerWithPriority adds a Drawer to the ECS with the specified priority.
-func (ecs *ECS) AddDrawerWithPriority(d Drawer, priority int, opts *DrawerOpts) {
-	ecs.drawers = append(ecs.drawers, drawerEntry{Drawer: d, Priority: priority, Options: opts})
+// AddDrawer adds a Drawer to the ECS.
+func (ecs *ECS) addDrawer(entry *drawerEntry) {
+	ecs.drawers = append(ecs.drawers, entry)
 	sortDrawerEntries(ecs.drawers)
 }
 
@@ -105,38 +111,22 @@ func (ecs *ECS) Update() {
 // Draw calls Drawer's Draw() methods.
 func (ecs *ECS) Draw(screen *ebiten.Image) {
 	for _, d := range ecs.drawers {
-		if d.Options.ImageToDraw != nil {
-			d.Drawer.Draw(ecs, d.Options.ImageToDraw)
+		if d.ImageToDraw != nil {
+			d.Drawer.Draw(ecs, d.ImageToDraw)
 			continue
 		}
 		d.Drawer.Draw(ecs, screen)
 	}
 }
 
-func sortUpdaterEntries(entries []updaterEntry) {
-	sort.Slice(entries, func(i, j int) bool {
+func sortUpdaterEntries(entries []*updaterEntry) {
+	sort.SliceStable(entries, func(i, j int) bool {
 		return entries[i].Priority > entries[j].Priority
 	})
 }
 
-func sortDrawerEntries(entries []drawerEntry) {
-	sort.Slice(entries, func(i, j int) bool {
+func sortDrawerEntries(entries []*drawerEntry) {
+	sort.SliceStable(entries, func(i, j int) bool {
 		return entries[i].Priority > entries[j].Priority
 	})
-}
-
-type updaterEntry struct {
-	Updater  Updater
-	Priority int
-}
-
-type drawerEntry struct {
-	Drawer   Drawer
-	Priority int
-	Options  *DrawerOpts
-}
-
-type innerECS struct {
-	updaters []updaterEntry
-	drawers  []drawerEntry
 }
