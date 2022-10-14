@@ -8,24 +8,25 @@ import (
 	"github.com/yohamta/donburi/query"
 )
 
+// Script is a arbitrary script that can be executed in the world.
 type Script interface {
 	Update(entry *donburi.Entry)
 	Draw(entry *donburi.Entry, screen *ebiten.Image)
 }
 
+// ScriptSystem is a built-in system that manages scripts with queries.
 type ScriptSystem struct {
 	scripts []scriptEntry
 }
 
-type ScriptOptions struct {
+// ScriptOpts represents options for a script.
+// The Priority is the priority of the script. higher priority is executed first.
+type ScriptOpts struct {
 	ImageToDraw *ebiten.Image
+	Priority    int
 }
 
-var (
-	_ = (Updater)((*ScriptSystem)(nil))
-	_ = (Drawer)((*ScriptSystem)(nil))
-)
-
+// NewScriptSystem creates a new ScriptSystem.
 func NewScriptSystem() *ScriptSystem {
 	return &ScriptSystem{
 		scripts: []scriptEntry{},
@@ -33,17 +34,18 @@ func NewScriptSystem() *ScriptSystem {
 }
 
 type scriptEntry struct {
-	Query    query.Query
-	Script   Script
-	Priority int
-	Options  *ScriptOptions
+	Query   query.Query
+	Script  Script
+	Options *ScriptOpts
 }
 
-func (s *ScriptSystem) AddScript(q query.Query, script Script, priority int, opts *ScriptOptions) {
-	entry := scriptEntry{q, script, priority, opts}
-	if entry.Options == nil {
-		entry.Options = &ScriptOptions{}
+// AddScript adds a script to the system.
+// Target entities are specified by the query.
+func (s *ScriptSystem) AddScript(q query.Query, script Script, opts *ScriptOpts) {
+	if opts == nil {
+		opts = &ScriptOpts{}
 	}
+	entry := scriptEntry{q, script, opts}
 	s.scripts = append(s.scripts, entry)
 
 	// sort script entries by priority. higher priority is executed first.
@@ -61,6 +63,7 @@ func (s *ScriptSystem) Draw(ecs *ECS, screen *ebiten.Image) {
 		script.Query.EachEntity(ecs.World, func(entry *donburi.Entry) {
 			if script.Options.ImageToDraw != nil {
 				script.Script.Draw(entry, script.Options.ImageToDraw)
+				return
 			}
 			script.Script.Draw(entry, screen)
 		})
@@ -70,6 +73,11 @@ func (s *ScriptSystem) Draw(ecs *ECS, screen *ebiten.Image) {
 // sortScriptEntries sorts script entries by priority. higher priority is executed first.
 func sortScriptEntries(entries []scriptEntry) {
 	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].Priority > entries[j].Priority
+		return entries[i].Options.Priority > entries[j].Options.Priority
 	})
 }
+
+var (
+	_ = (Updater)((*ScriptSystem)(nil))
+	_ = (Drawer)((*ScriptSystem)(nil))
+)

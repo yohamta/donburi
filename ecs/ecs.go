@@ -5,6 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/query"
 )
 
 // ECS represents an entity-component-system.
@@ -86,6 +87,11 @@ func (ecs *ECS) AddSystem(system interface{}, opts *SystemOpts) {
 	if !flag {
 		panic("ECS system should be either Updater or Drawer at least.")
 	}
+}
+
+// AddScript adds a script to the specified entity.
+func (ecs *ECS) AddScript(q query.Query, script Script, opts *ScriptOpts) {
+	ecs.ScriptSystem.AddScript(q, script, opts)
 }
 
 // AddUpdaterWithPriority adds an Updater to the ECS with the specified priority.
