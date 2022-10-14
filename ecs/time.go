@@ -18,6 +18,12 @@ type Time struct {
 	prevTime time.Time
 }
 
+func NewTime() *Time {
+	return &Time{
+		prevTime: time.Now(),
+	}
+}
+
 func (t *Time) SetPaused(paused bool) {
 	t.IsPaused = paused
 }

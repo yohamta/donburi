@@ -49,6 +49,7 @@ type innerECS struct {
 func NewECS(w donburi.World) *ECS {
 	ecs := &ECS{
 		World: w,
+		Time:  NewTime(),
 		innerECS: &innerECS{
 			updaters: []*updaterEntry{},
 			drawers:  []*drawerEntry{},
@@ -63,10 +64,10 @@ func NewECS(w donburi.World) *ECS {
 
 // AddSystem adds new system either Updater or Drawer
 func (ecs *ECS) AddSystem(system interface{}, opts *SystemOpts) {
-	flag := false
 	if opts == nil {
 		opts = &SystemOpts{}
 	}
+	flag := false
 	if system, ok := system.(Updater); ok {
 		ecs.addUpdater(&updaterEntry{
 			Updater:  system,
@@ -76,8 +77,9 @@ func (ecs *ECS) AddSystem(system interface{}, opts *SystemOpts) {
 	}
 	if system, ok := system.(Drawer); ok {
 		ecs.addDrawer(&drawerEntry{
-			Drawer:   system,
-			Priority: opts.Priority,
+			Drawer:      system,
+			Priority:    opts.Priority,
+			ImageToDraw: opts.ImageToDraw,
 		})
 		flag = true
 	}
