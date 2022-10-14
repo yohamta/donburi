@@ -236,7 +236,7 @@ Also, it provides some convenient features:
 - ScriptSystem
 - Time
 
-See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi) for more details.
+See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) for more details.
 
 ## Internal Design for `World`
 
