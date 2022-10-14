@@ -4,6 +4,7 @@ import (
 	"image"
 
 	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/helper"
 	"github.com/yohamta/donburi/filter"
@@ -25,8 +26,8 @@ func NewBounce(bounds *image.Rectangle) *Bounce {
 		))}
 }
 
-func (b *Bounce) Update(w donburi.World) {
-	b.query.EachEntity(w, func(entry *donburi.Entry) {
+func (b *Bounce) Update(ecs *ecs.ECS) {
+	b.query.EachEntity(ecs.World, func(entry *donburi.Entry) {
 		position := component.GetPosition(entry)
 		velocity := component.GetVelocity(entry)
 		sprite := component.GetSprite(entry)

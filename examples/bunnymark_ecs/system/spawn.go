@@ -6,6 +6,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/helper"
 	"github.com/yohamta/donburi/filter"
@@ -22,13 +23,13 @@ func NewSpawn() *Spawn {
 	}
 }
 
-func (s *Spawn) Update(w donburi.World) {
+func (s *Spawn) Update(ecs *ecs.ECS) {
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		s.addBunnies(w)
+		s.addBunnies(ecs.World)
 	}
 
 	if ids := ebiten.AppendTouchIDs(nil); len(ids) > 0 {
-		s.addBunnies(w) // not accurate, cause no input manager for this
+		s.addBunnies(ecs.World) // not accurate, cause no input manager for this
 	}
 
 	if _, offset := ebiten.Wheel(); offset != 0 {

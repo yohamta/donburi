@@ -9,6 +9,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
@@ -27,23 +28,23 @@ func NewMetrics(bounds *image.Rectangle) *Metrics {
 	}
 }
 
-func (m *Metrics) Update(w donburi.World) {
+func (m *Metrics) Update(ecs *ecs.ECS) {
 	if m.settings == nil {
 		query := query.NewQuery(filter.Contains(component.Settings))
-		query.EachEntity(w, func(entry *donburi.Entry) {
+		query.EachEntity(ecs.World, func(entry *donburi.Entry) {
 			m.settings = component.GetSettings(entry)
 		})
 	}
 	select {
 	case <-m.settings.Ticker.C:
-		m.settings.Objects.Update(float64(w.Len() - 1))
+		m.settings.Objects.Update(float64(ecs.World.Len() - 1))
 		m.settings.Tps.Update(ebiten.CurrentTPS())
 		m.settings.Fps.Update(ebiten.CurrentFPS())
 	default:
 	}
 }
 
-func (m *Metrics) Draw(w donburi.World, screen *ebiten.Image) {
+func (m *Metrics) Draw(ecs *ecs.ECS, screen *ebiten.Image) {
 	str := fmt.Sprintf(
 		"GPU: %s\nTPS: %.2f, FPS: %.2f, Objects: %.f\nBatching: %t, Amount: %d\nResolution: %dx%d",
 		m.settings.Gpu, m.settings.Tps.Last(), m.settings.Fps.Last(), m.settings.Objects.Last(),

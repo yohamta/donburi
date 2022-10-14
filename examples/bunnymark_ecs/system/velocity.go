@@ -2,6 +2,7 @@ package system
 
 import (
 	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
@@ -17,8 +18,8 @@ func NewVelocity() *Velocity {
 	}
 }
 
-func (v *Velocity) Update(w donburi.World) {
-	v.query.EachEntity(w, func(entry *donburi.Entry) {
+func (v *Velocity) Update(ecs *ecs.ECS) {
+	v.query.EachEntity(ecs.World, func(entry *donburi.Entry) {
 		position := component.GetPosition(entry)
 		velocity := component.GetVelocity(entry)
 

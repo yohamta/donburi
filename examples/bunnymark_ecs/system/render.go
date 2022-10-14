@@ -4,6 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
@@ -22,8 +23,8 @@ func NewRender() *Render {
 		))}
 }
 
-func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
-	r.query.EachEntity(w, func(entry *donburi.Entry) {
+func (r *Render) Draw(ecs *ecs.ECS, screen *ebiten.Image) {
+	r.query.EachEntity(ecs.World, func(entry *donburi.Entry) {
 		position := component.GetPosition(entry)
 		hue := component.GetHue(entry)
 		sprite := component.GetSprite(entry)

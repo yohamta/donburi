@@ -9,6 +9,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/assets"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/helper"
@@ -26,31 +27,33 @@ type Drawable interface {
 }
 
 type Game struct {
-	bounds    image.Rectangle
-	world     donburi.World
-	systems   []System
-	drawables []Drawable
+	ecs    *ecs.ECS
+	bounds image.Rectangle
 }
 
 func NewGame() *Game {
 	g := &Game{
 		bounds: image.Rectangle{},
-		world:  createWorld(),
+		ecs:    createECS(),
 	}
+
 	metrics := system.NewMetrics(&g.bounds)
-	g.systems = []System{
-		system.NewSpawn(),
-		system.NewGravity(),
-		system.NewVelocity(),
-		system.NewBounce(&g.bounds),
-		metrics,
-	}
-	g.drawables = []Drawable{
-		&system.Background{},
-		system.NewRender(),
-		metrics,
-	}
+
+	g.ecs.AddSystem(system.NewSpawn(), nil)
+	g.ecs.AddSystem(system.NewGravity(), nil)
+	g.ecs.AddSystem(system.NewVelocity(), nil)
+	g.ecs.AddSystem(system.NewBounce(&g.bounds), nil)
+	g.ecs.AddSystem(&system.Background{}, nil)
+	g.ecs.AddSystem(system.NewRender(), nil)
+	g.ecs.AddSystem(metrics, nil)
+
 	return g
+}
+
+func createECS() *ecs.ECS {
+	world := createWorld()
+	ecs := ecs.NewECS(world)
+	return ecs
 }
 
 func createWorld() donburi.World {
@@ -71,17 +74,13 @@ func createWorld() donburi.World {
 }
 
 func (g *Game) Update() error {
-	for _, s := range g.systems {
-		s.Update(g.world)
-	}
+	g.ecs.Update()
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Clear()
-	for _, s := range g.drawables {
-		s.Draw(g.world, screen)
-	}
+	g.ecs.Draw(screen)
 }
 
 func (g *Game) Layout(width, height int) (int, int) {
