@@ -3,6 +3,7 @@ package system
 import (
 	"image"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
@@ -56,3 +57,5 @@ func (b *Bounce) Update(ecs *ecs.ECS) {
 		}
 	})
 }
+
+func (b *Bounce) Draw(ecs *ecs.ECS, screen *ebiten.Image) {}
