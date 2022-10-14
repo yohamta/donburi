@@ -61,6 +61,13 @@ func NewECS(w donburi.World) *ECS {
 	return ecs
 }
 
+// AddSystems adds new systems either Updater or Drawer
+func (ecs *ECS) AddSystems(systems ...interface{}) {
+	for _, system := range systems {
+		ecs.AddSystem(system, nil)
+	}
+}
+
 // AddSystem adds new system either Updater or Drawer
 func (ecs *ECS) AddSystem(system interface{}, opts *SystemOpts) {
 	if opts == nil {
