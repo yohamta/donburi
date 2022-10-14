@@ -29,16 +29,16 @@ type SystemOpts struct {
 }
 
 type innerECS struct {
-	updaters []*updaterEntry
-	drawers  []*drawerEntry
+	updaters []*updater
+	drawers  []*drawer
 }
 
-type updaterEntry struct {
+type updater struct {
 	Updater  Updater
 	Priority int
 }
 
-type drawerEntry struct {
+type drawer struct {
 	Drawer   Drawer
 	Priority int
 	Image    *ebiten.Image
@@ -50,8 +50,8 @@ func NewECS(w donburi.World) *ECS {
 		World: w,
 		Time:  NewTime(),
 		innerECS: &innerECS{
-			updaters: []*updaterEntry{},
-			drawers:  []*drawerEntry{},
+			updaters: []*updater{},
+			drawers:  []*drawer{},
 		},
 	}
 
@@ -68,14 +68,14 @@ func (ecs *ECS) AddSystem(system interface{}, opts *SystemOpts) {
 	}
 	flag := false
 	if system, ok := system.(Updater); ok {
-		ecs.addUpdater(&updaterEntry{
+		ecs.addUpdater(&updater{
 			Updater:  system,
 			Priority: opts.Priority,
 		})
 		flag = true
 	}
 	if system, ok := system.(Drawer); ok {
-		ecs.addDrawer(&drawerEntry{
+		ecs.addDrawer(&drawer{
 			Drawer:   system,
 			Priority: opts.Priority,
 			Image:    opts.Image,
@@ -103,13 +103,13 @@ func (ecs *ECS) Update() {
 
 // AddUpdaterWithPriority adds an Updater to the ECS with the specified priority.
 // Higher priority is executed first.
-func (ecs *ECS) addUpdater(entry *updaterEntry) {
+func (ecs *ECS) addUpdater(entry *updater) {
 	ecs.updaters = append(ecs.updaters, entry)
 	sortUpdaterEntries(ecs.updaters)
 }
 
 // AddDrawer adds a Drawer to the ECS.
-func (ecs *ECS) addDrawer(entry *drawerEntry) {
+func (ecs *ECS) addDrawer(entry *drawer) {
 	ecs.drawers = append(ecs.drawers, entry)
 	sortDrawerEntries(ecs.drawers)
 }
@@ -125,13 +125,13 @@ func (ecs *ECS) Draw(screen *ebiten.Image) {
 	}
 }
 
-func sortUpdaterEntries(entries []*updaterEntry) {
+func sortUpdaterEntries(entries []*updater) {
 	sort.SliceStable(entries, func(i, j int) bool {
 		return entries[i].Priority > entries[j].Priority
 	})
 }
 
-func sortDrawerEntries(entries []*drawerEntry) {
+func sortDrawerEntries(entries []*drawer) {
 	sort.SliceStable(entries, func(i, j int) bool {
 		return entries[i].Priority > entries[j].Priority
 	})

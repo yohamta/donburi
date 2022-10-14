@@ -54,13 +54,13 @@ type entryDrawer struct {
 
 // AddScript adds a script to the system.
 // Target entities are specified by the query.
-func (s *ScriptSystem) AddScript(q query.Query, script interface{}, opts *ScriptOpts) {
+func (ss *ScriptSystem) AddScript(q query.Query, script interface{}, opts *ScriptOpts) {
 	if opts == nil {
 		opts = &ScriptOpts{}
 	}
 	flag := false
 	if script, ok := script.(EntryUpdater); ok {
-		s.addUpdater(&entryUpdater{
+		ss.addUpdater(&entryUpdater{
 			Query:   q,
 			Updater: script,
 			Options: opts,
@@ -68,7 +68,7 @@ func (s *ScriptSystem) AddScript(q query.Query, script interface{}, opts *Script
 		flag = true
 	}
 	if script, ok := script.(EntryDrawer); ok {
-		s.addDrawer(&entryDrawer{
+		ss.addDrawer(&entryDrawer{
 			Query:   q,
 			Drawer:  script,
 			Options: opts,
@@ -80,14 +80,14 @@ func (s *ScriptSystem) AddScript(q query.Query, script interface{}, opts *Script
 	}
 }
 
-func (s *ScriptSystem) Update(ecs *ECS) {
-	for _, script := range s.updaters {
+func (ss *ScriptSystem) Update(ecs *ECS) {
+	for _, script := range ss.updaters {
 		script.Query.EachEntity(ecs.World, script.Updater.Update)
 	}
 }
 
-func (s *ScriptSystem) Draw(ecs *ECS, screen *ebiten.Image) {
-	for _, script := range s.drawers {
+func (ss *ScriptSystem) Draw(ecs *ECS, screen *ebiten.Image) {
+	for _, script := range ss.drawers {
 		script.Query.EachEntity(ecs.World, func(entry *donburi.Entry) {
 			if script.Options.Image != nil {
 				script.Drawer.Draw(entry, script.Options.Image)
