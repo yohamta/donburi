@@ -236,7 +236,7 @@ Also, it provides some convenient features:
 - ScriptSystem
 - Time
 
-See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) for more details.
+See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) and [Example](https://github.com/yohamta/donburi/tree/master/examples/bunnymark_ecs).
 
 *Note: ECS package is experimental and API is unstable*
 
