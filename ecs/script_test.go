@@ -23,14 +23,14 @@ func TestScriptSystem(t *testing.T) {
 	entityA := world.Create(testEntityA)
 	entityB := world.Create(testEntityB)
 
-	scriptA := &testScript{}
-	scriptB := &testScript{}
-
 	queryA := query.NewQuery(filter.Contains(testEntityA))
 	queryB := query.NewQuery(filter.Contains(testEntityB))
 
-	ecs.AddScript(queryA, scriptA, &ScriptOpts{Image: certainImage})
-	ecs.AddScript(queryB, scriptB, &ScriptOpts{})
+	scriptA := NewScript(queryA, &testScript{}, &ScriptOpts{Image: certainImage})
+	scriptB := NewScript(queryB, &testScript{}, nil)
+
+	ecs.AddScript(scriptA)
+	ecs.AddScript(scriptB)
 
 	ecs.Update()
 
@@ -38,7 +38,7 @@ func TestScriptSystem(t *testing.T) {
 	ecs.Draw(defaultImage)
 
 	tests := []struct {
-		script          *testScript
+		script          *Script
 		entity          donburi.Entity
 		expectedUpdated int
 		expectedDrawed  int
@@ -61,17 +61,18 @@ func TestScriptSystem(t *testing.T) {
 	}
 
 	for idx, test := range tests {
-		if test.script.UpdateEntry.Entity() != test.entity {
-			t.Errorf("test %d: expected update entry entity %v, got %v", idx, test.entity, test.script.UpdateEntry.Entity())
+		scr := test.script.callback.(*testScript)
+		if scr.UpdateEntry.Entity() != test.entity {
+			t.Errorf("test %d: expected update entry entity %v, got %v", idx, test.entity, scr.UpdateEntry.Entity())
 		}
-		if test.script.UpdatedCount != test.expectedUpdated {
-			t.Errorf("test %d: expected updated count %d, got %d", idx, test.expectedUpdated, test.script.UpdatedCount)
+		if scr.UpdatedCount != test.expectedUpdated {
+			t.Errorf("test %d: expected updated count %d, got %d", idx, test.expectedUpdated, scr.UpdatedCount)
 		}
-		if test.script.DrawEntry.Entity() != test.entity {
-			t.Errorf("test %d: expected draw entry entity %v, got %v", idx, test.entity, test.script.DrawEntry.Entity())
+		if scr.DrawEntry.Entity() != test.entity {
+			t.Errorf("test %d: expected draw entry entity %v, got %v", idx, test.entity, scr.DrawEntry.Entity())
 		}
-		if test.script.DrawCount != test.expectedDrawed {
-			t.Errorf("test %d: expected draw count %d, got %d", idx, test.expectedDrawed, test.script.DrawCount)
+		if scr.DrawCount != test.expectedDrawed {
+			t.Errorf("test %d: expected draw count %d, got %d", idx, test.expectedDrawed, scr.DrawCount)
 		}
 	}
 }

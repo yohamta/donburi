@@ -5,7 +5,6 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/query"
 )
 
 // ECS represents an entity-component-system.
@@ -57,9 +56,16 @@ func (ecs *ECS) AddSystem(sys System, opts *SystemOpts) {
 	})
 }
 
+// AddScripts adds multiple scripts
+func (ecs *ECS) AddScripts(script ...*Script) {
+	for _, s := range script {
+		ecs.AddScript(s)
+	}
+}
+
 // AddScript adds a script to the entities matched by the query.
-func (ecs *ECS) AddScript(q *query.Query, script Script, opts *ScriptOpts) {
-	ecs.ScriptSystem.AddScript(q, script, opts)
+func (ecs *ECS) AddScript(script *Script) {
+	ecs.ScriptSystem.AddScript(script)
 }
 
 // Update calls Updater's Update() methods.
