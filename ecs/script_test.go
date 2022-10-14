@@ -26,15 +26,11 @@ func TestScriptSystem(t *testing.T) {
 	scriptA := &testScript{}
 	scriptB := &testScript{}
 
-	ecs.AddScript(query.NewQuery(
-		filter.Contains(testEntityA),
-	), scriptA, &ScriptOpts{
-		Image: certainImage,
-	})
+	queryA := query.NewQuery(filter.Contains(testEntityA))
+	queryB := query.NewQuery(filter.Contains(testEntityB))
 
-	ecs.AddScript(query.NewQuery(
-		filter.Contains(testEntityB),
-	), scriptB, nil)
+	ecs.AddScript(queryA, scriptA, &ScriptOpts{Image: certainImage})
+	ecs.AddScript(queryB, scriptB, &ScriptOpts{})
 
 	ecs.Update()
 

@@ -17,42 +17,20 @@ type ECS struct {
 	// ScriptSystem manages the scripts of the world.
 	ScriptSystem *ScriptSystem
 
-	*innerECS
+	systems []*system
 }
 
-// SystemOpts represents options for systems.
-type SystemOpts struct {
-	// Image is the image to draw the system.
-	Image *ebiten.Image
-	// Priority is the priority of the system.
-	Priority int
-}
-
-type innerECS struct {
-	updaters []*updater
-	drawers  []*drawer
-}
-
-type updater struct {
-	Updater  Updater
-	Priority int
-}
-
-type drawer struct {
-	Drawer   Drawer
-	Priority int
-	Image    *ebiten.Image
+type system struct {
+	System  System
+	Options *SystemOpts
 }
 
 // NewECS creates a new ECS with the specified world.
 func NewECS(w donburi.World) *ECS {
 	ecs := &ECS{
-		World: w,
-		Time:  NewTime(),
-		innerECS: &innerECS{
-			updaters: []*updater{},
-			drawers:  []*drawer{},
-		},
+		World:   w,
+		Time:    NewTime(),
+		systems: []*system{},
 	}
 
 	ecs.ScriptSystem = NewScriptSystem()
@@ -62,84 +40,54 @@ func NewECS(w donburi.World) *ECS {
 }
 
 // AddSystems adds new systems either Updater or Drawer
-func (ecs *ECS) AddSystems(systems ...interface{}) {
+func (ecs *ECS) AddSystems(systems ...System) {
 	for _, system := range systems {
 		ecs.AddSystem(system, nil)
 	}
 }
 
-// AddSystem adds new system either Updater or Drawer
-func (ecs *ECS) AddSystem(system interface{}, opts *SystemOpts) {
+// AddSystem adds new system
+func (ecs *ECS) AddSystem(sys System, opts *SystemOpts) {
 	if opts == nil {
 		opts = &SystemOpts{}
 	}
-	flag := false
-	if system, ok := system.(Updater); ok {
-		ecs.addUpdater(&updater{
-			Updater:  system,
-			Priority: opts.Priority,
-		})
-		flag = true
-	}
-	if system, ok := system.(Drawer); ok {
-		ecs.addDrawer(&drawer{
-			Drawer:   system,
-			Priority: opts.Priority,
-			Image:    opts.Image,
-		})
-		flag = true
-	}
-	if !flag {
-		panic("ECS system should be either Updater or Drawer at least.")
-	}
+	ecs.addSystem(&system{
+		System:  sys,
+		Options: opts,
+	})
 }
 
-// AddScript adds a script to the specified entity.
-// the argument `script` must implement EntryUpdater or/and EntryDrawer interface.
-func (ecs *ECS) AddScript(q *query.Query, script interface{}, opts *ScriptOpts) {
+// AddScript adds a script to the entities matched by the query.
+func (ecs *ECS) AddScript(q *query.Query, script Script, opts *ScriptOpts) {
 	ecs.ScriptSystem.AddScript(q, script, opts)
 }
 
 // Update calls Updater's Update() methods.
 func (ecs *ECS) Update() {
 	ecs.Time.Update()
-	for _, u := range ecs.updaters {
-		u.Updater.Update(ecs)
+	for _, u := range ecs.systems {
+		u.System.Update(ecs)
 	}
-}
-
-// AddUpdaterWithPriority adds an Updater to the ECS with the specified priority.
-// Higher priority is executed first.
-func (ecs *ECS) addUpdater(entry *updater) {
-	ecs.updaters = append(ecs.updaters, entry)
-	sortUpdaterEntries(ecs.updaters)
-}
-
-// AddDrawer adds a Drawer to the ECS.
-func (ecs *ECS) addDrawer(entry *drawer) {
-	ecs.drawers = append(ecs.drawers, entry)
-	sortDrawerEntries(ecs.drawers)
 }
 
 // Draw calls Drawer's Draw() methods.
 func (ecs *ECS) Draw(screen *ebiten.Image) {
-	for _, d := range ecs.drawers {
-		if d.Image != nil {
-			d.Drawer.Draw(ecs, d.Image)
+	for _, d := range ecs.systems {
+		if d.Options.Image != nil {
+			d.System.Draw(ecs, d.Options.Image)
 			continue
 		}
-		d.Drawer.Draw(ecs, screen)
+		d.System.Draw(ecs, screen)
 	}
 }
 
-func sortUpdaterEntries(entries []*updater) {
-	sort.SliceStable(entries, func(i, j int) bool {
-		return entries[i].Priority > entries[j].Priority
-	})
+func (ecs *ECS) addSystem(sys *system) {
+	ecs.systems = append(ecs.systems, sys)
+	sortSystems(ecs.systems)
 }
 
-func sortDrawerEntries(entries []*drawer) {
-	sort.SliceStable(entries, func(i, j int) bool {
-		return entries[i].Priority > entries[j].Priority
+func sortSystems(systems []*system) {
+	sort.SliceStable(systems, func(i, j int) bool {
+		return systems[i].Options.Priority > systems[j].Options.Priority
 	})
 }
