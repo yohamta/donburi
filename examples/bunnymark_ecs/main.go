@@ -32,24 +32,26 @@ type Game struct {
 	bounds image.Rectangle
 }
 
+const (
+	LayerBackground ecs.Layer = iota
+	LayerBunnies
+	LayerMetrics
+)
+
 func NewGame() *Game {
 	g := &Game{
 		bounds: image.Rectangle{},
 		ecs:    createECS(),
 	}
 
-	g.ecs.AddSystems(
-		system.NewSpawn(),
-		&system.Background{},
-		system.NewMetrics(&g.bounds),
-	)
+	g.ecs.AddSystem(LayerBackground, system.NewSpawn(), nil)
+	g.ecs.AddSystem(LayerBackground, &system.Background{}, nil)
+	g.ecs.AddSystem(LayerMetrics, system.NewMetrics(&g.bounds), nil)
 
-	g.ecs.AddScripts(
-		scripts.NewBounce(&g.bounds),
-		scripts.Gravity,
-		scripts.Velocity,
-		scripts.Render,
-	)
+	g.ecs.AddScript(LayerBunnies, scripts.NewBounce(&g.bounds))
+	g.ecs.AddScript(LayerBunnies, scripts.Velocity)
+	g.ecs.AddScript(LayerBunnies, scripts.Gravity)
+	g.ecs.AddScript(LayerBunnies, scripts.Render)
 
 	return g
 }
