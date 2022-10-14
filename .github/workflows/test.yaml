@@ -3,8 +3,19 @@ on: [push, pull_request]
 jobs:
   build:
     name: Test
+    env:
+      DISPLAY: ':99.0'
     runs-on: ubuntu-latest
     steps:
+      - name: Install dependencies
+        run: |
+            sudo apt update
+            sudo apt install libgl1-mesa-dev xorg-dev libgl-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
+      
+      - name: Xvfb
+        run: |
+          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
