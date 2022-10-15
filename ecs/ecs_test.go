@@ -46,7 +46,8 @@ func TestECS(t *testing.T) {
 		}
 	}
 
-	ecs.Draw(ebiten.NewImage(1, 1))
+	ecs.Draw(0, ebiten.NewImage(1, 1))
+	ecs.Draw(1, ebiten.NewImage(1, 1))
 
 	drawTests := []struct {
 		system              *testSystem

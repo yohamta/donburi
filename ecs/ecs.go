@@ -55,10 +55,8 @@ func (ecs *ECS) Update() {
 }
 
 // Draw calls Drawer's Draw() methods.
-func (ecs *ECS) Draw(screen *ebiten.Image) {
-	for _, l := range ecs.layers {
-		l.Draw(ecs, screen)
-	}
+func (ecs *ECS) Draw(l Layer, screen *ebiten.Image) {
+	ecs.getLayer(l).Draw(ecs, screen)
 }
 
 // AddScript adds a script to the entities matched by the query.

@@ -32,7 +32,7 @@ func TestScriptSystem(t *testing.T) {
 
 	ecs.Update()
 
-	ecs.Draw(ebiten.NewImage(1, 1))
+	ecs.Draw(0, ebiten.NewImage(1, 1))
 
 	tests := []struct {
 		script          *testScript
