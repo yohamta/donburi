@@ -4,23 +4,12 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type render struct{}
 
-var Render = ecs.NewScript(
-	query.NewQuery(filter.Contains(
-		component.Position,
-		component.Hue,
-		component.Sprite,
-	)),
-	&render{},
-	nil,
-)
+var Render = &render{}
 
 func (r *render) Update(entry *donburi.Entry) {}
 

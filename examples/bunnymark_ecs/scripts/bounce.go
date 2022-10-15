@@ -5,27 +5,16 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/helper"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type bounce struct {
 	bounds *image.Rectangle
 }
 
-func NewBounce(bounds *image.Rectangle) *ecs.Script {
-	return ecs.NewScript(
-		query.NewQuery(filter.Contains(
-			component.Position,
-			component.Velocity,
-			component.Sprite,
-		)),
-		&bounce{bounds},
-		nil,
-	)
+func NewBounce(bounds *image.Rectangle) *bounce {
+	return &bounce{bounds}
 }
 
 func (b *bounce) Update(entry *donburi.Entry) {
