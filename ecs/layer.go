@@ -11,39 +11,39 @@ type system struct {
 
 type layer struct {
 	systems      []*system
-	scriptSystem *ScriptSystem
+	scriptSystem *scriptSystem
 }
 
 func newLayer() *layer {
 	return &layer{
 		systems:      []*system{},
-		scriptSystem: NewScriptSystem(),
+		scriptSystem: newScriptSystem(),
 	}
 }
 
-func (l *layer) Update(ecs *ECS) {
+func (l *layer) Update(e *ECS) {
 	for _, u := range l.systems {
-		u.System.Update(ecs)
+		u.System.Update(e)
 	}
-	l.scriptSystem.Update(ecs)
+	l.scriptSystem.Update(e)
 }
 
 // Draw calls Drawer's Draw() methods.
-func (l *layer) Draw(ecs *ECS, screen *ebiten.Image) {
+func (l *layer) Draw(e *ECS, s *ebiten.Image) {
 	for _, d := range l.systems {
 		if d.Options.Image != nil {
-			d.System.Draw(ecs, d.Options.Image)
+			d.System.Draw(e, d.Options.Image)
 			continue
 		}
-		d.System.Draw(ecs, screen)
+		d.System.Draw(e, s)
 	}
-	l.scriptSystem.Draw(ecs, screen)
+	l.scriptSystem.Draw(e, s)
 }
 
-func (l *layer) addScript(script *Script) {
-	l.scriptSystem.AddScript(script)
+func (l *layer) addScript(s *script) {
+	l.scriptSystem.AddScript(s)
 }
 
-func (l *layer) addSystem(sys *system) {
-	l.systems = append(l.systems, sys)
+func (l *layer) addSystem(s *system) {
+	l.systems = append(l.systems, s)
 }

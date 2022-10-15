@@ -3,6 +3,7 @@ package ecs
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/query"
 )
 
 type Layer int
@@ -30,19 +31,20 @@ func NewECS(w donburi.World) *ECS {
 }
 
 // AddSystem adds new system
-func (ecs *ECS) AddSystem(layer Layer, sys System, opts *SystemOpts) {
+func (ecs *ECS) AddSystem(l Layer, s System, opts *SystemOpts) {
 	if opts == nil {
 		opts = &SystemOpts{}
 	}
-	ecs.getLayer(layer).addSystem(&system{
-		System:  sys,
+	ecs.getLayer(l).addSystem(&system{
+		System:  s,
 		Options: opts,
 	})
 }
 
 // AddScript adds a script to the entities matched by the query.
-func (ecs *ECS) AddScript(layer Layer, script *Script) {
-	ecs.getLayer(layer).addScript(script)
+func (ecs *ECS) AddScript(l Layer, s Script, q *query.Query) {
+	ecs.addScript(l, newScript(s, q))
+
 }
 
 // Update calls Updater's Update() methods.
@@ -58,6 +60,11 @@ func (ecs *ECS) Draw(screen *ebiten.Image) {
 	for _, l := range ecs.layers {
 		l.Draw(ecs, screen)
 	}
+}
+
+// AddScript adds a script to the entities matched by the query.
+func (ecs *ECS) addScript(l Layer, s *script) {
+	ecs.getLayer(l).addScript(s)
 }
 
 func (ecs *ECS) getLayer(l Layer) *layer {
