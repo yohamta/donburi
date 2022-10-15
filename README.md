@@ -18,7 +18,7 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
   - [Worlds](#worlds)
   - [Queries](#queries)
   - [Tags](#tags)
-- [ECS package (Experimental)](#ecs-package-experimental)
+  - [Systems (Experimental)](#systems-experimental)
 - [Internal Design for `World`](#internal-design-for-world)
 - [How to contribute?](#how-to-contribute)
 - [Contributors](#contributors)
@@ -228,7 +228,7 @@ query.EachEntity(world, func(entry *donburi.Entry) {
 }
 ```
 
-## ECS package (Experimental)
+### Systems (Experimental)
 
 The [ECS package](https://github.com/yohamta/donburi/tree/main/ecs) provides so-called **System** feature in ECS which can be used together with a `World` instance.
 
