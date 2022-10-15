@@ -10,6 +10,14 @@ type System interface {
 	Draw(ecs *ECS, screen *ebiten.Image)
 }
 
+type UpdateSystem interface {
+	Update(ecs *ECS)
+}
+
+type DrawSystem interface {
+	Draw(ecs *ECS, screen *ebiten.Image)
+}
+
 // SystemOpts represents options for systems.
 type SystemOpts struct {
 	// Image is the image to draw the system.

@@ -6,46 +6,60 @@ import (
 	"github.com/yohamta/donburi/query"
 )
 
-type script struct {
-	query    *query.Query
-	callback Script
-}
-
-func newScript(scr Script, q *query.Query) *script {
-	return &script{
-		query:    q,
-		callback: scr,
-	}
-}
-
-// Script is a function that runs on the entities matched by the query.
-type Script interface {
+// UpdateScript is a script that updates the entity.
+type UpdateScript interface {
 	Update(entry *donburi.Entry)
+}
+
+// DrawScript is a script that draws the entity.
+type DrawScript interface {
 	Draw(entry *donburi.Entry, screen *ebiten.Image)
 }
 
+type updateScript struct {
+	query    *query.Query
+	callback UpdateScript
+}
+
+type drawScript struct {
+	query    *query.Query
+	callback DrawScript
+}
+
 type scriptSystem struct {
-	scripts []*script
+	updateScripts []*updateScript
+	drawScripts   []*drawScript
 }
 
 func newScriptSystem() *scriptSystem {
 	return &scriptSystem{
-		scripts: []*script{},
+		updateScripts: []*updateScript{},
+		drawScripts:   []*drawScript{},
 	}
 }
 
-func (ss *scriptSystem) AddScript(scr *script) {
-	ss.scripts = append(ss.scripts, scr)
+func (ss *scriptSystem) AddUpdateScript(s UpdateScript, q *query.Query) {
+	ss.updateScripts = append(ss.updateScripts, &updateScript{
+		query:    q,
+		callback: s,
+	})
+}
+
+func (ss *scriptSystem) AddDrawScript(s DrawScript, q *query.Query) {
+	ss.drawScripts = append(ss.drawScripts, &drawScript{
+		query:    q,
+		callback: s,
+	})
 }
 
 func (ss *scriptSystem) Update(ecs *ECS) {
-	for _, script := range ss.scripts {
+	for _, script := range ss.updateScripts {
 		script.query.EachEntity(ecs.World, script.callback.Update)
 	}
 }
 
 func (ss *scriptSystem) Draw(ecs *ECS, screen *ebiten.Image) {
-	for _, script := range ss.scripts {
+	for _, script := range ss.drawScripts {
 		script.query.EachEntity(ecs.World, func(entry *donburi.Entry) {
 			script.callback.Draw(entry, screen)
 		})
@@ -53,5 +67,6 @@ func (ss *scriptSystem) Draw(ecs *ECS, screen *ebiten.Image) {
 }
 
 var (
-	_ = (System)((*scriptSystem)(nil))
+	_ = (UpdateSystem)((*scriptSystem)(nil))
+	_ = (DrawSystem)((*scriptSystem)(nil))
 )
