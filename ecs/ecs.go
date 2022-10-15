@@ -41,6 +41,11 @@ func (ecs *ECS) AddScript(l Layer, s Script, q *query.Query) {
 
 }
 
+// ConfigLayer sets the layer configuration.
+func (ecs *ECS) ConfigLayer(l Layer, cfg *LayerConfig) {
+	ecs.getLayer(l).Config(cfg)
+}
+
 // Update calls Updater's Update() methods.
 func (ecs *ECS) Update() {
 	ecs.Time.Update()
