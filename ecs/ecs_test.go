@@ -21,7 +21,8 @@ func TestECS(t *testing.T) {
 	}
 
 	for _, sys := range systems {
-		ecs.AddSystem(sys.layer, sys.system)
+		ecs.AddUpdateSystem(sys.system)
+		ecs.AddDrawSystem(sys.layer, sys.system)
 	}
 
 	ecs.Update()
@@ -31,9 +32,9 @@ func TestECS(t *testing.T) {
 		ExpectedUpdateCount  int
 		ExpectedUpdatedIndex int
 	}{
-		{systems[0].system, 1, 1},
-		{systems[1].system, 1, 2},
-		{systems[2].system, 1, 0},
+		{systems[0].system, 1, 0},
+		{systems[1].system, 1, 1},
+		{systems[2].system, 1, 2},
 	}
 
 	for idx, test := range updateTests {
@@ -46,7 +47,8 @@ func TestECS(t *testing.T) {
 		}
 	}
 
-	ecs.Draw(ebiten.NewImage(1, 1))
+	ecs.Draw(0, ebiten.NewImage(1, 1))
+	ecs.Draw(1, ebiten.NewImage(1, 1))
 
 	drawTests := []struct {
 		system              *testSystem

@@ -27,12 +27,15 @@ func TestScriptSystem(t *testing.T) {
 	scriptA := &testScript{}
 	scriptB := &testScript{}
 
-	ecs.AddScript(0, scriptA, queryA)
-	ecs.AddScript(0, scriptB, queryB)
+	ecs.AddUpdateScript(scriptA, queryA)
+	ecs.AddUpdateScript(scriptB, queryB)
+
+	ecs.AddDrawScript(0, scriptA, queryA)
+	ecs.AddDrawScript(0, scriptB, queryB)
 
 	ecs.Update()
 
-	ecs.Draw(ebiten.NewImage(1, 1))
+	ecs.Draw(0, ebiten.NewImage(1, 1))
 
 	tests := []struct {
 		script          *testScript

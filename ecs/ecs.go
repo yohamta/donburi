@@ -15,7 +15,9 @@ type ECS struct {
 	// Time manages the time of the world.
 	Time *Time
 
-	layers []*layer
+	systems      []UpdateSystem
+	layers       []*layer
+	scriptSystem *scriptSystem
 }
 
 // NewECS creates a new ECS with the specified world.
@@ -24,46 +26,55 @@ func NewECS(w donburi.World) *ECS {
 		World: w,
 		Time:  NewTime(),
 
-		layers: []*layer{},
+		systems:      []UpdateSystem{},
+		layers:       []*layer{},
+		scriptSystem: newScriptSystem(),
 	}
 
 	return ecs
 }
 
-// AddSystem adds new system
-func (ecs *ECS) AddSystem(l Layer, s System) {
+// AddUpdateSystems adds new update systems
+func (ecs *ECS) AddUpdateSystems(systems ...UpdateSystem) {
+	ecs.systems = append(ecs.systems, systems...)
+}
+
+// AddUpdateSystem adds new update system
+func (ecs *ECS) AddUpdateSystem(s UpdateSystem) {
+	ecs.addSystem(s)
+}
+
+// AddDrawSystem adds new draw system
+func (ecs *ECS) AddDrawSystem(l Layer, s DrawSystem) {
 	ecs.getLayer(l).addSystem(&system{System: s})
 }
 
-// AddScript adds a script to the entities matched by the query.
-func (ecs *ECS) AddScript(l Layer, s Script, q *query.Query) {
-	ecs.addScript(l, newScript(s, q))
-
+// AddUpdateScript adds a script to the entities matched by the query.
+func (ecs *ECS) AddUpdateScript(s UpdateScript, q *query.Query) {
+	ecs.scriptSystem.AddUpdateScript(s, q)
 }
 
-// ConfigLayer sets the layer configuration.
-func (ecs *ECS) ConfigLayer(l Layer, cfg *LayerConfig) {
-	ecs.getLayer(l).Config(cfg)
+// AddDrawScript adds a script to the entities matched by the query.
+func (ecs *ECS) AddDrawScript(l Layer, s DrawScript, q *query.Query) {
+	ecs.getLayer(l).scriptSystem.AddDrawScript(s, q)
 }
 
 // Update calls Updater's Update() methods.
 func (ecs *ECS) Update() {
 	ecs.Time.Update()
-	for _, l := range ecs.layers {
-		l.Update(ecs)
+	for _, s := range ecs.systems {
+		s.Update(ecs)
 	}
+	ecs.scriptSystem.Update(ecs)
 }
 
 // Draw calls Drawer's Draw() methods.
-func (ecs *ECS) Draw(screen *ebiten.Image) {
-	for _, l := range ecs.layers {
-		l.Draw(ecs, screen)
-	}
+func (ecs *ECS) Draw(l Layer, screen *ebiten.Image) {
+	ecs.getLayer(l).Draw(ecs, screen)
 }
 
-// AddScript adds a script to the entities matched by the query.
-func (ecs *ECS) addScript(l Layer, s *script) {
-	ecs.getLayer(l).addScript(s)
+func (ecs *ECS) addSystem(s UpdateSystem) {
+	ecs.systems = append(ecs.systems, s)
 }
 
 func (ecs *ECS) getLayer(l Layer) *layer {

@@ -11,8 +11,6 @@ type render struct{}
 
 var Render = &render{}
 
-func (r *render) Update(entry *donburi.Entry) {}
-
 func (r *render) Draw(entry *donburi.Entry, screen *ebiten.Image) {
 	position := component.GetPosition(entry)
 	hue := component.GetHue(entry)

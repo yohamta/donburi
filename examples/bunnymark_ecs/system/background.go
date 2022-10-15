@@ -9,8 +9,6 @@ import (
 
 type Background struct{}
 
-func (b *Background) Update(ecs *ecs.ECS) {}
-
 func (b *Background) Draw(ecs *ecs.ECS, screen *ebiten.Image) {
 	screen.Fill(color.RGBA{R: 41, G: 44, B: 45, A: 255})
 }

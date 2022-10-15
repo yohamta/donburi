@@ -1,7 +1,6 @@
 package scripts
 
 import (
-	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 )
@@ -15,5 +14,3 @@ func (v *Velocity) Update(entry *donburi.Entry) {
 	position.X += velocity.X
 	position.Y += velocity.Y
 }
-
-func (v *Velocity) Draw(entry *donburi.Entry, image *ebiten.Image) {}

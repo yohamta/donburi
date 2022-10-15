@@ -46,26 +46,29 @@ func NewGame() *Game {
 		ecs:    createECS(),
 	}
 
-	// System is a logic that updates the world.
-	g.ecs.AddSystem(LayerBackground, system.NewSpawn())
-	g.ecs.AddSystem(LayerBackground, &system.Background{})
-	g.ecs.AddSystem(LayerMetrics, system.NewMetrics(&g.bounds))
+	metrics := system.NewMetrics(&g.bounds)
 
-	// Script is a logic that updates the entries that match the query.
-	g.ecs.AddScript(LayerBunnies, scripts.NewBounce(&g.bounds),
+	g.ecs.AddUpdateSystems(
+		system.NewSpawn(),
+		metrics,
+	)
+	g.ecs.AddDrawSystem(LayerBackground, &system.Background{})
+	g.ecs.AddDrawSystem(LayerMetrics, metrics)
+
+	g.ecs.AddUpdateScript(scripts.NewBounce(&g.bounds),
 		query.NewQuery(filter.Contains(
 			component.Position,
 			component.Velocity,
 			component.Sprite,
 		)))
 
-	g.ecs.AddScript(LayerBunnies, &scripts.Velocity{},
+	g.ecs.AddUpdateScript(&scripts.Velocity{},
 		query.NewQuery(filter.Contains(component.Position, component.Velocity)))
 
-	g.ecs.AddScript(LayerBunnies, scripts.Gravity,
+	g.ecs.AddUpdateScript(scripts.Gravity,
 		query.NewQuery(filter.Contains(component.Velocity, component.Gravity)))
 
-	g.ecs.AddScript(LayerBunnies, scripts.Render,
+	g.ecs.AddDrawScript(LayerBunnies, scripts.Render,
 		query.NewQuery(filter.Contains(
 			component.Position,
 			component.Hue,
@@ -105,7 +108,9 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Clear()
-	g.ecs.Draw(screen)
+	g.ecs.Draw(LayerBackground, screen)
+	g.ecs.Draw(LayerBunnies, screen)
+	g.ecs.Draw(LayerMetrics, screen)
 }
 
 func (g *Game) Layout(width, height int) (int, int) {
