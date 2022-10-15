@@ -11,22 +11,17 @@ func TestECS(t *testing.T) {
 	world := donburi.NewWorld()
 	ecs := NewECS(world)
 
-	certainImage := ebiten.NewImage(1, 1)
-
 	systems := []struct {
 		layer  Layer
 		system *testSystem
-		image  *ebiten.Image
 	}{
-		{1, &testSystem{}, nil},
-		{1, &testSystem{}, certainImage},
-		{0, &testSystem{}, nil},
+		{1, &testSystem{}},
+		{1, &testSystem{}},
+		{0, &testSystem{}},
 	}
 
 	for _, sys := range systems {
-		ecs.AddSystem(sys.layer, sys.system, &SystemOpts{
-			Image: sys.image,
-		})
+		ecs.AddSystem(sys.layer, sys.system)
 	}
 
 	ecs.Update()
@@ -51,18 +46,16 @@ func TestECS(t *testing.T) {
 		}
 	}
 
-	defaultImage := ebiten.NewImage(1, 1)
-	ecs.Draw(defaultImage)
+	ecs.Draw(ebiten.NewImage(1, 1))
 
 	drawTests := []struct {
 		system              *testSystem
 		ExpectedDrawCount   int
 		ExpectedDrawedIndex int
-		ExpectedImage       *ebiten.Image
 	}{
-		{systems[0].system, 1, 1, defaultImage},
-		{systems[1].system, 1, 2, certainImage},
-		{systems[2].system, 1, 0, defaultImage},
+		{systems[0].system, 1, 1},
+		{systems[1].system, 1, 2},
+		{systems[2].system, 1, 0},
 	}
 
 	for idx, test := range drawTests {
@@ -72,9 +65,6 @@ func TestECS(t *testing.T) {
 		}
 		if sys.DrawedIndex != test.ExpectedDrawedIndex {
 			t.Errorf("test %d: expected drawed index %d, got %d", idx, test.ExpectedDrawedIndex, sys.DrawedIndex)
-		}
-		if sys.DrawImage != test.ExpectedImage {
-			t.Errorf("test %d: expected draw image %v, got %v", idx, test.ExpectedImage, sys.DrawImage)
 		}
 	}
 }

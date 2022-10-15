@@ -31,14 +31,8 @@ func NewECS(w donburi.World) *ECS {
 }
 
 // AddSystem adds new system
-func (ecs *ECS) AddSystem(l Layer, s System, opts *SystemOpts) {
-	if opts == nil {
-		opts = &SystemOpts{}
-	}
-	ecs.getLayer(l).addSystem(&system{
-		System:  s,
-		Options: opts,
-	})
+func (ecs *ECS) AddSystem(l Layer, s System) {
+	ecs.getLayer(l).addSystem(&system{System: s})
 }
 
 // AddScript adds a script to the entities matched by the query.

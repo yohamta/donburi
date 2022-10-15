@@ -5,8 +5,7 @@ import (
 )
 
 type system struct {
-	System  System
-	Options *SystemOpts
+	System System
 }
 
 type layer struct {
@@ -31,10 +30,6 @@ func (l *layer) Update(e *ECS) {
 // Draw calls Drawer's Draw() methods.
 func (l *layer) Draw(e *ECS, s *ebiten.Image) {
 	for _, d := range l.systems {
-		if d.Options.Image != nil {
-			d.System.Draw(e, d.Options.Image)
-			continue
-		}
 		d.System.Draw(e, s)
 	}
 	l.scriptSystem.Draw(e, s)
