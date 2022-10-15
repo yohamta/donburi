@@ -3,7 +3,6 @@ package scripts
 import (
 	"image"
 
-	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/helper"
@@ -45,5 +44,3 @@ func (b *bounce) Update(entry *donburi.Entry) {
 		position.Y = 0
 	}
 }
-
-func (b *bounce) Draw(entry *donburi.Entry, screen *ebiten.Image) {}

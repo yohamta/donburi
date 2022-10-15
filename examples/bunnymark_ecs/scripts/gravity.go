@@ -1,7 +1,6 @@
 package scripts
 
 import (
-	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 )
@@ -16,5 +15,3 @@ func (g *gravity) Update(entry *donburi.Entry) {
 
 	velocity.Y += gravity.Value
 }
-
-func (g *gravity) Draw(entry *donburi.Entry, screen *ebiten.Image) {}
