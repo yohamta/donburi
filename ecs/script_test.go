@@ -18,50 +18,44 @@ func TestScriptSystem(t *testing.T) {
 	world := donburi.NewWorld()
 	ecs := NewECS(world)
 
-	certainImage := ebiten.NewImage(1, 1)
-
 	entityA := world.Create(testEntityA)
 	entityB := world.Create(testEntityB)
 
 	queryA := query.NewQuery(filter.Contains(testEntityA))
 	queryB := query.NewQuery(filter.Contains(testEntityB))
 
-	scriptA := NewScript(queryA, &testScript{}, &ScriptOpts{Image: certainImage})
-	scriptB := NewScript(queryB, &testScript{}, nil)
+	scriptA := &testScript{}
+	scriptB := &testScript{}
 
-	ecs.AddScript(0, scriptA)
-	ecs.AddScript(0, scriptB)
+	ecs.AddScript(0, scriptA, queryA)
+	ecs.AddScript(0, scriptB, queryB)
 
 	ecs.Update()
 
-	defaultImage := ebiten.NewImage(1, 1)
-	ecs.Draw(defaultImage)
+	ecs.Draw(ebiten.NewImage(1, 1))
 
 	tests := []struct {
-		script          *Script
+		script          *testScript
 		entity          donburi.Entity
 		expectedUpdated int
 		expectedDrawed  int
-		expectedImage   *ebiten.Image
 	}{
 		{
 			script:          scriptA,
 			entity:          entityA,
 			expectedUpdated: 1,
 			expectedDrawed:  1,
-			expectedImage:   certainImage,
 		},
 		{
 			script:          scriptB,
 			entity:          entityB,
 			expectedUpdated: 1,
 			expectedDrawed:  1,
-			expectedImage:   defaultImage,
 		},
 	}
 
 	for idx, test := range tests {
-		scr := test.script.callback.(*testScript)
+		scr := test.script
 		if scr.UpdateEntry.Entity() != test.entity {
 			t.Errorf("test %d: expected update entry entity %v, got %v", idx, test.entity, scr.UpdateEntry.Entity())
 		}

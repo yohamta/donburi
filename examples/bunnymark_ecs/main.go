@@ -15,6 +15,8 @@ import (
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/helper"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/scripts"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/system"
+	"github.com/yohamta/donburi/filter"
+	"github.com/yohamta/donburi/query"
 
 	_ "net/http/pprof"
 )
@@ -44,14 +46,31 @@ func NewGame() *Game {
 		ecs:    createECS(),
 	}
 
-	g.ecs.AddSystem(LayerBackground, system.NewSpawn(), nil)
-	g.ecs.AddSystem(LayerBackground, &system.Background{}, nil)
-	g.ecs.AddSystem(LayerMetrics, system.NewMetrics(&g.bounds), nil)
+	// System is a logic that updates the world.
+	g.ecs.AddSystem(LayerBackground, system.NewSpawn())
+	g.ecs.AddSystem(LayerBackground, &system.Background{})
+	g.ecs.AddSystem(LayerMetrics, system.NewMetrics(&g.bounds))
 
-	g.ecs.AddScript(LayerBunnies, scripts.NewBounce(&g.bounds))
-	g.ecs.AddScript(LayerBunnies, scripts.Velocity)
-	g.ecs.AddScript(LayerBunnies, scripts.Gravity)
-	g.ecs.AddScript(LayerBunnies, scripts.Render)
+	// Script is a logic that updates the entries that match the query.
+	g.ecs.AddScript(LayerBunnies, scripts.NewBounce(&g.bounds),
+		query.NewQuery(filter.Contains(
+			component.Position,
+			component.Velocity,
+			component.Sprite,
+		)))
+
+	g.ecs.AddScript(LayerBunnies, &scripts.Velocity{},
+		query.NewQuery(filter.Contains(component.Position, component.Velocity)))
+
+	g.ecs.AddScript(LayerBunnies, scripts.Gravity,
+		query.NewQuery(filter.Contains(component.Velocity, component.Gravity)))
+
+	g.ecs.AddScript(LayerBunnies, scripts.Render,
+		query.NewQuery(filter.Contains(
+			component.Position,
+			component.Hue,
+			component.Sprite,
+		)))
 
 	return g
 }
