@@ -4,25 +4,17 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type system struct {
-	System DrawSystem
-}
-
 type layer struct {
-	systems      []*system
+	systems      []DrawSystem
 	scriptSystem *scriptSystem
 	image        *ebiten.Image
 }
 
 func newLayer() *layer {
 	return &layer{
-		systems:      []*system{},
+		systems:      []DrawSystem{},
 		scriptSystem: newScriptSystem(),
 	}
-}
-
-func (l *layer) Update(e *ECS) {
-	l.scriptSystem.Update(e)
 }
 
 func (l *layer) Draw(e *ECS, i *ebiten.Image) {
@@ -30,12 +22,12 @@ func (l *layer) Draw(e *ECS, i *ebiten.Image) {
 	if l.image != nil {
 		screen = l.image
 	}
-	for _, d := range l.systems {
-		d.System.Draw(e, screen)
+	for _, s := range l.systems {
+		s(e, screen)
 	}
 	l.scriptSystem.Draw(e, screen)
 }
 
-func (l *layer) addSystem(s *system) {
+func (l *layer) addDrawSystem(s DrawSystem) {
 	l.systems = append(l.systems, s)
 }
