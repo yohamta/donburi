@@ -6,11 +6,19 @@ import (
 	"github.com/yohamta/donburi/query"
 )
 
-// UpdateScript is a script that updates the entity.
+// UpdateScript is a script that updates entities.
 type UpdateScript func(entry *donburi.Entry)
 
-// DrawScript is a script that draws the entity.
+// DrawScript is a script that draws entities.
 type DrawScript func(entry *donburi.Entry, screen *ebiten.Image)
+
+// Script represents a script.
+type Script struct {
+	Update    UpdateScript
+	DrawLayer DrawLayer
+	Draw      DrawScript
+	Query     *query.Query
+}
 
 type updateScript struct {
 	query    *query.Query

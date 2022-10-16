@@ -12,7 +12,7 @@ func TestECS(t *testing.T) {
 	ecs := NewECS(world)
 
 	systems := []struct {
-		layer  Layer
+		layer  DrawLayer
 		system *testSystem
 	}{
 		{1, &testSystem{}},
@@ -21,8 +21,11 @@ func TestECS(t *testing.T) {
 	}
 
 	for _, sys := range systems {
-		ecs.AddUpdateSystem(sys.system.Update)
-		ecs.AddDrawSystem(sys.layer, sys.system.Draw)
+		ecs.AddSystem(System{
+			Update:    sys.system.Update,
+			DrawLayer: sys.layer,
+			Draw:      sys.system.Draw,
+		})
 	}
 
 	ecs.Update()

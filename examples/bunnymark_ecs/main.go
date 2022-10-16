@@ -35,7 +35,7 @@ type Game struct {
 }
 
 const (
-	LayerBackground ecs.Layer = iota
+	LayerBackground ecs.DrawLayer = iota
 	LayerBunnies
 	LayerMetrics
 )
@@ -48,28 +48,48 @@ func NewGame() *Game {
 
 	metrics := system.NewMetrics(&g.bounds)
 
-	g.ecs.AddUpdateSystems(system.NewSpawn().Update, metrics.Update)
-	g.ecs.AddUpdateScript(scripts.NewBounce(&g.bounds).Update,
-		query.NewQuery(filter.Contains(
-			component.Position,
-			component.Velocity,
-			component.Sprite,
-		)))
-
-	g.ecs.AddUpdateScript(scripts.Velocity,
-		query.NewQuery(filter.Contains(component.Position, component.Velocity)))
-	g.ecs.AddUpdateScript(scripts.Gravity,
-		query.NewQuery(filter.Contains(component.Velocity, component.Gravity)))
-
-	g.ecs.AddDrawSystem(LayerBackground, system.DrawBackground)
-	g.ecs.AddDrawSystem(LayerMetrics, metrics.Draw)
-
-	g.ecs.AddDrawScript(LayerBunnies, scripts.Render,
-		query.NewQuery(filter.Contains(
-			component.Position,
-			component.Hue,
-			component.Sprite,
-		)))
+	g.ecs.AddSystems(
+		ecs.System{Update: system.NewSpawn().Update},
+		ecs.System{Update: metrics.Update},
+		ecs.System{
+			DrawLayer: LayerBackground,
+			Draw:      system.DrawBackground,
+		},
+		ecs.System{
+			DrawLayer: LayerMetrics,
+			Draw:      metrics.Draw,
+		},
+	).AddScripts(
+		ecs.Script{
+			Update: scripts.NewBounce(&g.bounds).Update,
+			Query: query.NewQuery(filter.Contains(
+				component.Position,
+				component.Velocity,
+				component.Sprite,
+			)),
+		},
+		ecs.Script{
+			Update: scripts.Velocity,
+			Query: query.NewQuery(filter.Contains(
+				component.Position, component.Velocity,
+			)),
+		},
+		ecs.Script{
+			Update: scripts.Gravity,
+			Query: query.NewQuery(filter.Contains(
+				component.Velocity, component.Gravity,
+			)),
+		},
+		ecs.Script{
+			DrawLayer: LayerBunnies,
+			Draw:      scripts.Render,
+			Query: query.NewQuery(filter.Contains(
+				component.Position,
+				component.Hue,
+				component.Sprite,
+			)),
+		},
+	)
 
 	return g
 }

@@ -27,11 +27,20 @@ func TestScriptSystem(t *testing.T) {
 	scriptA := &testScript{}
 	scriptB := &testScript{}
 
-	ecs.AddUpdateScript(scriptA.Update, queryA)
-	ecs.AddUpdateScript(scriptB.Update, queryB)
-
-	ecs.AddDrawScript(0, scriptA.Draw, queryA)
-	ecs.AddDrawScript(0, scriptB.Draw, queryB)
+	ecs.AddScripts(
+		Script{
+			Update:    scriptA.Update,
+			DrawLayer: 0,
+			Draw:      scriptA.Draw,
+			Query:     queryA,
+		},
+		Script{
+			Update:    scriptB.Update,
+			DrawLayer: 0,
+			Draw:      scriptB.Draw,
+			Query:     queryB,
+		},
+	)
 
 	ecs.Update()
 
@@ -65,11 +74,11 @@ func TestScriptSystem(t *testing.T) {
 		if scr.UpdatedCount != test.expectedUpdated {
 			t.Errorf("test %d: expected updated count %d, got %d", idx, test.expectedUpdated, scr.UpdatedCount)
 		}
-		if scr.DrawEntry.Entity() != test.entity {
-			t.Errorf("test %d: expected draw entry entity %v, got %v", idx, test.entity, scr.DrawEntry.Entity())
-		}
 		if scr.DrawCount != test.expectedDrawed {
 			t.Errorf("test %d: expected draw count %d, got %d", idx, test.expectedDrawed, scr.DrawCount)
+		}
+		if scr.DrawEntry.Entity() != test.entity {
+			t.Errorf("test %d: expected draw entry entity %v, got %v", idx, test.entity, scr.DrawEntry.Entity())
 		}
 	}
 }
