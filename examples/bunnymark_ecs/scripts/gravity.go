@@ -5,11 +5,7 @@ import (
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 )
 
-type gravity struct{}
-
-var Gravity = &gravity{}
-
-func (g *gravity) Update(entry *donburi.Entry) {
+func Gravity(entry *donburi.Entry) {
 	gravity := component.GetGravity(entry)
 	velocity := component.GetVelocity(entry)
 

@@ -5,9 +5,7 @@ import (
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 )
 
-type Velocity struct{}
-
-func (v *Velocity) Update(entry *donburi.Entry) {
+func Velocity(entry *donburi.Entry) {
 	position := component.GetPosition(entry)
 	velocity := component.GetVelocity(entry)
 
