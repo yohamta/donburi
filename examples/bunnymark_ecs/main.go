@@ -5,7 +5,6 @@ import (
 	"log"
 	"math/rand"
 	"time"
-	"unsafe"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
@@ -20,14 +19,6 @@ import (
 
 	_ "net/http/pprof"
 )
-
-type System interface {
-	Update(w donburi.World)
-}
-
-type Drawable interface {
-	Draw(w donburi.World, screen *ebiten.Image)
-}
 
 type Game struct {
 	ecs    *ecs.ECS
@@ -49,45 +40,55 @@ func NewGame() *Game {
 	metrics := system.NewMetrics(&g.bounds)
 
 	g.ecs.AddSystems(
-		ecs.System{Update: system.NewSpawn().Update},
-		ecs.System{Update: metrics.Update},
+		// Systems are executed in the order they are added.
+		ecs.System{
+			Update: system.NewSpawn().Update,
+		},
 		ecs.System{
 			DrawLayer: LayerBackground,
 			Draw:      system.DrawBackground,
 		},
 		ecs.System{
 			DrawLayer: LayerMetrics,
+			Update:    metrics.Update,
 			Draw:      metrics.Draw,
 		},
 	).AddScripts(
+		// Scripts are executed for each entity that matches the query.
 		ecs.Script{
 			Update: scripts.NewBounce(&g.bounds).Update,
-			Query: query.NewQuery(filter.Contains(
-				component.Position,
-				component.Velocity,
-				component.Sprite,
-			)),
+			Query: query.NewQuery(
+				filter.Contains(
+					component.Position,
+					component.Velocity,
+					component.Sprite,
+				)),
 		},
 		ecs.Script{
 			Update: scripts.Velocity,
-			Query: query.NewQuery(filter.Contains(
-				component.Position, component.Velocity,
-			)),
+			Query: query.NewQuery(
+				filter.Contains(
+					component.Position,
+					component.Velocity,
+				)),
 		},
 		ecs.Script{
 			Update: scripts.Gravity,
-			Query: query.NewQuery(filter.Contains(
-				component.Velocity, component.Gravity,
-			)),
+			Query: query.NewQuery(
+				filter.Contains(
+					component.Velocity,
+					component.Gravity,
+				)),
 		},
 		ecs.Script{
 			DrawLayer: LayerBunnies,
 			Draw:      scripts.Render,
-			Query: query.NewQuery(filter.Contains(
-				component.Position,
-				component.Hue,
-				component.Sprite,
-			)),
+			Query: query.NewQuery(
+				filter.Contains(
+					component.Position,
+					component.Hue,
+					component.Sprite,
+				)),
 		},
 	)
 
@@ -102,9 +103,11 @@ func createECS() *ecs.ECS {
 
 func createWorld() donburi.World {
 	world := donburi.NewWorld()
-	setting := world.Create(component.Settings)
-	world.Entry(setting).SetComponent(component.Settings,
-		unsafe.Pointer(&component.SettingsData{
+	settings := world.Entry(world.Create(component.Settings))
+	donburi.SetValue(
+		settings,
+		component.Settings,
+		component.SettingsData{
 			Ticker:   time.NewTicker(500 * time.Millisecond),
 			Gpu:      helper.GpuInfo(),
 			Tps:      helper.NewPlot(20, 60),
@@ -113,7 +116,8 @@ func createWorld() donburi.World {
 			Sprite:   assets.LoadSprite(),
 			Colorful: false,
 			Amount:   1000,
-		}))
+		},
+	)
 	return world
 }
 
