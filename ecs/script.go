@@ -7,14 +7,10 @@ import (
 )
 
 // UpdateScript is a script that updates the entity.
-type UpdateScript interface {
-	Update(entry *donburi.Entry)
-}
+type UpdateScript func(entry *donburi.Entry)
 
 // DrawScript is a script that draws the entity.
-type DrawScript interface {
-	Draw(entry *donburi.Entry, screen *ebiten.Image)
-}
+type DrawScript func(entry *donburi.Entry, screen *ebiten.Image)
 
 type updateScript struct {
 	query    *query.Query
@@ -54,19 +50,14 @@ func (ss *scriptSystem) AddDrawScript(s DrawScript, q *query.Query) {
 
 func (ss *scriptSystem) Update(ecs *ECS) {
 	for _, script := range ss.updateScripts {
-		script.query.EachEntity(ecs.World, script.callback.Update)
+		script.query.EachEntity(ecs.World, script.callback)
 	}
 }
 
 func (ss *scriptSystem) Draw(ecs *ECS, screen *ebiten.Image) {
 	for _, script := range ss.drawScripts {
 		script.query.EachEntity(ecs.World, func(entry *donburi.Entry) {
-			script.callback.Draw(entry, screen)
+			script.callback(entry, screen)
 		})
 	}
 }
-
-var (
-	_ = (UpdateSystem)((*scriptSystem)(nil))
-	_ = (DrawSystem)((*scriptSystem)(nil))
-)

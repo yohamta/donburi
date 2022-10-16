@@ -27,11 +27,11 @@ func TestScriptSystem(t *testing.T) {
 	scriptA := &testScript{}
 	scriptB := &testScript{}
 
-	ecs.AddUpdateScript(scriptA, queryA)
-	ecs.AddUpdateScript(scriptB, queryB)
+	ecs.AddUpdateScript(scriptA.Update, queryA)
+	ecs.AddUpdateScript(scriptB.Update, queryB)
 
-	ecs.AddDrawScript(0, scriptA, queryA)
-	ecs.AddDrawScript(0, scriptB, queryB)
+	ecs.AddDrawScript(0, scriptA.Draw, queryA)
+	ecs.AddDrawScript(0, scriptB.Draw, queryB)
 
 	ecs.Update()
 

@@ -46,7 +46,7 @@ func (ecs *ECS) AddUpdateSystem(s UpdateSystem) {
 
 // AddDrawSystem adds new draw system
 func (ecs *ECS) AddDrawSystem(l Layer, s DrawSystem) {
-	ecs.getLayer(l).addSystem(&system{System: s})
+	ecs.getLayer(l).addDrawSystem(s)
 }
 
 // AddUpdateScript adds a script to the entities matched by the query.
@@ -62,8 +62,8 @@ func (ecs *ECS) AddDrawScript(l Layer, s DrawScript, q *query.Query) {
 // Update calls Updater's Update() methods.
 func (ecs *ECS) Update() {
 	ecs.Time.Update()
-	for _, s := range ecs.systems {
-		s.Update(ecs)
+	for _, sys := range ecs.systems {
+		sys(ecs)
 	}
 	ecs.scriptSystem.Update(ecs)
 }

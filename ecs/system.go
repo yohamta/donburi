@@ -5,11 +5,7 @@ import (
 )
 
 // UpdateSystem is a system that updates the world.
-type UpdateSystem interface {
-	Update(ecs *ECS)
-}
+type UpdateSystem func(ecs *ECS)
 
 // DrawSystem is a system that draws the world.
-type DrawSystem interface {
-	Draw(ecs *ECS, screen *ebiten.Image)
-}
+type DrawSystem func(ecs *ECS, screen *ebiten.Image)

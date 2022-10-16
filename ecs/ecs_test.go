@@ -21,8 +21,8 @@ func TestECS(t *testing.T) {
 	}
 
 	for _, sys := range systems {
-		ecs.AddUpdateSystem(sys.system)
-		ecs.AddDrawSystem(sys.layer, sys.system)
+		ecs.AddUpdateSystem(sys.system.Update)
+		ecs.AddDrawSystem(sys.layer, sys.system.Draw)
 	}
 
 	ecs.Update()

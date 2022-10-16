@@ -48,25 +48,21 @@ func NewGame() *Game {
 
 	metrics := system.NewMetrics(&g.bounds)
 
-	g.ecs.AddUpdateSystems(
-		system.NewSpawn(),
-		metrics,
-	)
-	g.ecs.AddDrawSystem(LayerBackground, &system.Background{})
-	g.ecs.AddDrawSystem(LayerMetrics, metrics)
-
-	g.ecs.AddUpdateScript(scripts.NewBounce(&g.bounds),
+	g.ecs.AddUpdateSystems(system.NewSpawn().Update, metrics.Update)
+	g.ecs.AddUpdateScript(scripts.NewBounce(&g.bounds).Update,
 		query.NewQuery(filter.Contains(
 			component.Position,
 			component.Velocity,
 			component.Sprite,
 		)))
 
-	g.ecs.AddUpdateScript(&scripts.Velocity{},
+	g.ecs.AddUpdateScript(scripts.Velocity,
 		query.NewQuery(filter.Contains(component.Position, component.Velocity)))
-
 	g.ecs.AddUpdateScript(scripts.Gravity,
 		query.NewQuery(filter.Contains(component.Velocity, component.Gravity)))
+
+	g.ecs.AddDrawSystem(LayerBackground, system.DrawBackground)
+	g.ecs.AddDrawSystem(LayerMetrics, metrics.Draw)
 
 	g.ecs.AddDrawScript(LayerBunnies, scripts.Render,
 		query.NewQuery(filter.Contains(
