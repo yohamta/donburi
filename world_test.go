@@ -148,15 +148,16 @@ func TestRemoveComponent(t *testing.T) {
 }
 
 func TestDeleteEntity(t *testing.T) {
-	createWorldFunc := func() (donburi.World, []entity.Entity) {
+	createWorldFunc := func() (donburi.World, []*donburi.Entry) {
 		world := donburi.NewWorld()
-		entities := []donburi.Entity{
-			world.Create(tagA, transform, velocity),
-			world.Create(tagA, transform, velocity),
-			world.Create(tagA, transform, velocity),
+		entities := []*donburi.Entry{
+			world.Entry(world.Create(tagA, transform, velocity)),
+			world.Entry(world.Create(tagA, transform, velocity)),
+			world.Entry(world.Create(tagA, transform, velocity)),
 		}
 		return world, entities
 	}
+
 	var tests = []struct {
 		DeleteIndex         []int
 		expectedEntityCount int
@@ -169,10 +170,22 @@ func TestDeleteEntity(t *testing.T) {
 	for _, tt := range tests {
 		world, entities := createWorldFunc()
 
+		for _, ent := range entities {
+			if !world.Valid(ent.Entity()) {
+				t.Errorf("Entity should be valid")
+			}
+			if !ent.Valid() {
+				t.Errorf("Entry should be valid")
+			}
+		}
+
 		for _, del := range tt.DeleteIndex {
-			world.Remove(entities[del])
-			if world.Valid(entities[del]) {
+			world.Remove(entities[del].Entity())
+			if world.Valid(entities[del].Entity()) {
 				t.Errorf("Entity should be invalid")
+			}
+			if entities[del].Valid() {
+				t.Errorf("Entry should be invalid")
 			}
 		}
 

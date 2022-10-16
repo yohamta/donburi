@@ -110,6 +110,11 @@ func (e *Entry) RemoveComponent(ctype *component.ComponentType) {
 	e.loc = e.world.Entry(e.entity).loc
 }
 
+// Valid returns true if the entry is valid.
+func (e *Entry) Valid() bool {
+	return e.world.Valid(e.entity)
+}
+
 // Archetype returns the archetype.
 func (e *Entry) Archetype() *storage.Archetype {
 	a := e.loc.Archetype
