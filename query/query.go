@@ -70,7 +70,13 @@ func (q *Query) FirstEntity(w donburi.World) (entry *donburi.Entry, ok bool) {
 	if !iter.HasNext() {
 		return nil, false
 	}
-	return w.Entry(iter.Next()[0]), true
+	for iter.HasNext() {
+		entities := iter.Next()
+		if len(entities) > 0 {
+			return w.Entry(entities[0]), true
+		}
+	}
+	return nil, false
 }
 
 func (q *Query) evaluateQuery(world donburi.World, accessor *donburi.StorageAccessor) []storage.ArchetypeIndex {

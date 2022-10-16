@@ -77,3 +77,24 @@ func TestComplexQuery(t *testing.T) {
 		}
 	}
 }
+
+func TestFirstEntity(t *testing.T) {
+	world := donburi.NewWorld()
+	world.Create(tagA)
+	world.Create(tagC)
+	world.Create(tagA, tagB)
+
+	// find first entity with tagC
+	query := query.NewQuery(filter.Contains(tagC))
+	entry, ok := query.FirstEntity(world)
+	if entry == nil || ok == false {
+		t.Errorf("entry with tagC should not be nil")
+	}
+
+	entry.Remove()
+
+	entry, ok = query.FirstEntity(world)
+	if entry != nil || ok {
+		t.Errorf("entry with tagC should be nil")
+	}
+}
