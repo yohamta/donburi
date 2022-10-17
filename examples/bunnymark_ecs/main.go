@@ -12,10 +12,7 @@ import (
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/assets"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/helper"
-	"github.com/yohamta/donburi/examples/bunnymark_ecs/scripts"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/system"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 
 	_ "net/http/pprof"
 )
@@ -53,42 +50,18 @@ func NewGame() *Game {
 			Update:    metrics.Update,
 			Draw:      metrics.Draw,
 		},
-	).AddScripts(
-		// Scripts are executed for each entity that matches the query.
-		ecs.Script{
-			Update: scripts.NewBounce(&g.bounds).Update,
-			Query: query.NewQuery(
-				filter.Contains(
-					component.Position,
-					component.Velocity,
-					component.Sprite,
-				)),
+		ecs.System{
+			Update: system.NewBounce(&g.bounds).Update,
 		},
-		ecs.Script{
-			Update: scripts.Velocity,
-			Query: query.NewQuery(
-				filter.Contains(
-					component.Position,
-					component.Velocity,
-				)),
+		ecs.System{
+			Update: system.Velocity.Update,
 		},
-		ecs.Script{
-			Update: scripts.Gravity,
-			Query: query.NewQuery(
-				filter.Contains(
-					component.Velocity,
-					component.Gravity,
-				)),
+		ecs.System{
+			Update: system.Gravity.Update,
 		},
-		ecs.Script{
+		ecs.System{
 			DrawLayer: LayerBunnies,
-			Draw:      scripts.Render,
-			Query: query.NewQuery(
-				filter.Contains(
-					component.Position,
-					component.Hue,
-					component.Sprite,
-				)),
+			Draw:      system.Render.Draw,
 		},
 	)
 
