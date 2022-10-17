@@ -39,9 +39,7 @@ func (cs *Components) PushComponents(components []*component.ComponentType, arch
 }
 
 // MoveComponent moves the pointer to data of the component in the archetype.
-func (cs *Components) MoveComponent(c *component.ComponentType, src ArchetypeIndex, idx ComponentIndex, dst ArchetypeIndex) {
-	storage := cs.Storage(c)
-	storage.MoveComponent(src, idx, dst)
+func (cs *Components) Move(src ArchetypeIndex, dst ArchetypeIndex) {
 	cs.componentIndices[src]--
 	cs.componentIndices[dst]++
 }

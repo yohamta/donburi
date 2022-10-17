@@ -58,7 +58,8 @@ func TestComponents(t *testing.T) {
 	var srcArchIdx ArchetypeIndex = target.archIdx
 	var dstArchIdx ArchetypeIndex = 1
 
-	components.MoveComponent(ca, srcArchIdx, target.compIdx, dstArchIdx)
+	storage.MoveComponent(srcArchIdx, target.compIdx, dstArchIdx)
+	components.Move(srcArchIdx, dstArchIdx)
 
 	if storage.Contains(srcArchIdx, target.compIdx) {
 		t.Errorf("storage should not contain the component at %d, %d", target.archIdx, target.compIdx)

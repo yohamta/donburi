@@ -194,12 +194,14 @@ func (w *world) TransferArchetype(from, to storage.ArchetypeIndex, idx storage.C
 
 	// move components
 	for _, component_type := range from_layout.Components() {
+		storage := w.components.Storage(component_type)
 		if to_layout.HasComponent(component_type) {
-			w.components.MoveComponent(component_type, from, idx, to)
+			storage.MoveComponent(from, idx, to)
 		} else {
-			w.components.Remove(from_arch, idx)
+			storage.SwapRemove(from, idx)
 		}
 	}
+	w.components.Move(from, to)
 
 	return storage.ComponentIndex(len(to_arch.Entities()) - 1)
 }
