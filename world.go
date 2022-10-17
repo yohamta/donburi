@@ -2,7 +2,6 @@ package donburi
 
 import (
 	"fmt"
-	"sort"
 
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/internal/component"
@@ -237,9 +236,6 @@ func (w *world) getArchetypeForComponents(components []*component.ComponentType)
 	if len(components) == 0 {
 		panic("entity must have at least one component")
 	}
-	sort.Slice(components, func(i, j int) bool {
-		return components[i].Id() < components[j].Id()
-	})
 	if ii := w.index.Search(filter.Exact(components)); ii.HasNext() {
 		return ii.Next()
 	}
