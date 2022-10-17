@@ -5,15 +5,13 @@ import (
 )
 
 type layer struct {
-	systems      []DrawSystem
-	scriptSystem *scriptSystem
-	image        *ebiten.Image
+	systems []DrawSystem
+	image   *ebiten.Image
 }
 
 func newLayer() *layer {
 	return &layer{
-		systems:      []DrawSystem{},
-		scriptSystem: newScriptSystem(),
+		systems: []DrawSystem{},
 	}
 }
 
@@ -25,7 +23,6 @@ func (l *layer) Draw(e *ECS, i *ebiten.Image) {
 	for _, s := range l.systems {
 		s(e, screen)
 	}
-	l.scriptSystem.Draw(e, screen)
 }
 
 func (l *layer) addDrawSystem(s DrawSystem) {
