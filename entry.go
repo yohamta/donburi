@@ -10,10 +10,11 @@ import (
 
 // Entry is a struct that contains an entity and a location in an archetype.
 type Entry struct {
+	World *world
+
 	id     entity.EntityId
 	entity Entity
 	loc    *storage.Location
-	world  *world
 }
 
 // Get returns the component from the entry
@@ -56,14 +57,14 @@ func (e *Entry) Entity() Entity {
 func (e *Entry) Component(ctype *component.ComponentType) unsafe.Pointer {
 	c := e.loc.Component
 	a := e.loc.Archetype
-	return e.world.components.Storage(ctype).Component(a, c)
+	return e.World.components.Storage(ctype).Component(a, c)
 }
 
 // SetComponent sets the component.
 func (e *Entry) SetComponent(ctype *component.ComponentType, component unsafe.Pointer) {
 	c := e.loc.Component
 	a := e.loc.Archetype
-	e.world.components.Storage(ctype).SetComponent(a, c, component)
+	e.World.components.Storage(ctype).SetComponent(a, c, component)
 }
 
 // AddComponent adds the component to the entity.
@@ -75,11 +76,11 @@ func (e *Entry) AddComponent(ctype *component.ComponentType, components ...unsaf
 		c := e.loc.Component
 		a := e.loc.Archetype
 
-		base_layout := e.world.archetypes[a].Layout().Components()
-		target_arc := e.world.getArchetypeForComponents(append(base_layout, ctype))
-		e.world.TransferArchetype(a, target_arc, c)
+		base_layout := e.World.archetypes[a].Layout().Components()
+		target_arc := e.World.getArchetypeForComponents(append(base_layout, ctype))
+		e.World.TransferArchetype(a, target_arc, c)
 
-		e.loc = e.world.Entry(e.entity).loc
+		e.loc = e.World.Entry(e.entity).loc
 	}
 	if len(components) == 1 {
 		e.SetComponent(ctype, components[0])
@@ -95,7 +96,7 @@ func (e *Entry) RemoveComponent(ctype *component.ComponentType) {
 	c := e.loc.Component
 	a := e.loc.Archetype
 
-	base_layout := e.world.archetypes[a].Layout().Components()
+	base_layout := e.World.archetypes[a].Layout().Components()
 	target_layout := make([]*component.ComponentType, 0, len(base_layout)-1)
 	for _, c2 := range base_layout {
 		if c2 == ctype {
@@ -104,26 +105,26 @@ func (e *Entry) RemoveComponent(ctype *component.ComponentType) {
 		target_layout = append(target_layout, c2)
 	}
 
-	target_arc := e.world.getArchetypeForComponents(target_layout)
-	e.world.TransferArchetype(e.loc.Archetype, target_arc, c)
+	target_arc := e.World.getArchetypeForComponents(target_layout)
+	e.World.TransferArchetype(e.loc.Archetype, target_arc, c)
 
-	e.loc = e.world.Entry(e.entity).loc
+	e.loc = e.World.Entry(e.entity).loc
 }
 
 // Remove removes the entity from the world.
 func (e *Entry) Remove() {
-	e.world.Remove(e.entity)
+	e.World.Remove(e.entity)
 }
 
 // Valid returns true if the entry is valid.
 func (e *Entry) Valid() bool {
-	return e.world.Valid(e.entity)
+	return e.World.Valid(e.entity)
 }
 
 // Archetype returns the archetype.
 func (e *Entry) Archetype() *storage.Archetype {
 	a := e.loc.Archetype
-	return e.world.archetypes[a]
+	return e.World.archetypes[a]
 }
 
 // HasComponent returns true if the entity has the given component type.
