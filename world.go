@@ -112,7 +112,7 @@ func (w *world) createEntry(e Entity) {
 		id:     id,
 		entity: e,
 		loc:    loc,
-		world:  w,
+		World:  w,
 	}
 	w.entries[id] = entry
 }
