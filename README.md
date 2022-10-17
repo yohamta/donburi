@@ -232,10 +232,6 @@ query.EachEntity(world, func(entry *donburi.Entry) {
 
 The [ECS package](https://github.com/yohamta/donburi/tree/main/ecs) provides so-called **System** feature in ECS which can be used together with a `World` instance.
 
-Also, it provides some convenient features:
-- ScriptSystem
-- Time
-
 See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) and [Example](https://github.com/yohamta/donburi/tree/master/examples/bunnymark_ecs).
 
 *Note: ECS package is experimental and API is unstable*
