@@ -34,6 +34,17 @@ func (c *ComponentType) String() string {
 	return c.name
 }
 
+// SetName sets the component type name.
+func (c *ComponentType) SetName(name string) *ComponentType {
+	c.name = name
+	return c
+}
+
+// Name returns the component type name.
+func (c *ComponentType) Name() string {
+	return c.name
+}
+
 // Id returns the component type id.
 func (c *ComponentType) Id() ComponentTypeId {
 	return c.id
