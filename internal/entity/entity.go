@@ -1,5 +1,7 @@
 package entity
 
+import "fmt"
+
 // Entity is identifier of an entity.
 // The first 32 bits are the entity id.
 // The last 32 bits are the version.
@@ -35,4 +37,8 @@ func (e Entity) Version() uint32 {
 // IncVersion increments the entity version.
 func (e Entity) IncVersion() Entity {
 	return e&idMask | ((e + 1) & versionMask)
+}
+
+func (e Entity) String() string {
+	return fmt.Sprintf("Entity: {id: %d, version: %d}", e.Id(), e.Version())
 }
