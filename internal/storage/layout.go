@@ -1,6 +1,11 @@
 package storage
 
-import "github.com/yohamta/donburi/internal/component"
+import (
+	"bytes"
+	"fmt"
+
+	"github.com/yohamta/donburi/internal/component"
+)
 
 // Layout represents a layout of components.
 type Layout struct {
@@ -38,4 +43,17 @@ func (l *Layout) HasComponent(componentType *component.ComponentType) bool {
 		}
 	}
 	return false
+}
+
+func (l *Layout) String() string {
+	var out bytes.Buffer
+	out.WriteString("Layout: {")
+	for i, ct := range l.componentTypes {
+		if i != 0 {
+			out.WriteString(", ")
+		}
+		out.WriteString(fmt.Sprintf("%s", ct))
+	}
+	out.WriteString("}")
+	return out.String()
 }

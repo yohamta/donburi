@@ -1,6 +1,8 @@
 package donburi
 
 import (
+	"bytes"
+	"fmt"
 	"unsafe"
 
 	"github.com/yohamta/donburi/internal/component"
@@ -130,4 +132,16 @@ func (e *Entry) Archetype() *storage.Archetype {
 // HasComponent returns true if the entity has the given component type.
 func (e *Entry) HasComponent(componentType *component.ComponentType) bool {
 	return e.Archetype().Layout().HasComponent(componentType)
+}
+
+func (e *Entry) String() string {
+	var out bytes.Buffer
+	out.WriteString("Entry: {")
+	out.WriteString(e.Entity().String())
+	out.WriteString(", ")
+	out.WriteString(e.Archetype().Layout().String())
+	out.WriteString(", Valid: ")
+	out.WriteString(fmt.Sprintf("%v", e.Valid()))
+	out.WriteString("}")
+	return out.String()
 }
