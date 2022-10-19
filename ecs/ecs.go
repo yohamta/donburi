@@ -61,7 +61,7 @@ func (ecs *ECS) AddSystem(s System) *ECS {
 		ecs.addUpdateSystem(s.Update)
 	}
 	if s.Draw != nil {
-		ecs.addDrawSystem(s.DrawLayer, s.Draw)
+		ecs.addDrawSystem(s.Layer, s.Draw)
 	}
 	return ecs
 }

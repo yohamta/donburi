@@ -42,13 +42,13 @@ func NewGame() *Game {
 			Update: system.NewSpawn().Update,
 		},
 		ecs.System{
-			DrawLayer: LayerBackground,
-			Draw:      system.DrawBackground,
+			Layer: LayerBackground,
+			Draw:  system.DrawBackground,
 		},
 		ecs.System{
-			DrawLayer: LayerMetrics,
-			Update:    metrics.Update,
-			Draw:      metrics.Draw,
+			Layer:  LayerMetrics,
+			Update: metrics.Update,
+			Draw:   metrics.Draw,
 		},
 		ecs.System{
 			Update: system.NewBounce(&g.bounds).Update,
@@ -60,8 +60,8 @@ func NewGame() *Game {
 			Update: system.Gravity.Update,
 		},
 		ecs.System{
-			DrawLayer: LayerBunnies,
-			Draw:      system.Render.Draw,
+			Layer: LayerBunnies,
+			Draw:  system.Render.Draw,
 		},
 	)
 

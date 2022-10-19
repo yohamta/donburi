@@ -24,9 +24,9 @@ func TestECS(t *testing.T) {
 
 	for _, sys := range systems {
 		ecs.AddSystem(System{
-			Update:    sys.system.Update,
-			DrawLayer: sys.layer,
-			Draw:      sys.system.Draw,
+			Update: sys.system.Update,
+			Layer:  sys.layer,
+			Draw:   sys.system.Draw,
 		})
 	}
 
@@ -104,9 +104,9 @@ func TestECSLayer(t *testing.T) {
 
 	for _, sys := range systems {
 		ecs.AddSystem(System{
-			Update:    sys.system.Update,
-			DrawLayer: sys.layer,
-			Draw:      sys.system.Draw,
+			Update: sys.system.Update,
+			Layer:  sys.layer,
+			Draw:   sys.system.Draw,
 		})
 	}
 
