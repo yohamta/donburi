@@ -17,8 +17,6 @@ type ECS struct {
 	World donburi.World
 	// Time manages the time of the world.
 	Time *Time
-	// UpdateCount is the number of times Update is called.
-	UpdateCount int64
 
 	layers         []*Layer
 	systems        []UpdateSystem
@@ -91,6 +89,21 @@ func (ecs *ECS) Create(l LayerID, components ...*donburi.ComponentType) donburi.
 func (ecs *ECS) CreateMany(l LayerID, n int, components ...*component.ComponentType) []donburi.Entity {
 	comps := append(components, ecs.getLayer(l).tag)
 	return ecs.World.CreateMany(n, comps...)
+}
+
+// Pause pauses the world.
+func (ecs *ECS) Pause() {
+	ecs.Time.Pause()
+}
+
+// Resume resumes the world.
+func (ecs *ECS) Resume() {
+	ecs.Time.Resume()
+}
+
+// IsPaused returns a boolean value indicating whether the world is paused.
+func (ecs *ECS) IsPaused() bool {
+	return ecs.Time.isPaused
 }
 
 func (ecs *ECS) getLayer(layerID LayerID) *Layer {
