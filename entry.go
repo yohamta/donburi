@@ -45,6 +45,14 @@ func Remove(e *Entry, ctype *component.ComponentType) {
 	e.RemoveComponent(ctype)
 }
 
+// Valid returns true if the entry is valid.
+func Valid(e *Entry) bool {
+	if e == nil {
+		return false
+	}
+	return e.Valid()
+}
+
 // Id returns the entity id.
 func (e *Entry) Id() entity.EntityId {
 	return e.id
