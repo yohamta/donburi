@@ -23,7 +23,7 @@ type Game struct {
 }
 
 const (
-	LayerBackground ecs.DrawLayer = iota
+	LayerBackground ecs.LayerID = iota
 	LayerBunnies
 	LayerMetrics
 )

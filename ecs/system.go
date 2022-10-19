@@ -13,6 +13,6 @@ type DrawSystem func(ecs *ECS, screen *ebiten.Image)
 // System represents a system.
 type System struct {
 	Update    UpdateSystem
-	DrawLayer DrawLayer
+	DrawLayer LayerID
 	Draw      DrawSystem
 }

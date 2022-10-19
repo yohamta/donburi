@@ -5,6 +5,8 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/filter"
+	"github.com/yohamta/donburi/query"
 )
 
 func TestECS(t *testing.T) {
@@ -12,7 +14,7 @@ func TestECS(t *testing.T) {
 	ecs := NewECS(world)
 
 	systems := []struct {
-		layer  DrawLayer
+		layer  LayerID
 		system *testSystem
 	}{
 		{1, &testSystem{}},
@@ -74,17 +76,63 @@ func TestECS(t *testing.T) {
 	}
 }
 
+func TestECSLayer(t *testing.T) {
+	world := donburi.NewWorld()
+	ecs := NewECS(world)
+
+	var (
+		layer0 LayerID = 0
+		layer1 LayerID = 1
+	)
+
+	c1 := donburi.NewTag()
+
+	ecs.Create(layer0, c1)
+	ecs.Create(layer1, c1)
+
+	systems := []struct {
+		layer  LayerID
+		system *testSystem
+	}{
+		{layer0, &testSystem{
+			Query: NewQuery(layer0, filter.Contains(c1)),
+		}},
+		{layer1, &testSystem{
+			Query: NewQuery(layer1, filter.Contains(c1)),
+		}},
+	}
+
+	for _, sys := range systems {
+		ecs.AddSystem(System{
+			Update:    sys.system.Update,
+			DrawLayer: sys.layer,
+			Draw:      sys.system.Draw,
+		})
+	}
+
+	ecs.Draw(layer0, ebiten.NewImage(1, 1))
+	if systems[0].system.QueryCountDraw != 1 {
+		t.Errorf("expected query count draw %d, got %d", 1, systems[0].system.QueryCountDraw)
+	}
+	if systems[1].system.QueryCountDraw != 0 {
+		t.Errorf("expected query count draw %d, got %d", 0, systems[1].system.QueryCountDraw)
+	}
+}
+
 var (
 	testUpdatedIndex int
 	testDrawedIndex  int
 )
 
 type testSystem struct {
-	UpdatedIndex int
-	DrawedIndex  int
-	DrawImage    *ebiten.Image
-	UpdateCount  int
-	DrawCount    int
+	UpdatedIndex     int
+	DrawedIndex      int
+	DrawImage        *ebiten.Image
+	UpdateCount      int
+	DrawCount        int
+	Query            *query.Query
+	QueryCountUpdate int
+	QueryCountDraw   int
 }
 
 func (ts *testSystem) Update(ecs *ECS) {
@@ -92,6 +140,10 @@ func (ts *testSystem) Update(ecs *ECS) {
 	ts.UpdateCount++
 
 	testUpdatedIndex++
+
+	if ts.Query != nil {
+		ts.QueryCountUpdate = ts.Query.Count(ecs.World)
+	}
 }
 
 func (ts *testSystem) Draw(ecs *ECS, image *ebiten.Image) {
@@ -100,4 +152,8 @@ func (ts *testSystem) Draw(ecs *ECS, image *ebiten.Image) {
 	ts.DrawCount++
 
 	testDrawedIndex++
+
+	if ts.Query != nil {
+		ts.QueryCountDraw = ts.Query.Count(ecs.World)
+	}
 }
