@@ -6,6 +6,7 @@ import (
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
+	"github.com/yohamta/donburi/examples/bunnymark_ecs/layers"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
 )
@@ -15,7 +16,8 @@ type render struct {
 }
 
 var Render = &render{
-	query: query.NewQuery(
+	query: ecs.NewQuery(
+		layers.LayerBunnies,
 		filter.Contains(
 			component.Position,
 			component.Hue,

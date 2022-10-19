@@ -9,6 +9,7 @@ import (
 	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/helper"
+	"github.com/yohamta/donburi/examples/bunnymark_ecs/layers"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
 )
@@ -25,11 +26,11 @@ func NewSpawn() *Spawn {
 
 func (s *Spawn) Update(ecs *ecs.ECS) {
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		s.addBunnies(ecs.World)
+		s.addBunnies(ecs)
 	}
 
 	if ids := ebiten.AppendTouchIDs(nil); len(ids) > 0 {
-		s.addBunnies(ecs.World) // not accurate, cause no input manager for this
+		s.addBunnies(ecs) // not accurate, cause no input manager for this
 	}
 
 	if _, offset := ebiten.Wheel(); offset != 0 {
@@ -44,15 +45,16 @@ func (s *Spawn) Update(ecs *ecs.ECS) {
 	}
 }
 
-func (s *Spawn) addBunnies(w donburi.World) {
+func (s *Spawn) addBunnies(ecs *ecs.ECS) {
 	if s.settings == nil {
 		query := query.NewQuery(filter.Contains(component.Settings))
-		query.EachEntity(w, func(entry *donburi.Entry) {
+		query.EachEntity(ecs.World, func(entry *donburi.Entry) {
 			s.settings = component.GetSettings(entry)
 		})
 	}
 
-	entities := w.CreateMany(
+	entities := ecs.CreateMany(
+		layers.LayerBunnies,
 		s.settings.Amount,
 		component.Position,
 		component.Velocity,
@@ -61,7 +63,7 @@ func (s *Spawn) addBunnies(w donburi.World) {
 		component.Sprite,
 	)
 	for i, entity := range entities {
-		entry := w.Entry(entity)
+		entry := ecs.World.Entry(entity)
 		position := component.GetPosition(entry)
 		*position = component.PositionData{
 			X: float64(i % 2), // Alternate screen edges

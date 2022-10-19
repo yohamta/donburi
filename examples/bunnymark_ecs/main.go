@@ -12,6 +12,7 @@ import (
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/assets"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/helper"
+	"github.com/yohamta/donburi/examples/bunnymark_ecs/layers"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/system"
 
 	_ "net/http/pprof"
@@ -21,12 +22,6 @@ type Game struct {
 	ecs    *ecs.ECS
 	bounds image.Rectangle
 }
-
-const (
-	LayerBackground ecs.DrawLayer = iota
-	LayerBunnies
-	LayerMetrics
-)
 
 func NewGame() *Game {
 	g := &Game{
@@ -42,13 +37,13 @@ func NewGame() *Game {
 			Update: system.NewSpawn().Update,
 		},
 		ecs.System{
-			DrawLayer: LayerBackground,
-			Draw:      system.DrawBackground,
+			Layer: layers.LayerBackground,
+			Draw:  system.DrawBackground,
 		},
 		ecs.System{
-			DrawLayer: LayerMetrics,
-			Update:    metrics.Update,
-			Draw:      metrics.Draw,
+			Layer:  layers.LayerMetrics,
+			Update: metrics.Update,
+			Draw:   metrics.Draw,
 		},
 		ecs.System{
 			Update: system.NewBounce(&g.bounds).Update,
@@ -60,8 +55,8 @@ func NewGame() *Game {
 			Update: system.Gravity.Update,
 		},
 		ecs.System{
-			DrawLayer: LayerBunnies,
-			Draw:      system.Render.Draw,
+			Layer: layers.LayerBunnies,
+			Draw:  system.Render.Draw,
 		},
 	)
 
@@ -101,9 +96,9 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Clear()
-	g.ecs.Draw(LayerBackground, screen)
-	g.ecs.Draw(LayerBunnies, screen)
-	g.ecs.Draw(LayerMetrics, screen)
+	g.ecs.Draw(layers.LayerBackground, screen)
+	g.ecs.Draw(layers.LayerBunnies, screen)
+	g.ecs.Draw(layers.LayerMetrics, screen)
 }
 
 func (g *Game) Layout(width, height int) (int, int) {

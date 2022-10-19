@@ -3,9 +3,13 @@ package ecs
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/filter"
+	"github.com/yohamta/donburi/internal/component"
+	"github.com/yohamta/donburi/query"
 )
 
-type DrawLayer int
+// LayerID is used to specify a layer.
+type LayerID int
 
 // ECS represents an entity-component-system.
 type ECS struct {
@@ -16,9 +20,18 @@ type ECS struct {
 	// UpdateCount is the number of times Update is called.
 	UpdateCount int64
 
+	layers         []*Layer
 	systems        []UpdateSystem
-	layers         []*layer
 	startupSystems []UpdateSystem
+}
+
+// NewQuery creates a new query.
+func NewQuery(l LayerID, f filter.LayoutFilter) *query.Query {
+	layerFilter := filter.Contains(getLayer(l).tag)
+	if f == nil {
+		return query.NewQuery(layerFilter)
+	}
+	return query.NewQuery(filter.And(layerFilter, f))
 }
 
 // NewECS creates a new ECS with the specified world.
@@ -28,7 +41,7 @@ func NewECS(w donburi.World) *ECS {
 		Time:  NewTime(),
 
 		systems:        []UpdateSystem{},
-		layers:         []*layer{},
+		layers:         []*Layer{},
 		startupSystems: []UpdateSystem{},
 	}
 
@@ -49,22 +62,8 @@ func (ecs *ECS) AddSystem(s System) *ECS {
 		ecs.addUpdateSystem(s.Update)
 	}
 	if s.Draw != nil {
-		ecs.addDrawSystem(s.DrawLayer, s.Draw)
+		ecs.addDrawSystem(s.Layer, s.Draw)
 	}
-	return ecs
-}
-
-// AddUpdateSystem adds new update system
-func (ecs *ECS) addUpdateSystem(systems ...UpdateSystem) *ECS {
-	for _, s := range systems {
-		ecs.systems = append(ecs.systems, s)
-	}
-	return ecs
-}
-
-// AddDrawSystem adds new draw system
-func (ecs *ECS) addDrawSystem(l DrawLayer, s DrawSystem) *ECS {
-	ecs.getLayer(l).addDrawSystem(s)
 	return ecs
 }
 
@@ -77,17 +76,41 @@ func (ecs *ECS) Update() {
 }
 
 // Draw calls draw
-func (ecs *ECS) Draw(l DrawLayer, screen *ebiten.Image) {
-	ecs.getLayer(l).Draw(ecs, screen)
+func (ecs *ECS) Draw(l LayerID, screen *ebiten.Image) {
+	ecs.getLayer(l).draw(ecs, screen)
 }
 
-func (ecs *ECS) getLayer(l DrawLayer) *layer {
-	if int(l) >= len(ecs.layers) {
-		// expand layers slice
-		ecs.layers = append(ecs.layers, make([]*layer, int(l)-len(ecs.layers)+1)...)
+// Create creates a new entity
+func (ecs *ECS) Create(l LayerID, components ...*donburi.ComponentType) donburi.Entity {
+	entry := ecs.World.Entry(ecs.World.Create(components...))
+	entry.AddComponent(ecs.getLayer(l).tag)
+	return entry.Entity()
+}
+
+// Create creates a new entity
+func (ecs *ECS) CreateMany(l LayerID, n int, components ...*component.ComponentType) []donburi.Entity {
+	comps := append(components, ecs.getLayer(l).tag)
+	return ecs.World.CreateMany(n, comps...)
+}
+
+func (ecs *ECS) getLayer(layerID LayerID) *Layer {
+	if int(layerID) >= len(ecs.layers) {
+		ecs.layers = append(ecs.layers, make([]*Layer, int(layerID)-len(ecs.layers)+1)...)
 	}
-	if ecs.layers[l] == nil {
-		ecs.layers[l] = newLayer()
+	if ecs.layers[layerID] == nil {
+		ecs.layers[layerID] = newLayer(getLayer(layerID))
 	}
-	return ecs.layers[l]
+	return ecs.layers[layerID]
+}
+
+func (ecs *ECS) addUpdateSystem(systems ...UpdateSystem) *ECS {
+	for _, s := range systems {
+		ecs.systems = append(ecs.systems, s)
+	}
+	return ecs
+}
+
+func (ecs *ECS) addDrawSystem(l LayerID, s DrawSystem) *ECS {
+	ecs.getLayer(l).addDrawSystem(s)
+	return ecs
 }
