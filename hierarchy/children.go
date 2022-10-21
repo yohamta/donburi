@@ -4,15 +4,16 @@ import (
 	"github.com/yohamta/donburi"
 )
 
-type ChildrenData struct {
+type childrenData struct {
 	Children []donburi.Entity
 }
 
-var Children = donburi.NewComponentType[ChildrenData]()
+var childrenComponent = donburi.NewComponentType[childrenData]()
 
+// GetChildren returns children of the entry.
 func GetChildren(entry *donburi.Entry) ([]donburi.Entity, bool) {
-	if entry.HasComponent(Children) {
-		c := donburi.Get[ChildrenData](entry, Children).Children
+	if entry.HasComponent(childrenComponent) {
+		c := donburi.Get[childrenData](entry, childrenComponent).Children
 		return c, true
 	}
 	return nil, false
