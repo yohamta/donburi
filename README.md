@@ -239,7 +239,7 @@ See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) and [Example](htt
 
 ### Hierarchy (Experimental)
 
-The [Hierarchy package](https://github.com/yohamta/donburi/tree/hierarchy/ecs) provides Parent-Children relationship function.
+The [Hierarchy package](https://github.com/yohamta/donburi/tree/main/hierarchy) provides Parent-Children relationship function.
 
 See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/hierarchy) and [Example](https://github.com/yohamta/donburi/tree/main/hierarchy/example_test.go).
 
