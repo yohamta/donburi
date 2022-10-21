@@ -38,6 +38,19 @@ func TestParent(t *testing.T) {
 		t.Errorf("expected parent entity %d, got %d", donburi.Null, pe.Entity())
 	}
 
+	children, ok := GetChildren(pe)
+	if !ok {
+		t.Errorf("expected children, got nil")
+	}
+	if children[0] != ce.Entity() {
+		t.Errorf("expected child entity %d, got %d", ce.Entity(), children[0])
+	}
+
+	children, ok = GetChildren(ce)
+	if children[0] != ge.Entity() {
+		t.Errorf("expected child entity %d, got %d", ge.Entity(), children[0])
+	}
+
 	pe.Remove()
 	ecs.Update()
 
