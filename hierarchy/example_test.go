@@ -1,0 +1,53 @@
+package hierarchy
+
+import (
+	"testing"
+
+	"github.com/yohamta/donburi"
+	ecslib "github.com/yohamta/donburi/ecs"
+)
+
+func TestParent(t *testing.T) {
+	w := donburi.NewWorld()
+	ecs := ecslib.NewECS(w)
+
+	ecs.AddSystem(ecslib.System{
+		Update: ParentSystem.RemoveChildren,
+	})
+
+	parent := donburi.NewTag().SetName("parent")
+	child := donburi.NewTag().SetName("child")
+	grandChild := donburi.NewTag().SetName("grandChild")
+
+	pe := w.Entry(w.Create(parent))
+	ce := w.Entry(w.Create(child))
+	ge := w.Entry(w.Create(grandChild))
+
+	SetParent(pe, ce)
+	SetParent(ce, ge)
+
+	if p, ok := GetParent(ce); p != pe.Entity() || !ok {
+		t.Errorf("expected parent entity %d, got %d", pe.Entity(), p)
+	}
+
+	if p, ok := GetParent(ge); p != ce.Entity() || !ok {
+		t.Errorf("expected parent entity %d, got %d", ce.Entity(), p)
+	}
+
+	if _, ok := GetParent(pe); ok {
+		t.Errorf("expected parent entity %d, got %d", donburi.Null, pe.Entity())
+	}
+
+	pe.Remove()
+	ecs.Update()
+
+	if w.Valid(ce.Entity()) {
+		t.Errorf("expected child entity %d to be removed", ce.Entity())
+	}
+	if w.Valid(ge.Entity()) {
+		t.Errorf("expected grand child entity %d to be removed", ge.Entity())
+	}
+	if w.Len() != 0 {
+		t.Errorf("expected world to be empty")
+	}
+}
