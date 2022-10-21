@@ -12,7 +12,7 @@ func TestParent(t *testing.T) {
 	ecs := ecslib.NewECS(w)
 
 	ecs.AddSystem(ecslib.System{
-		Update: ParentSystem.RemoveChildren,
+		Update: HierarchySystem.RemoveChildren,
 	})
 
 	parent := donburi.NewTag().SetName("parent")
