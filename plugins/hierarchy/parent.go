@@ -33,6 +33,12 @@ func RemoveChildrenRecursive(entry *donburi.Entry) {
 	}
 }
 
+// RemoveRecursive removes the entry recursively.
+func RemoveRecursive(entry *donburi.Entry) {
+	RemoveChildrenRecursive(entry)
+	entry.Remove()
+}
+
 // SetParent sets a parent of the entry.
 func SetParent(parent *donburi.Entry, child *donburi.Entry) {
 	if !parent.Valid() {
