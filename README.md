@@ -238,7 +238,7 @@ See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) and [Example](htt
 
 *Note: ECS package is experimental and API is unstable*
 
-## Modules
+## Plugins
 
 ### Hierarchy (Experimental)
 
