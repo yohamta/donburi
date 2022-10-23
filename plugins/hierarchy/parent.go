@@ -20,6 +20,25 @@ func GetParent(entry *donburi.Entry) (donburi.Entity, bool) {
 	return donburi.Null, false
 }
 
+// RemoveChildrenRecursive removes children of the entry recursively.
+func RemoveChildrenRecursive(entry *donburi.Entry) {
+	if entry.HasComponent(childrenComponent) {
+		c, ok := GetChildren(entry)
+		if ok {
+			for _, e := range c {
+				RemoveChildrenRecursive(entry.World.Entry(e))
+				entry.World.Remove(e)
+			}
+		}
+	}
+}
+
+// RemoveRecursive removes the entry recursively.
+func RemoveRecursive(entry *donburi.Entry) {
+	RemoveChildrenRecursive(entry)
+	entry.Remove()
+}
+
 // SetParent sets a parent of the entry.
 func SetParent(parent *donburi.Entry, child *donburi.Entry) {
 	if !parent.Valid() {

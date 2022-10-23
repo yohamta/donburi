@@ -19,6 +19,7 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
   - [Queries](#queries)
   - [Tags](#tags)
   - [Systems (Experimental)](#systems-experimental)
+- [Modules](#modules)
   - [Hierarchy (Experimental)](#hierarchy-experimental)
 - [Internal Design for `World`](#internal-design-for-world)
 - [How to contribute?](#how-to-contribute)
@@ -237,11 +238,13 @@ See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) and [Example](htt
 
 *Note: ECS package is experimental and API is unstable*
 
+## Modules
+
 ### Hierarchy (Experimental)
 
-The [Hierarchy package](https://github.com/yohamta/donburi/tree/main/hierarchy) provides Parent-Children relationship function.
+The [Hierarchy package](https://github.com/yohamta/donburi/tree/main/plugins/hierarchy) provides Parent-Children relationship function.
 
-See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/hierarchy) and [Example](https://github.com/yohamta/donburi/tree/main/hierarchy/example_test.go).
+See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/plugins/hierarchy) and [Example](https://github.com/yohamta/donburi/tree/main/plugins/hierarchy/example_test.go).
 
 *Note: Hierarchy package is experimental and API is unstable*
 

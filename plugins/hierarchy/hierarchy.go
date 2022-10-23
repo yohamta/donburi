@@ -12,8 +12,15 @@ var HierarchySystem = &parent{
 	query: query.NewQuery(filter.Contains(parentComponent)),
 }
 
+// RemoveChildren removes children of invalid parents.
+// This function is useful when you want to remove children of invalid parents.
+// You don't need to use this system function when you use
+// hierarchy.RemoveRecursive() or hierarchy.RemoveChildrenRecursive() instead.
 func (ps *parent) RemoveChildren(ecs *ecs.ECS) {
 	ps.query.EachEntity(ecs.World, func(entry *donburi.Entry) {
+		if !entry.Valid() {
+			return
+		}
 		if p, ok := GetParent(entry); ok {
 			if ecs.World.Valid(p) {
 				return
