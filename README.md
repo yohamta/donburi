@@ -19,7 +19,7 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
   - [Queries](#queries)
   - [Tags](#tags)
   - [Systems (Experimental)](#systems-experimental)
-- [Optional Modules](#optional-modules)
+- [Modules](#modules)
   - [Hierarchy (Experimental)](#hierarchy-experimental)
 - [Internal Design for `World`](#internal-design-for-world)
 - [How to contribute?](#how-to-contribute)
@@ -238,7 +238,7 @@ See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) and [Example](htt
 
 *Note: ECS package is experimental and API is unstable*
 
-## Optional Modules
+## Modules
 
 ### Hierarchy (Experimental)
 
