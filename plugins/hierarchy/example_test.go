@@ -7,7 +7,7 @@ import (
 	ecslib "github.com/yohamta/donburi/ecs"
 )
 
-func TestParent(t *testing.T) {
+func TestHierarchy(t *testing.T) {
 	w := donburi.NewWorld()
 	ecs := ecslib.NewECS(w)
 
@@ -53,6 +53,34 @@ func TestParent(t *testing.T) {
 
 	pe.Remove()
 	ecs.Update()
+
+	if w.Valid(ce.Entity()) {
+		t.Errorf("expected child entity %d to be removed", ce.Entity())
+	}
+	if w.Valid(ge.Entity()) {
+		t.Errorf("expected grand child entity %d to be removed", ge.Entity())
+	}
+	if w.Len() != 0 {
+		t.Errorf("expected world to be empty")
+	}
+}
+
+func TestRemoveChildrenRecursive(t *testing.T) {
+	w := donburi.NewWorld()
+
+	parent := donburi.NewTag().SetName("parent")
+	child := donburi.NewTag().SetName("child")
+	grandChild := donburi.NewTag().SetName("grandChild")
+
+	pe := w.Entry(w.Create(parent))
+	ce := w.Entry(w.Create(child))
+	ge := w.Entry(w.Create(grandChild))
+
+	SetParent(pe, ce)
+	SetParent(ce, ge)
+
+	RemoveChildrenRecursive(pe)
+	pe.Remove()
 
 	if w.Valid(ce.Entity()) {
 		t.Errorf("expected child entity %d to be removed", ce.Entity())
