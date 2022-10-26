@@ -13,7 +13,7 @@ var parentComponent = donburi.NewComponentType[parentData]()
 
 // GetParent returns a parent of the entry.
 func GetParent(entry *donburi.Entry) (donburi.Entity, bool) {
-	if entry.HasComponent(parentComponent) {
+	if entry.HasComponent(parentComponent) && entry.Valid() {
 		p := donburi.Get[parentData](entry, parentComponent).Parent
 		return p, true
 	}
@@ -22,7 +22,7 @@ func GetParent(entry *donburi.Entry) (donburi.Entity, bool) {
 
 // RemoveChildrenRecursive removes children of the entry recursively.
 func RemoveChildrenRecursive(entry *donburi.Entry) {
-	if entry.HasComponent(childrenComponent) {
+	if entry.HasComponent(childrenComponent) && entry.Valid() {
 		c, ok := GetChildren(entry)
 		if ok {
 			for _, e := range c {
