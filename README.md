@@ -20,6 +20,7 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
   - [Tags](#tags)
   - [Systems (Experimental)](#systems-experimental)
 - [Optional Features](#optional-features)
+  - [Math](#math)
   - [Hierarchy (Experimental)](#hierarchy-experimental)
 - [Internal Design for `World`](#internal-design-for-world)
 - [How to contribute?](#how-to-contribute)
@@ -234,7 +235,7 @@ query.EachEntity(world, func(entry *donburi.Entry) {
 
 The [ECS package](https://github.com/yohamta/donburi/tree/main/ecs) provides so-called **System** feature in ECS which can be used together with a `World` instance.
 
-See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) and [Example](https://github.com/yohamta/donburi/tree/master/examples/bunnymark_ecs).
+See the [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) and [Example](https://github.com/yohamta/donburi/tree/master/examples/bunnymark_ecs).
 
 How to create an ECS instance:
 
@@ -380,11 +381,17 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 ## Optional Features
 
+### Math
+
+The [math package](https://github.com/yohamta/donburi/tree/main/features/math) provides the basic types (Vec2 etc) and helpers.
+
+See the [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/features/math) for more details.
+
 ### Hierarchy (Experimental)
 
-The [Hierarchy package](https://github.com/yohamta/donburi/tree/main/features/hierarchy) provides the Parent-Children relationship function.
+The [hierarchy package](https://github.com/yohamta/donburi/tree/main/features/hierarchy) provides the Parent-Children relationship function.
 
-See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/features/hierarchy) and [Example](https://github.com/yohamta/donburi/tree/main/features/hierarchy/example_test.go).
+See the [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/features/hierarchy) and [Example](https://github.com/yohamta/donburi/tree/main/features/hierarchy/example_test.go).
 
 Example:
 ```go
