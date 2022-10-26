@@ -61,6 +61,14 @@ func (v *Vec2) Add(other *Vec2) Vec2 {
 	}
 }
 
+// Mul multiplies the vector by another vector.
+func (v *Vec2) Mul(other *Vec2) Vec2 {
+	return Vec2{
+		v.X * other.X,
+		v.Y * other.Y,
+	}
+}
+
 // Sub subtracts x and y from the vector.
 func (v *Vec2) Sub(other *Vec2) Vec2 {
 	return Vec2{
