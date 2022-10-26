@@ -269,7 +269,7 @@ You can also provide `Draw()` functions for Systems. The `Layer` option allows y
 ```go
 
 const (
-  LayerBackground ecs.LayerID = iota
+  LayerBackground ecslib.LayerID = iota
   LayerActors
   LayerFX
 )
