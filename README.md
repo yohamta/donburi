@@ -19,7 +19,7 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
   - [Queries](#queries)
   - [Tags](#tags)
   - [Systems (Experimental)](#systems-experimental)
-- [Modules](#modules)
+- [Optional Features](#optional-features)
   - [Hierarchy (Experimental)](#hierarchy-experimental)
 - [Internal Design for `World`](#internal-design-for-world)
 - [How to contribute?](#how-to-contribute)
@@ -236,17 +236,62 @@ The [ECS package](https://github.com/yohamta/donburi/tree/main/ecs) provides so-
 
 See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) and [Example](https://github.com/yohamta/donburi/tree/master/examples/bunnymark_ecs).
 
-*Note: ECS package is experimental and API is unstable*
-
-## Plugins
+## Optional Features
 
 ### Hierarchy (Experimental)
 
-The [Hierarchy package](https://github.com/yohamta/donburi/tree/main/plugins/hierarchy) provides Parent-Children relationship function.
+The [Hierarchy package](https://github.com/yohamta/donburi/tree/main/features/hierarchy) provides Parent-Children relationship function.
 
-See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/plugins/hierarchy) and [Example](https://github.com/yohamta/donburi/tree/main/plugins/hierarchy/example_test.go).
+See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/features/hierarchy) and [Example](https://github.com/yohamta/donburi/tree/main/features/hierarchy/example_test.go).
 
-*Note: Hierarchy package is experimental and API is unstable*
+Example:
+```go
+import (
+	ecslib "github.com/yohamta/donburi/ecs"
+	"github.com/yohamta/donburi/features/hierarchy"
+)
+
+// ...
+
+	Parent := donburi.NewTag().SetName("parent")
+	Child := donburi.NewTag().SetName("child")
+
+// ...
+
+	parent := w.Entry(w.Create(Parent))
+	child := w.Entry(w.Create(Child))
+
+	// add a child
+	hierarchy.AppendChild(parent, child)
+
+	if children, ok := hierarchy.GetChildren(entry *donburi.Entry); ok {
+		for _, c := range children {
+			// do something
+		}
+	}
+
+	// Remove children
+	hierarchy.RemoveChildrenRecursive(parent)
+
+	// Remove children and parent as well
+	hierarchy.RemoveRecursive(parent)
+	
+// ...
+```
+
+If you want children to be removed autoamtically:
+
+```go
+	// setup a world and ECS container
+	w := donburi.NewWorld()
+	ecs := ecslib.NewECS(w)
+
+	// Add system to remove children automatically
+	ecs.AddSystem(ecslib.System{
+		Update: hierarchy.HierarchySystem.RemoveChildren,
+	})
+
+```
 
 ## Internal Design for `World`
 

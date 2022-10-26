@@ -23,8 +23,19 @@ func TestHierarchy(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 	ge := w.Entry(w.Create(grandChild))
 
-	SetParent(pe, ce)
-	SetParent(ce, ge)
+	SetParent(ce, pe)
+	SetParent(ge, ce)
+
+	testChildren(t, []childrenTest{
+		{
+			Parent:   pe,
+			Children: []*donburi.Entry{ce},
+		},
+		{
+			Parent:   ce,
+			Children: []*donburi.Entry{ge},
+		},
+	})
 
 	if p, ok := GetParent(ce); p != pe.Entity() || !ok {
 		t.Errorf("expected parent entity %d, got %d", pe.Entity(), p)
@@ -76,8 +87,19 @@ func TestRemoveChildrenRecursive(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 	ge := w.Entry(w.Create(grandChild))
 
-	SetParent(pe, ce)
-	SetParent(ce, ge)
+	SetParent(ce, pe)
+	SetParent(ge, ce)
+
+	testChildren(t, []childrenTest{
+		{
+			Parent:   pe,
+			Children: []*donburi.Entry{ce},
+		},
+		{
+			Parent:   ce,
+			Children: []*donburi.Entry{ge},
+		},
+	})
 
 	RemoveChildrenRecursive(pe)
 
@@ -103,8 +125,19 @@ func TestRemoveRecursive(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 	ge := w.Entry(w.Create(grandChild))
 
-	SetParent(pe, ce)
-	SetParent(ce, ge)
+	AppendChild(pe, ce)
+	AppendChild(ce, ge)
+
+	testChildren(t, []childrenTest{
+		{
+			Parent:   pe,
+			Children: []*donburi.Entry{ce},
+		},
+		{
+			Parent:   ce,
+			Children: []*donburi.Entry{ge},
+		},
+	})
 
 	RemoveRecursive(pe)
 
@@ -116,5 +149,27 @@ func TestRemoveRecursive(t *testing.T) {
 	}
 	if w.Len() != 0 {
 		t.Errorf("expected world to be empty")
+	}
+}
+
+type childrenTest struct {
+	Parent   *donburi.Entry
+	Children []*donburi.Entry
+}
+
+func testChildren(t *testing.T, tests []childrenTest) {
+	for _, test := range tests {
+		children, ok := GetChildren(test.Parent)
+		if !ok {
+			t.Errorf("expected children, got nil")
+		}
+		if len(children) != len(test.Children) {
+			t.Errorf("expected %d children, got %d", len(test.Children), len(children))
+		}
+		for i, c := range children {
+			if c != test.Children[i].Entity() {
+				t.Errorf("expected child entity %d, got %d", test.Children[i].Entity(), c)
+			}
+		}
 	}
 }

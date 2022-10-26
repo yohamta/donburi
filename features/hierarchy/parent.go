@@ -39,8 +39,13 @@ func RemoveRecursive(entry *donburi.Entry) {
 	entry.Remove()
 }
 
+// AppendChild appends a child to the entry.
+func AppendChild(parent *donburi.Entry, child *donburi.Entry) {
+	SetParent(child, parent)
+}
+
 // SetParent sets a parent of the entry.
-func SetParent(parent *donburi.Entry, child *donburi.Entry) {
+func SetParent(child *donburi.Entry, parent *donburi.Entry) {
 	if !parent.Valid() {
 		panic("parent is not valid")
 	}
