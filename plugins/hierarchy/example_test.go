@@ -23,8 +23,8 @@ func TestHierarchy(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 	ge := w.Entry(w.Create(grandChild))
 
-	SetParent(pe, ce)
-	SetParent(ce, ge)
+	SetParent(ce, pe)
+	SetParent(ge, ce)
 
 	if p, ok := GetParent(ce); p != pe.Entity() || !ok {
 		t.Errorf("expected parent entity %d, got %d", pe.Entity(), p)
@@ -76,8 +76,8 @@ func TestRemoveChildrenRecursive(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 	ge := w.Entry(w.Create(grandChild))
 
-	SetParent(pe, ce)
-	SetParent(ce, ge)
+	SetParent(ce, pe)
+	SetParent(ge, ce)
 
 	RemoveChildrenRecursive(pe)
 
@@ -103,8 +103,8 @@ func TestRemoveRecursive(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 	ge := w.Entry(w.Create(grandChild))
 
-	SetParent(pe, ce)
-	SetParent(ce, ge)
+	SetParent(ce, pe)
+	SetParent(ge, ce)
 
 	RemoveRecursive(pe)
 
