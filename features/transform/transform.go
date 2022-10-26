@@ -18,6 +18,13 @@ type TransformData struct {
 	hasPrent bool
 }
 
+// Identity is a default transform data.
+var Identity = TransformData{
+	LocalPosition: dmath.Vec2{},
+	LocalRotation: 0,
+	LocalScale:    dmath.Vec2{X: 1, Y: 1},
+}
+
 // AppendChild appends child to the entry.
 func AppendChild(parent, child *donburi.Entry, keepWorldPosition bool) {
 	if !parent.HasComponent(Transform) {
