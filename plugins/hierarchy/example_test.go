@@ -103,8 +103,8 @@ func TestRemoveRecursive(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 	ge := w.Entry(w.Create(grandChild))
 
-	SetParent(ce, pe)
-	SetParent(ge, ce)
+	AppendChild(pe, ce)
+	AppendChild(ce, ge)
 
 	RemoveRecursive(pe)
 
