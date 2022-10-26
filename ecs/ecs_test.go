@@ -52,8 +52,7 @@ func TestECS(t *testing.T) {
 		}
 	}
 
-	ecs.Draw(0, ebiten.NewImage(1, 1))
-	ecs.Draw(1, ebiten.NewImage(1, 1))
+	ecs.Draw(ebiten.NewImage(1, 1))
 
 	drawTests := []struct {
 		system              *testSystem
@@ -110,7 +109,8 @@ func TestECSLayer(t *testing.T) {
 		})
 	}
 
-	ecs.Draw(layer0, ebiten.NewImage(1, 1))
+	ecs.DrawLayer(0, ebiten.NewImage(1, 1))
+
 	if systems[0].system.QueryCountDraw != 1 {
 		t.Errorf("expected query count draw %d, got %d", 1, systems[0].system.QueryCountDraw)
 	}
