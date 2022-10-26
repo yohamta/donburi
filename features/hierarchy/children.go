@@ -18,16 +18,19 @@ func GetChildren(entry *donburi.Entry) ([]donburi.Entity, bool) {
 	return nil, false
 }
 
+// MustGetChildren returns children of the entry.
+func MustGetChildren(entry *donburi.Entry) []donburi.Entity {
+	c := donburi.Get[childrenData](entry, childrenComponent)
+	return c.Children
+}
+
 // HasChildren returns true if the entry has children.
 func HasChildren(entry *donburi.Entry) bool {
-	if entry.Valid() {
-		return entry.HasComponent(childrenComponent)
-	}
-	return false
+	return entry.HasComponent(childrenComponent)
 }
 
 func getChildrenData(entry *donburi.Entry) (*childrenData, bool) {
-	if entry.Valid() {
+	if HasChildren(entry) {
 		c := donburi.Get[childrenData](entry, childrenComponent)
 		return c, true
 	}
