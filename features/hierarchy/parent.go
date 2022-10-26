@@ -2,7 +2,6 @@ package hierarchy
 
 import (
 	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/query"
 )
 
 type parentData struct {
@@ -21,23 +20,22 @@ func GetParent(entry *donburi.Entry) (donburi.Entity, bool) {
 	return donburi.Null, false
 }
 
-func getParentData(entry *donburi.Entry) (*parentData, bool) {
-	if entry.HasComponent(parentComponent) && entry.Valid() {
-		p := donburi.Get[parentData](entry, parentComponent)
-		return p, true
-	}
-	return nil, false
+// MustGetParent returns a parent of the entry.
+func MustGetParent(entry *donburi.Entry) donburi.Entity {
+	p := donburi.Get[parentData](entry, parentComponent)
+	return p.Parent
 }
 
 // RemoveChildrenRecursive removes children of the entry recursively.
 func RemoveChildrenRecursive(entry *donburi.Entry) {
-	if entry.HasComponent(childrenComponent) && entry.Valid() {
+	if HasChildren(entry) {
 		cs, ok := GetChildren(entry)
 		if ok {
 			for _, e := range cs {
-
-				RemoveChildrenRecursive(entry.World.Entry(e))
-				entry.World.Remove(e)
+				if entry.World.Valid(e) {
+					RemoveChildrenRecursive(entry.World.Entry(e))
+					entry.World.Remove(e)
+				}
 			}
 		}
 	}
@@ -52,6 +50,19 @@ func RemoveRecursive(entry *donburi.Entry) {
 // AppendChild appends a child to the entry.
 func AppendChild(parent *donburi.Entry, child *donburi.Entry) {
 	SetParent(child, parent)
+}
+
+// FindChildrenWithComponent
+func FindChildWithComponent(entry *donburi.Entry, componentType *donburi.ComponentType) (*donburi.Entry, bool) {
+	if children, ok := GetChildren(entry); ok {
+		for _, c := range children {
+			ce := entry.World.Entry(c)
+			if ce.Valid() && ce.HasComponent(componentType) {
+				return ce, true
+			}
+		}
+	}
+	return nil, false
 }
 
 // SetParent sets a parent of the entry.
@@ -74,6 +85,15 @@ func SetParent(child *donburi.Entry, parent *donburi.Entry) {
 	children.Children = append(children.Children, child.Entity())
 }
 
-type parent struct {
-	query *query.Query
+// HasParent returns true if the entry has a parent.
+func HasParent(entry *donburi.Entry) bool {
+	return entry.HasComponent(parentComponent)
+}
+
+func getParentData(entry *donburi.Entry) (*parentData, bool) {
+	if HasParent(entry) {
+		p := donburi.Get[parentData](entry, parentComponent)
+		return p, true
+	}
+	return nil, false
 }

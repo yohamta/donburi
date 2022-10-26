@@ -45,7 +45,7 @@ func TestHierarchy(t *testing.T) {
 		t.Errorf("expected parent entity %d, got %d", ce.Entity(), p)
 	}
 
-	if _, ok := GetParent(pe); ok {
+	if HasParent(pe) {
 		t.Errorf("expected parent entity %d, got %d", donburi.Null, pe.Entity())
 	}
 
@@ -149,6 +149,28 @@ func TestRemoveRecursive(t *testing.T) {
 	}
 	if w.Len() != 0 {
 		t.Errorf("expected world to be empty")
+	}
+}
+
+func TestFindChildren(t *testing.T) {
+	w := donburi.NewWorld()
+
+	tagToFind := donburi.NewTag().SetName("tag")
+
+	parent := donburi.NewTag().SetName("parent")
+	child := donburi.NewTag().SetName("child")
+
+	pe := w.Entry(w.Create(parent))
+	ce := w.Entry(w.Create(child, tagToFind))
+
+	SetParent(ce, pe)
+
+	found, ok := FindChildWithComponent(pe, tagToFind)
+	if !ok {
+		t.Errorf("expected to find child with component")
+	}
+	if found.Entity() != ce.Entity() {
+		t.Errorf("expected to find child entity %d, got %d", ce.Entity(), found.Entity())
 	}
 }
 
