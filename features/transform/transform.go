@@ -111,7 +111,7 @@ func WorldScale(entry *donburi.Entry) dmath.Vec2 {
 
 // Right returns right vector of the entry.
 func Right(entry *donburi.Entry) dmath.Vec2 {
-	radians := WorldRotation(entry)
+	radians := dmath.ToRadians(WorldRotation(entry))
 	return dmath.Vec2{
 		X: math.Cos(radians),
 		Y: math.Sin(radians),
@@ -120,7 +120,7 @@ func Right(entry *donburi.Entry) dmath.Vec2 {
 
 // Up returns up vector of the entry.
 func Up(entry *donburi.Entry) dmath.Vec2 {
-	radians := WorldRotation(entry) - 90*math.Pi/180
+	radians := dmath.ToRadians(WorldRotation(entry) - 90)
 	return dmath.Vec2{
 		X: math.Cos(radians),
 		Y: math.Sin(radians),
