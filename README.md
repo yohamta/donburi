@@ -240,8 +240,8 @@ How to create an ECS instance:
 
 ```go
 import (
-	"github.com/yohamta/donburi"
-	ecslib "github.com/yohamta/donburi/ecs"
+  "github.com/yohamta/donburi"
+  ecslib "github.com/yohamta/donburi/ecs"
 )
 
 world := donburi.NewWorld()
@@ -253,13 +253,13 @@ A `System` is created from just a function that receives an argument `(ecs *ecs.
 ```go
 // Some System's function
 func SomeFunction(ecs *ecs.ECS) {
-	// ...
+  // ...
 }
 
 ecs.AddSystem(
-	ecs.System{
-		Update: SomeFunction,
-	}
+  ecs.System{
+    Update: SomeFunction,
+  }
 )
 ```
 
@@ -268,17 +268,17 @@ You can also provide `Draw()` functions for Systems. The `Layer` option allows y
 ```go
 
 const (
-	LayerBackground ecs.LayerID = iota
-	LayerActors
-	LayerFX
+  LayerBackground ecs.LayerID = iota
+  LayerActors
+  LayerFX
 )
 
 ecs.AddSystem(
-	ecs.System{
-		Layer:  LayerBackground,
-		Update: UpdateBackground,
-		Draw:   DrawBackground,
-	}
+  ecs.System{
+    Layer:  LayerBackground,
+    Update: UpdateBackground,
+    Draw:   DrawBackground,
+  }
 )
 ```
 
@@ -286,15 +286,15 @@ Execute an ECS's `Update()` and `Draw()` to run systems as below:
 
 ```go
 func (g *Game) Update() error {
-	g.ecs.Update()
-	return nil
+  g.ecs.Update()
+  return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.Clear()
-	g.ecs.DrawLayer(LayerBackground, screen)
-	g.ecs.DrawLayer(LayerBunnies, screen)
-	g.ecs.DrawLayer(LayerMetrics, screen)
+  screen.Clear()
+  g.ecs.DrawLayer(LayerBackground, screen)
+  g.ecs.DrawLayer(LayerBunnies, screen)
+  g.ecs.DrawLayer(LayerMetrics, screen)
 }
 ```
 
@@ -314,63 +314,63 @@ Example:
 
 ```go
 import (
-	ecslib "github.com/yohamta/donburi/ecs"
-	"github.com/yohamta/donburi/features/hierarchy"
+  ecslib "github.com/yohamta/donburi/ecs"
+  "github.com/yohamta/donburi/features/hierarchy"
 )
 
 const (
-	LayerBackground ecs.LayerID = iota
-	LayerBunnies
-	LayerMetrics
+  LayerBackground ecs.LayerID = iota
+  LayerBunnies
+  LayerMetrics
 )
 
 func newECS() *ecs.ECS {
-	world := donburi.NewWorld()
-	ecs := ecslib.NewECS(world)
+  world := donburi.NewWorld()
+  ecs := ecslib.NewECS(world)
 
-	ecs.AddSystems(
-		// Systems are executed in the order they are added.
-		ecs.System{
-			Update: system.NewSpawn().Update,
-		},
-		ecs.System{
-			Layer: LayerBackground,
-			Draw:  system.DrawBackground,
-		},
-		ecs.System{
-			Layer:  LayerMetrics,
-			Update: metrics.Update,
-			Draw:   metrics.Draw,
-		},
-		ecs.System{
-			Update: system.NewBounce(&g.bounds).Update,
-		},
-		ecs.System{
-			Update: system.Velocity.Update,
-		},
-		ecs.System{
-			Update: system.Gravity.Update,
-		},
-		ecs.System{
-			Layer: LayerBunnies,
-			Draw:  system.Render.Draw,
-		},
-	)
+  ecs.AddSystems(
+    // Systems are executed in the order they are added.
+    ecs.System{
+      Update: system.NewSpawn().Update,
+    },
+    ecs.System{
+      Layer: LayerBackground,
+      Draw:  system.DrawBackground,
+    },
+    ecs.System{
+      Layer:  LayerMetrics,
+      Update: metrics.Update,
+      Draw:   metrics.Draw,
+    },
+    ecs.System{
+      Update: system.NewBounce(&g.bounds).Update,
+    },
+    ecs.System{
+      Update: system.Velocity.Update,
+    },
+    ecs.System{
+      Update: system.Gravity.Update,
+    },
+    ecs.System{
+      Layer: LayerBunnies,
+      Draw:  system.Render.Draw,
+    },
+  )
 
-	return ecs
+  return ecs
 }
 // ...
 
 func (g *Game) Update() error {
-	g.ecs.Update()
-	return nil
+  g.ecs.Update()
+  return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.Clear()
-	g.ecs.DrawLayer(LayerBackground, screen)
-	g.ecs.DrawLayer(LayerBunnies, screen)
-	g.ecs.DrawLayer(LayerMetrics, screen)
+  screen.Clear()
+  g.ecs.DrawLayer(LayerBackground, screen)
+  g.ecs.DrawLayer(LayerBunnies, screen)
+  g.ecs.DrawLayer(LayerMetrics, screen)
 }
 
 // ...
@@ -389,35 +389,35 @@ See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/features/hierarchy) an
 Example:
 ```go
 import (
-	ecslib "github.com/yohamta/donburi/ecs"
-	"github.com/yohamta/donburi/features/hierarchy"
+  ecslib "github.com/yohamta/donburi/ecs"
+  "github.com/yohamta/donburi/features/hierarchy"
 )
 
 // ...
 
-	Parent := donburi.NewTag().SetName("parent")
-	Child := donburi.NewTag().SetName("child")
+  Parent := donburi.NewTag().SetName("parent")
+  Child := donburi.NewTag().SetName("child")
 
 // ...
 
-	parent := w.Entry(w.Create(Parent))
-	child := w.Entry(w.Create(Child))
+  parent := w.Entry(w.Create(Parent))
+  child := w.Entry(w.Create(Child))
 
-	// add a child
-	hierarchy.AppendChild(parent, child)
+  // add a child
+  hierarchy.AppendChild(parent, child)
 
-	if children, ok := hierarchy.GetChildren(entry *donburi.Entry); ok {
-		for _, c := range children {
-			// do something
-		}
-	}
+  if children, ok := hierarchy.GetChildren(entry *donburi.Entry); ok {
+    for _, c := range children {
+      // do something
+    }
+  }
 
-	// Remove children
-	hierarchy.RemoveChildrenRecursive(parent)
+  // Remove children
+  hierarchy.RemoveChildrenRecursive(parent)
 
-	// Remove children and parent as well
-	hierarchy.RemoveRecursive(parent)
-	
+  // Remove children and parent as well
+  hierarchy.RemoveRecursive(parent)
+  
 // ...
 ```
 
@@ -430,7 +430,7 @@ ecs := ecslib.NewECS(w)
 
 // Add system to remove children automatically
 ecs.AddSystem(ecslib.System{
-	Update: hierarchy.HierarchySystem.RemoveChildren,
+  Update: hierarchy.HierarchySystem.RemoveChildren,
 })
 
 ```
