@@ -304,10 +304,10 @@ The `ecs.Create()` and `ecs.NewQuery()` wrapper-functions allow you to create an
 var layer0 LayerID = 0
 
 // Create an entity on layer0
-ecslib.Create(layer0, c1)
+ecslib.Create(layer0, someComponents...)
 
 // Create a query to iterate entities on layer0
-queryForLayer0 := ecslib.NewQuery(layer0, filter.Contains(c1))
+queryForLayer0 := ecslib.NewQuery(layer0, filter.Contains(someComponent))
 ```
 
 Example:
@@ -424,14 +424,14 @@ import (
 If you want children to be removed autoamtically when its parents are already removed:
 
 ```go
-	// setup a world and ECS container
-	w := donburi.NewWorld()
-	ecs := ecslib.NewECS(w)
+// setup a world and ECS container
+w := donburi.NewWorld()
+ecs := ecslib.NewECS(w)
 
-	// Add system to remove children automatically
-	ecs.AddSystem(ecslib.System{
-		Update: hierarchy.HierarchySystem.RemoveChildren,
-	})
+// Add system to remove children automatically
+ecs.AddSystem(ecslib.System{
+	Update: hierarchy.HierarchySystem.RemoveChildren,
+})
 
 ```
 
