@@ -96,9 +96,9 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Clear()
-	g.ecs.Draw(layers.LayerBackground, screen)
-	g.ecs.Draw(layers.LayerBunnies, screen)
-	g.ecs.Draw(layers.LayerMetrics, screen)
+	g.ecs.DrawLayer(layers.LayerBackground, screen)
+	g.ecs.DrawLayer(layers.LayerBunnies, screen)
+	g.ecs.DrawLayer(layers.LayerMetrics, screen)
 }
 
 func (g *Game) Layout(width, height int) (int, int) {

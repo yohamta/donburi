@@ -73,9 +73,16 @@ func (ecs *ECS) Update() {
 	}
 }
 
-// Draw calls draw
-func (ecs *ECS) Draw(l LayerID, screen *ebiten.Image) {
+// DrawLayer executes all draw systems of the specified layer.
+func (ecs *ECS) DrawLayer(l LayerID, screen *ebiten.Image) {
 	ecs.getLayer(l).draw(ecs, screen)
+}
+
+// Draw executes all draw systems.
+func (ecs *ECS) Draw(screen *ebiten.Image) {
+	for _, l := range ecs.layers {
+		l.draw(ecs, screen)
+	}
 }
 
 // Create creates a new entity

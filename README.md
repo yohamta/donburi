@@ -236,11 +236,153 @@ The [ECS package](https://github.com/yohamta/donburi/tree/main/ecs) provides so-
 
 See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) and [Example](https://github.com/yohamta/donburi/tree/master/examples/bunnymark_ecs).
 
+How to create an ECS instance:
+
+```go
+import (
+	"github.com/yohamta/donburi"
+	ecslib "github.com/yohamta/donburi/ecs"
+)
+
+world := donburi.NewWorld()
+ecs := ecslib.NewECS(world)
+```
+
+A `System` is created from just a function that receives an argument `(ecs *ecs.ECS)`.
+
+```go
+// Some System's function
+func SomeFunction(ecs *ecs.ECS) {
+	// ...
+}
+
+ecs.AddSystem(
+	ecs.System{
+		Update: SomeFunction,
+	}
+)
+```
+
+You can also provide `Draw()` functions for Systems. The `Layer` option allows you to control the order of calling `Draw()` functions and where to render. An `Layer` is just an integer value from the user's perspective. The default value of `Layer` is just `0`.
+
+```go
+
+const (
+	LayerBackground ecs.LayerID = iota
+	LayerActors
+	LayerFX
+)
+
+ecs.AddSystem(
+	ecs.System{
+		Layer:  LayerBackground,
+		Update: UpdateBackground,
+		Draw:   DrawBackground,
+	}
+)
+```
+
+Execute an ECS's `Update()` and `Draw()` to run systems as below:
+
+```go
+func (g *Game) Update() error {
+	g.ecs.Update()
+	return nil
+}
+
+func (g *Game) Draw(screen *ebiten.Image) {
+	screen.Clear()
+	g.ecs.DrawLayer(LayerBackground, screen)
+	g.ecs.DrawLayer(LayerBunnies, screen)
+	g.ecs.DrawLayer(LayerMetrics, screen)
+}
+```
+
+The `ecs.Create()` and `ecs.NewQuery()` wrapper-functions allow you to create and query entities on a certain layer:
+
+```go
+	var layer0 LayerID = 0
+
+	// Create an entity on layer0
+	ecslib.Create(layer0, c1)
+
+	// Create a query to iterate entities on layer0
+	queryForLayer0 := ecslib.NewQuery(layer0, filter.Contains(c1))
+```
+
+Example:
+
+```go
+import (
+	ecslib "github.com/yohamta/donburi/ecs"
+	"github.com/yohamta/donburi/features/hierarchy"
+)
+
+const (
+	LayerBackground ecs.LayerID = iota
+	LayerBunnies
+	LayerMetrics
+)
+
+func newECS() *ecs.ECS {
+	world := donburi.NewWorld()
+	ecs := ecslib.NewECS(world)
+
+	ecs.AddSystems(
+		// Systems are executed in the order they are added.
+		ecs.System{
+			Update: system.NewSpawn().Update,
+		},
+		ecs.System{
+			Layer: LayerBackground,
+			Draw:  system.DrawBackground,
+		},
+		ecs.System{
+			Layer:  LayerMetrics,
+			Update: metrics.Update,
+			Draw:   metrics.Draw,
+		},
+		ecs.System{
+			Update: system.NewBounce(&g.bounds).Update,
+		},
+		ecs.System{
+			Update: system.Velocity.Update,
+		},
+		ecs.System{
+			Update: system.Gravity.Update,
+		},
+		ecs.System{
+			Layer: LayerBunnies,
+			Draw:  system.Render.Draw,
+		},
+	)
+
+  return ecs
+}
+// ...
+
+func (g *Game) Update() error {
+	g.ecs.Update()
+	return nil
+}
+
+func (g *Game) Draw(screen *ebiten.Image) {
+	screen.Clear()
+	g.ecs.DrawLayer(LayerBackground, screen)
+	g.ecs.DrawLayer(LayerBunnies, screen)
+	g.ecs.DrawLayer(LayerMetrics, screen)
+}
+
+// ...
+
+```
+
+
 ## Optional Features
 
 ### Hierarchy (Experimental)
 
-The [Hierarchy package](https://github.com/yohamta/donburi/tree/main/features/hierarchy) provides Parent-Children relationship function.
+The [Hierarchy package](https://github.com/yohamta/donburi/tree/main/features/hierarchy) provides the Parent-Children relationship function.
 
 See [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/features/hierarchy) and [Example](https://github.com/yohamta/donburi/tree/main/features/hierarchy/example_test.go).
 
@@ -279,7 +421,7 @@ import (
 // ...
 ```
 
-If you want children to be removed autoamtically:
+If you want children to be removed autoamtically when its parents are already removed:
 
 ```go
 	// setup a world and ECS container
