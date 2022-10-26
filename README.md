@@ -301,13 +301,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 The `ecs.Create()` and `ecs.NewQuery()` wrapper-functions allow you to create and query entities on a certain layer:
 
 ```go
-	var layer0 LayerID = 0
+var layer0 LayerID = 0
 
-	// Create an entity on layer0
-	ecslib.Create(layer0, c1)
+// Create an entity on layer0
+ecslib.Create(layer0, c1)
 
-	// Create a query to iterate entities on layer0
-	queryForLayer0 := ecslib.NewQuery(layer0, filter.Contains(c1))
+// Create a query to iterate entities on layer0
+queryForLayer0 := ecslib.NewQuery(layer0, filter.Contains(c1))
 ```
 
 Example:
@@ -357,7 +357,7 @@ func newECS() *ecs.ECS {
 		},
 	)
 
-  return ecs
+	return ecs
 }
 // ...
 
