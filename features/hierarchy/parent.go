@@ -22,7 +22,7 @@ func GetParent(entry *donburi.Entry) (donburi.Entity, bool) {
 }
 
 func getParentData(entry *donburi.Entry) (*parentData, bool) {
-	if entry.HasComponent(parentComponent) && entry.Valid() {
+	if entry.Valid() {
 		p := donburi.Get[parentData](entry, parentComponent)
 		return p, true
 	}
@@ -41,6 +41,14 @@ func RemoveChildrenRecursive(entry *donburi.Entry) {
 			}
 		}
 	}
+}
+
+// HasParent returns true if the entry has a parent.
+func HasParent(entry *donburi.Entry) bool {
+	if entry.Valid() {
+		return entry.HasComponent(parentComponent)
+	}
+	return false
 }
 
 // RemoveRecursive removes the entry recursively.

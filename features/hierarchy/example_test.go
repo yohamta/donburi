@@ -45,7 +45,7 @@ func TestHierarchy(t *testing.T) {
 		t.Errorf("expected parent entity %d, got %d", ce.Entity(), p)
 	}
 
-	if _, ok := GetParent(pe); ok {
+	if HasParent(pe) {
 		t.Errorf("expected parent entity %d, got %d", donburi.Null, pe.Entity())
 	}
 
