@@ -52,6 +52,19 @@ func AppendChild(parent *donburi.Entry, child *donburi.Entry) {
 	SetParent(child, parent)
 }
 
+// FindChildrenWithComponent
+func FindChildWithComponent(entry *donburi.Entry, componentType *donburi.ComponentType) (*donburi.Entry, bool) {
+	if children, ok := GetChildren(entry); ok {
+		for _, c := range children {
+			ce := entry.World.Entry(c)
+			if ce.Valid() && ce.HasComponent(componentType) {
+				return ce, true
+			}
+		}
+	}
+	return nil, false
+}
+
 // SetParent sets a parent of the entry.
 func SetParent(child *donburi.Entry, parent *donburi.Entry) {
 	if !parent.Valid() {

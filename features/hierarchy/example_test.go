@@ -152,6 +152,28 @@ func TestRemoveRecursive(t *testing.T) {
 	}
 }
 
+func TestFindChildren(t *testing.T) {
+	w := donburi.NewWorld()
+
+	tagToFind := donburi.NewTag().SetName("tag")
+
+	parent := donburi.NewTag().SetName("parent")
+	child := donburi.NewTag().SetName("child")
+
+	pe := w.Entry(w.Create(parent))
+	ce := w.Entry(w.Create(child, tagToFind))
+
+	SetParent(ce, pe)
+
+	found, ok := FindChildWithComponent(pe, tagToFind)
+	if !ok {
+		t.Errorf("expected to find child with component")
+	}
+	if found.Entity() != ce.Entity() {
+		t.Errorf("expected to find child entity %d, got %d", ce.Entity(), found.Entity())
+	}
+}
+
 type childrenTest struct {
 	Parent   *donburi.Entry
 	Children []*donburi.Entry
