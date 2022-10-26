@@ -301,7 +301,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 The `ecs.Create()` and `ecs.NewQuery()` wrapper-functions allow you to create and query entities on a certain layer:
 
 ```go
-var layer0 LayerID = 0
+var layer0 ecs.LayerID = 0
 
 // Create an entity on layer0
 ecslib.Create(layer0, someComponents...)
