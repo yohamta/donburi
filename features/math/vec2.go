@@ -54,21 +54,25 @@ func (v *Vec2) Set(x, y float64) {
 }
 
 // Add adds x and y to the vector.
-func (v *Vec2) Add(x, y float64) {
-	v.X += x
-	v.Y += y
+func (v *Vec2) Add(other *Vec2) Vec2 {
+	return Vec2{
+		v.X + other.X,
+		v.Y + other.Y,
+	}
 }
 
 // Sub subtracts x and y from the vector.
-func (v *Vec2) Sub(x, y float64) {
-	v.X -= x
-	v.Y -= y
+func (v *Vec2) Sub(other *Vec2) Vec2 {
+	return Vec2{
+		v.X - other.X,
+		v.Y - other.Y,
+	}
 }
 
 // SetFrom sets the vector from another vector.
-func (v *Vec2) SetFrom(v2 *Vec2) {
-	v.X = v2.X
-	v.Y = v2.Y
+func (v *Vec2) SetFrom(other *Vec2) {
+	v.X = other.X
+	v.Y = other.Y
 }
 
 // RotateAround rotates the vector by the given angle around the given point.
@@ -80,8 +84,8 @@ func (v *Vec2) RotateAround(point *Vec2, angle float64) {
 }
 
 // AddFrom adds another vector to the vector.
-func (v *Vec2) Equal(v2 *Vec2) bool {
-	return v.X == v2.X && v.Y == v2.Y
+func (v *Vec2) Equal(other *Vec2) bool {
+	return v.X == other.X && v.Y == other.Y
 }
 
 // Roatate rotates the vector by the given angle.
@@ -93,13 +97,13 @@ func (v *Vec2) Rotate(rad float64) {
 }
 
 // Angle returns angle in radian to another vec2
-func (v *Vec2) Angle(v2 *Vec2) float64 {
+func (v *Vec2) Angle(other *Vec2) float64 {
 	x, y := v.X, v.Y
-	x2, y2 := v2.X, v2.Y
+	x2, y2 := other.X, other.Y
 	return math.Atan2(y2-y, x2-x)
 }
 
 // Distance returns the distance between the vector and another vector.
-func (v *Vec2) Distance(v2 *Vec2) float64 {
-	return math.Sqrt(math.Pow(v.X-v2.X, 2) + math.Pow(v.Y-v2.Y, 2))
+func (v *Vec2) Distance(other *Vec2) float64 {
+	return math.Sqrt(math.Pow(v.X-other.X, 2) + math.Pow(v.Y-other.Y, 2))
 }
