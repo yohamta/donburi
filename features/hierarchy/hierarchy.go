@@ -21,14 +21,14 @@ func (ps *parent) RemoveChildren(ecs *ecs.ECS) {
 		if !entry.Valid() {
 			return
 		}
-		if p, ok := GetParent(entry); ok {
-			if ecs.World.Valid(p) {
+		if pd, ok := getParentData(entry); ok {
+			if ecs.World.Valid(pd.Parent) {
 				return
 			}
 			c, ok := GetChildren(entry)
 			if ok {
 				for _, e := range c {
-					ecs.World.Remove(e)
+					RemoveRecursive(ecs.World.Entry(e))
 				}
 			}
 			entry.Remove()
