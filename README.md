@@ -449,6 +449,39 @@ The [transofrm package](https://github.com/yohamta/donburi/tree/main/features/tr
 
 This package was adapted from [ariplane](https://github.com/m110/airplanes)'s code, which is created by [m110](https://github.com/m110). 
 
+Usage:
+```go
+w := donburi.NewWorld()
+
+// setup parent
+parent := w.Entry(w.Create(transform.Transform))
+donburi.SetValue(parent, transform.Transform, transform.Identity)
+
+// set world position and scale for the parent
+transform.SetWorldPosition(parent, dmath.Vec2{X: 1, Y: 2})
+transform.SetWorldScale(parent, dmath.Vec2{X: 2, Y: 3})
+
+// setup child
+child := w.Entry(w.Create(transform.Transform))
+donburi.SetValue(child, transform.Transform, transform.TransformData{
+	LocalPosition: dmath.Vec2{X: 1, Y: 2},
+	LocalRotation: 90,
+	LocalScale:    dmath.Vec2{X: 2, Y: 3},
+})
+
+// add the child to the parent
+transform.AppendChild(parent, child, false)
+
+// get world position of the child with parent's position taken into account
+pos := transform.WorldPosition(child)
+
+// roatation
+rot := transform.WorldRotation(child)
+
+// scale
+scale := transform.WorldScale(child)
+```
+
 
 ## Internal Design for `World`
 
