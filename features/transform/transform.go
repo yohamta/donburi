@@ -48,7 +48,8 @@ func SetParent(entry, parent *donburi.Entry, keepWorldPosition bool) {
 		d.LocalRotation -= WorldRotation(parent)
 
 		ws := WorldScale(parent)
-		d.LocalScale = d.LocalScale.Sub(&ws)
+		d.LocalScale.X = d.LocalScale.X / ws.X
+		d.LocalScale.Y = d.LocalScale.Y / ws.Y
 	}
 }
 
@@ -93,6 +94,20 @@ func SetWorldRotation(entry *donburi.Entry, rotation float64) {
 
 	parent := entry.World.Entry(hierarchy.MustGetParent(entry))
 	d.LocalRotation = rotation - WorldRotation(parent)
+}
+
+// SetWorldScale sets world scale to the entry.
+func SetWorldScale(entry *donburi.Entry, scale dmath.Vec2) {
+	d := GetTransform(entry)
+	if !d.hasPrent {
+		d.LocalScale = scale
+		return
+	}
+
+	parent := entry.World.Entry(hierarchy.MustGetParent(entry))
+	parentScale := WorldScale(parent)
+	d.LocalScale.X = scale.X / parentScale.X
+	d.LocalScale.Y = scale.Y / parentScale.Y
 }
 
 // WorldRotation returns world rotation of the entry.
