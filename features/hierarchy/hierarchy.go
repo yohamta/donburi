@@ -26,13 +26,13 @@ func (hs *hierarchySystem) RemoveChildren(ecs *ecs.ECS) {
 			return
 		}
 		if pd, ok := getParentData(entry); ok {
-			if ecs.World.Valid(pd.Parent) {
+			if pd.Parent.Valid() {
 				return
 			}
 			c, ok := GetChildren(entry)
 			if ok {
 				for _, e := range c {
-					RemoveRecursive(ecs.World.Entry(e))
+					RemoveRecursive(e)
 				}
 			}
 			entry.Remove()

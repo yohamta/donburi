@@ -66,7 +66,7 @@ func SetWorldPosition(entry *donburi.Entry, pos dmath.Vec2) {
 		return
 	}
 
-	parent := entry.World.Entry(hierarchy.MustGetParent(entry))
+	parent := hierarchy.MustGetParent(entry)
 	parentPos := WorldPosition(parent)
 	d.LocalPosition.X = pos.X - parentPos.X
 	d.LocalPosition.Y = pos.Y - parentPos.Y
@@ -79,7 +79,7 @@ func WorldPosition(entry *donburi.Entry) dmath.Vec2 {
 		return d.LocalPosition
 	}
 
-	parent := entry.World.Entry(hierarchy.MustGetParent(entry))
+	parent := hierarchy.MustGetParent(entry)
 	parentPos := WorldPosition(parent)
 	return parentPos.Add(&d.LocalPosition)
 }
@@ -92,7 +92,7 @@ func SetWorldRotation(entry *donburi.Entry, rotation float64) {
 		return
 	}
 
-	parent := entry.World.Entry(hierarchy.MustGetParent(entry))
+	parent := hierarchy.MustGetParent(entry)
 	d.LocalRotation = rotation - WorldRotation(parent)
 }
 
@@ -104,7 +104,7 @@ func SetWorldScale(entry *donburi.Entry, scale dmath.Vec2) {
 		return
 	}
 
-	parent := entry.World.Entry(hierarchy.MustGetParent(entry))
+	parent := hierarchy.MustGetParent(entry)
 	parentScale := WorldScale(parent)
 	d.LocalScale.X = scale.X / parentScale.X
 	d.LocalScale.Y = scale.Y / parentScale.Y
@@ -117,7 +117,7 @@ func WorldRotation(entry *donburi.Entry) float64 {
 		return d.LocalRotation
 	}
 
-	parent := entry.World.Entry(hierarchy.MustGetParent(entry))
+	parent := hierarchy.MustGetParent(entry)
 	rot := WorldRotation(parent)
 	return rot + d.LocalRotation
 }
@@ -129,7 +129,7 @@ func WorldScale(entry *donburi.Entry) dmath.Vec2 {
 		return d.LocalScale
 	}
 
-	parent := entry.World.Entry(hierarchy.MustGetParent(entry))
+	parent := hierarchy.MustGetParent(entry)
 	parentScale := WorldScale(parent)
 	return parentScale.Mul(&d.LocalScale)
 }

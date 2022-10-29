@@ -5,13 +5,13 @@ import (
 )
 
 type childrenData struct {
-	Children []donburi.Entity
+	Children []*donburi.Entry
 }
 
 var childrenComponent = donburi.NewComponentType[childrenData]()
 
 // GetChildren returns children of the entry.
-func GetChildren(entry *donburi.Entry) ([]donburi.Entity, bool) {
+func GetChildren(entry *donburi.Entry) ([]*donburi.Entry, bool) {
 	if cd, ok := getChildrenData(entry); ok {
 		return cd.Children, true
 	}
@@ -19,7 +19,7 @@ func GetChildren(entry *donburi.Entry) ([]donburi.Entity, bool) {
 }
 
 // MustGetChildren returns children of the entry.
-func MustGetChildren(entry *donburi.Entry) []donburi.Entity {
+func MustGetChildren(entry *donburi.Entry) []*donburi.Entry {
 	c := donburi.Get[childrenData](entry, childrenComponent)
 	return c.Children
 }
