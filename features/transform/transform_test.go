@@ -12,7 +12,7 @@ func TestTransform(t *testing.T) {
 	w := donburi.NewWorld()
 
 	parent := w.Entry(w.Create(transform.Transform))
-	donburi.SetValue(parent, transform.Transform, transform.Identity)
+	transform.Reset(parent)
 	transform.SetWorldPosition(parent, dmath.Vec2{X: 1, Y: 2})
 	transform.SetWorldScale(parent, dmath.Vec2{X: 2, Y: 3})
 
@@ -46,7 +46,7 @@ func TestTransformKeepWorldPosition(t *testing.T) {
 	w := donburi.NewWorld()
 
 	parent := w.Entry(w.Create(transform.Transform))
-	donburi.SetValue(parent, transform.Transform, transform.Identity)
+	transform.Reset(parent)
 
 	transform.SetWorldPosition(parent, dmath.Vec2{X: 1, Y: 2})
 	transform.SetWorldRotation(parent, 90)

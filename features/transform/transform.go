@@ -18,11 +18,18 @@ type TransformData struct {
 	hasPrent bool
 }
 
-// Identity is a default transform data.
-var Identity = TransformData{
+var defaultValue = TransformData{
 	LocalPosition: dmath.Vec2{},
 	LocalRotation: 0,
 	LocalScale:    dmath.Vec2{X: 1, Y: 1},
+}
+
+// Reset resets the entry's transform component to default value.
+func Reset(entry *donburi.Entry) {
+	if !entry.HasComponent(Transform) {
+		panic("entry does not have transform component")
+	}
+	donburi.SetValue(entry, Transform, defaultValue)
 }
 
 // AppendChild appends child to the entry.
