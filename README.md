@@ -21,8 +21,8 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
   - [Systems (Experimental)](#systems-experimental)
 - [Optional Features](#optional-features)
   - [Math](#math)
-  - [Hierarchy (Experimental)](#hierarchy-experimental)
   - [Transform (Experimental)](#transform-experimental)
+  - [Hierarchy (Experimental)](#hierarchy-experimental)
 - [Internal Design for `World`](#internal-design-for-world)
 - [How to contribute?](#how-to-contribute)
 - [Contributors](#contributors)
@@ -388,9 +388,60 @@ The [math package](https://github.com/yohamta/donburi/tree/main/features/math) p
 
 See the [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/features/math) for more details.
 
+### Transform (Experimental)
+
+The [transofrm package](https://github.com/yohamta/donburi/tree/main/features/transform) provides the `Tranform` Component and helpers.
+
+`transform` package allows us to handle `position`, `rotation`, `scale` data relative to the parent.
+
+This package was adapted from [ariplane](https://github.com/m110/airplanes)'s code, which is created by [m110](https://github.com/m110). 
+
+Usage:
+```go
+w := donburi.NewWorld()
+
+// setup parent
+parent := w.Entry(w.Create(transform.Transform))
+transform.Reset(parent) // Reset() initialize the transform data to be the default values
+
+// set world position and scale for the parent
+transform.SetWorldPosition(parent, dmath.Vec2{X: 1, Y: 2})
+transform.SetWorldScale(parent, dmath.Vec2{X: 2, Y: 3})
+
+// setup child
+child := w.Entry(w.Create(transform.Transform))
+donburi.SetValue(child, transform.Transform, transform.TransformData{
+	LocalPosition: dmath.Vec2{X: 1, Y: 2},
+	LocalRotation: 90,
+	LocalScale:    dmath.Vec2{X: 2, Y: 3},
+})
+
+// add the child to the parent
+transform.AppendChild(parent, child, false)
+
+// get world position of the child with parent's position taken into account
+pos := transform.WorldPosition(child)
+
+// roatation
+rot := transform.WorldRotation(child)
+
+// scale
+scale := transform.WorldScale(child)
+```
+
+How to remove chidren (= destroy entities):
+
+```go
+// Remove children
+transform.RemoveChildrenRecursive(parent)
+
+// Remove children and the parent
+transform.RemoveRecursive(parent)
+```
+
 ### Hierarchy (Experimental)
 
-The [hierarchy package](https://github.com/yohamta/donburi/tree/main/features/hierarchy) provides the Parent-Children relationship function.
+The [hierarchy package](https://github.com/yohamta/donburi/tree/main/features/hierarchy) provides the Parent-Children relationship function. Unlike `transform` package it doesn't have any data such as `position` or `rotation`.
 
 See the [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/features/hierarchy) and [Example](https://github.com/yohamta/donburi/tree/main/features/hierarchy/example_test.go).
 
@@ -420,10 +471,10 @@ import (
     }
   }
 
-  // Remove children
+  // Remove children (= destroy entities)
   hierarchy.RemoveChildrenRecursive(parent)
 
-  // Remove children and parent as well
+  // Remove children and the parent
   hierarchy.RemoveRecursive(parent)
   
 // ...
@@ -442,46 +493,6 @@ ecs.AddSystem(ecslib.System{
 })
 
 ```
-
-### Transform (Experimental)
-
-The [transofrm package](https://github.com/yohamta/donburi/tree/main/features/transform) provides the `Tranform` Component and helpers.
-
-This package was adapted from [ariplane](https://github.com/m110/airplanes)'s code, which is created by [m110](https://github.com/m110). 
-
-Usage:
-```go
-w := donburi.NewWorld()
-
-// setup parent
-parent := w.Entry(w.Create(transform.Transform))
-donburi.SetValue(parent, transform.Transform, transform.Identity)
-
-// set world position and scale for the parent
-transform.SetWorldPosition(parent, dmath.Vec2{X: 1, Y: 2})
-transform.SetWorldScale(parent, dmath.Vec2{X: 2, Y: 3})
-
-// setup child
-child := w.Entry(w.Create(transform.Transform))
-donburi.SetValue(child, transform.Transform, transform.TransformData{
-	LocalPosition: dmath.Vec2{X: 1, Y: 2},
-	LocalRotation: 90,
-	LocalScale:    dmath.Vec2{X: 2, Y: 3},
-})
-
-// add the child to the parent
-transform.AppendChild(parent, child, false)
-
-// get world position of the child with parent's position taken into account
-pos := transform.WorldPosition(child)
-
-// roatation
-rot := transform.WorldRotation(child)
-
-// scale
-scale := transform.WorldScale(child)
-```
-
 
 ## Internal Design for `World`
 
