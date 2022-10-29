@@ -37,12 +37,12 @@ func TestHierarchy(t *testing.T) {
 		},
 	})
 
-	if p, ok := GetParent(ce); p != pe.Entity() || !ok {
-		t.Errorf("expected parent entity %d, got %d", pe.Entity(), p)
+	if p, ok := GetParent(ce); p.Entity() != pe.Entity() || !ok {
+		t.Errorf("expected parent entity %d, got %d", pe.Entity(), p.Entity())
 	}
 
-	if p, ok := GetParent(ge); p != ce.Entity() || !ok {
-		t.Errorf("expected parent entity %d, got %d", ce.Entity(), p)
+	if p, ok := GetParent(ge); p.Entity() != ce.Entity() || !ok {
+		t.Errorf("expected parent entity %d, got %d", ce.Entity(), p.Entity())
 	}
 
 	if HasParent(pe) {
@@ -53,13 +53,13 @@ func TestHierarchy(t *testing.T) {
 	if !ok {
 		t.Errorf("expected children, got nil")
 	}
-	if children[0] != ce.Entity() {
-		t.Errorf("expected child entity %d, got %d", ce.Entity(), children[0])
+	if children[0].Entity() != ce.Entity() {
+		t.Errorf("expected child entity %d, got %d", ce.Entity(), children[0].Entity())
 	}
 
 	children, ok = GetChildren(ce)
-	if children[0] != ge.Entity() {
-		t.Errorf("expected child entity %d, got %d", ge.Entity(), children[0])
+	if children[0].Entity() != ge.Entity() {
+		t.Errorf("expected child entity %d, got %d", ge.Entity(), children[0].Entity())
 	}
 
 	pe.Remove()
@@ -189,8 +189,8 @@ func testChildren(t *testing.T, tests []childrenTest) {
 			t.Errorf("expected %d children, got %d", len(test.Children), len(children))
 		}
 		for i, c := range children {
-			if c != test.Children[i].Entity() {
-				t.Errorf("expected child entity %d, got %d", test.Children[i].Entity(), c)
+			if c.Entity() != test.Children[i].Entity() {
+				t.Errorf("expected child entity %d, got %d", test.Children[i].Entity(), c.Entity())
 			}
 		}
 	}

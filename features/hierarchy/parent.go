@@ -5,23 +5,23 @@ import (
 )
 
 type parentData struct {
-	Parent donburi.Entity
+	Parent *donburi.Entry
 }
 
 var parentComponent = donburi.NewComponentType[parentData]()
 
 // GetParent returns a parent of the entry.
-func GetParent(entry *donburi.Entry) (donburi.Entity, bool) {
+func GetParent(entry *donburi.Entry) (*donburi.Entry, bool) {
 	if pd, ok := getParentData(entry); ok {
-		if entry.World.Valid(pd.Parent) {
+		if pd.Parent.Valid() {
 			return pd.Parent, true
 		}
 	}
-	return donburi.Null, false
+	return nil, false
 }
 
 // MustGetParent returns a parent of the entry.
-func MustGetParent(entry *donburi.Entry) donburi.Entity {
+func MustGetParent(entry *donburi.Entry) *donburi.Entry {
 	p := donburi.Get[parentData](entry, parentComponent)
 	return p.Parent
 }
@@ -29,12 +29,12 @@ func MustGetParent(entry *donburi.Entry) donburi.Entity {
 // RemoveChildrenRecursive removes children of the entry recursively.
 func RemoveChildrenRecursive(entry *donburi.Entry) {
 	if HasChildren(entry) {
-		cs, ok := GetChildren(entry)
+		children, ok := GetChildren(entry)
 		if ok {
-			for _, e := range cs {
-				if entry.World.Valid(e) {
-					RemoveChildrenRecursive(entry.World.Entry(e))
-					entry.World.Remove(e)
+			for _, c := range children {
+				if c.Valid() {
+					RemoveChildrenRecursive(c)
+					c.Remove()
 				}
 			}
 		}
@@ -56,9 +56,8 @@ func AppendChild(parent *donburi.Entry, child *donburi.Entry) {
 func FindChildWithComponent(entry *donburi.Entry, componentType *donburi.ComponentType) (*donburi.Entry, bool) {
 	if children, ok := GetChildren(entry); ok {
 		for _, c := range children {
-			ce := entry.World.Entry(c)
-			if ce.Valid() && ce.HasComponent(componentType) {
-				return ce, true
+			if c.Valid() && c.HasComponent(componentType) {
+				return c, true
 			}
 		}
 	}
@@ -80,9 +79,9 @@ func SetParent(child *donburi.Entry, parent *donburi.Entry) {
 		parent.AddComponent(childrenComponent)
 	}
 	child.AddComponent(parentComponent)
-	donburi.SetValue(child, parentComponent, parentData{Parent: parent.Entity()})
+	donburi.SetValue(child, parentComponent, parentData{Parent: parent})
 	children := donburi.Get[childrenData](parent, childrenComponent)
-	children.Children = append(children.Children, child.Entity())
+	children.Children = append(children.Children, child)
 }
 
 // HasParent returns true if the entry has a parent.
