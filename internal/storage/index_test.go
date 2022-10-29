@@ -9,9 +9,9 @@ import (
 
 func TestIndex(t *testing.T) {
 	var (
-		ca = component.NewComponentType(struct{}{})
-		cb = component.NewComponentType(struct{}{})
-		cc = component.NewComponentType(struct{}{})
+		ca = component.NewComponentType(struct{}{}, nil)
+		cb = component.NewComponentType(struct{}{}, nil)
+		cc = component.NewComponentType(struct{}{}, nil)
 	)
 
 	index := NewIndex()

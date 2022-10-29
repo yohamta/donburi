@@ -269,3 +269,20 @@ func TestCreateEntityAndExtend(t *testing.T) {
 		{"new", newArchtype, 2},
 	})
 }
+
+func TestComponentDefaultVal(t *testing.T) {
+	type ComponentData struct {
+		Val int
+	}
+	defVal := ComponentData{Val: 10}
+	component := donburi.NewComponentType[ComponentData](defVal)
+
+	world := donburi.NewWorld()
+
+	entry := world.Entry(world.Create(component))
+	val := donburi.Get[ComponentData](entry, component)
+
+	if val.Val != defVal.Val {
+		t.Errorf("Default value should be %d, but %d", defVal.Val, val.Val)
+	}
+}
