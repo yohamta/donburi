@@ -53,6 +53,30 @@ func SetParent(entry, parent *donburi.Entry, keepWorldPosition bool) {
 	}
 }
 
+// GetParent returns parent of the entry.
+func GetParent(entry *donburi.Entry) (*donburi.Entry, bool) {
+	d := GetTransform(entry)
+	if !d.hasPrent {
+		return nil, false
+	}
+	return hierarchy.GetParent(entry)
+}
+
+// GetChildren returns children of the entry.
+func GetChildren(entry *donburi.Entry) ([]*donburi.Entry, bool) {
+	return hierarchy.GetChildren(entry)
+}
+
+// RemoveRecursive removes the entry and its children recursively.
+func RemoveRecursive(entry *donburi.Entry) {
+	hierarchy.RemoveRecursive(entry)
+}
+
+// RemoveChildrenRecursive removes children recursively.
+func RemoveChildrenRecursive(entry *donburi.Entry) {
+	hierarchy.RemoveChildrenRecursive(entry)
+}
+
 // FindChildWithComponent finds child with specified component.
 func FindChildWithComponent(entry *donburi.Entry, componentType *donburi.ComponentType) (*donburi.Entry, bool) {
 	return hierarchy.FindChildWithComponent(entry, componentType)
