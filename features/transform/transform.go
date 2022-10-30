@@ -188,7 +188,7 @@ func LookAt(entry *donburi.Entry, target dmath.Vec2) {
 	x := target.X - WorldPosition(entry).X
 	y := target.Y - WorldPosition(entry).Y
 	radians := math.Atan2(y, x)
-	SetWorldRotation(entry, radians)
+	SetWorldRotation(entry, dmath.ToDegrees(radians))
 }
 
 var Transform = donburi.NewComponentType[TransformData]()
