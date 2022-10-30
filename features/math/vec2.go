@@ -18,14 +18,17 @@ func NewVec2(x, y float64) Vec2 {
 	}
 }
 
+// IsZero returns true if the vector is (0, 0).
 func (v Vec2) IsZero() bool {
 	return v.X == 0 && v.Y == 0
 }
 
+// Magnitude returns the magnitude of the vector.
 func (v Vec2) Magnitude() float64 {
 	return math.Sqrt(v.X*v.X + v.Y*v.Y)
 }
 
+// Normalized returns the normalized vector.
 func (v Vec2) Normalized() Vec2 {
 	m := v.Magnitude()
 
@@ -35,6 +38,8 @@ func (v Vec2) Normalized() Vec2 {
 
 	return v
 }
+
+// MulScalar multiplies the vector by a scalar.
 func (v Vec2) MulScalar(scalar float64) Vec2 {
 	return Vec2{
 		X: v.X * scalar,
@@ -42,6 +47,7 @@ func (v Vec2) MulScalar(scalar float64) Vec2 {
 	}
 }
 
+// DivScalar divides the vector by a scalar.
 func (v Vec2) DivScalar(scalar float64) Vec2 {
 	return Vec2{
 		X: v.X / scalar,
@@ -49,6 +55,7 @@ func (v Vec2) DivScalar(scalar float64) Vec2 {
 	}
 }
 
+// Dot returns the dot product of the vector and another vector.
 func (v Vec2) Dot(other *Vec2) float64 {
 	return v.X*other.X + v.Y*other.Y
 }
@@ -92,7 +99,7 @@ func (v Vec2) Equal(other Vec2) bool {
 	return v.X == other.X && v.Y == other.Y
 }
 
-// Roatate rotates the vector by the given angle.
+// Rotate rotates the vector by the given angle.
 func (v Vec2) Rotate(rad float64) Vec2 {
 	return Vec2{
 		X: v.X*math.Cos(rad) - v.Y*math.Sin(rad),
