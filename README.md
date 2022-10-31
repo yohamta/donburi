@@ -19,10 +19,9 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
   - [Queries](#queries)
   - [Tags](#tags)
   - [Systems (Experimental)](#systems-experimental)
-- [Optional Features](#optional-features)
+- [Features](#features-1)
   - [Math](#math)
-  - [Transform (Experimental)](#transform-experimental)
-  - [Hierarchy (Experimental)](#hierarchy-experimental)
+  - [Transform](#transform)
 - [Internal Design for `World`](#internal-design-for-world)
 - [How to contribute?](#how-to-contribute)
 - [Contributors](#contributors)
@@ -380,7 +379,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 ```
 
 
-## Optional Features
+## Features
 
 ### Math
 
@@ -388,7 +387,7 @@ The [math package](https://github.com/yohamta/donburi/tree/main/features/math) p
 
 See the [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/features/math) for more details.
 
-### Transform (Experimental)
+### Transform
 
 The [transofrm package](https://github.com/yohamta/donburi/tree/main/features/transform) provides the `Tranform` Component and helpers.
 
@@ -437,61 +436,6 @@ transform.RemoveChildrenRecursive(parent)
 
 // Remove children and the parent
 transform.RemoveRecursive(parent)
-```
-
-### Hierarchy (Experimental)
-
-The [hierarchy package](https://github.com/yohamta/donburi/tree/main/features/hierarchy) provides the Parent-Children relationship function. Unlike `transform` package it doesn't have any data such as `position` or `rotation`.
-
-See the [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/features/hierarchy) and [Example](https://github.com/yohamta/donburi/tree/main/features/hierarchy/example_test.go).
-
-Example:
-```go
-import (
-  ecslib "github.com/yohamta/donburi/ecs"
-  "github.com/yohamta/donburi/features/hierarchy"
-)
-
-// ...
-
-  Parent := donburi.NewTag().SetName("parent")
-  Child := donburi.NewTag().SetName("child")
-
-// ...
-
-  parent := w.Entry(w.Create(Parent))
-  child := w.Entry(w.Create(Child))
-
-  // add a child
-  hierarchy.AppendChild(parent, child)
-
-  if children, ok := hierarchy.GetChildren(entry *donburi.Entry); ok {
-    for _, c := range children {
-      // do something
-    }
-  }
-
-  // Remove children (= destroy entities)
-  hierarchy.RemoveChildrenRecursive(parent)
-
-  // Remove children and the parent
-  hierarchy.RemoveRecursive(parent)
-  
-// ...
-```
-
-If you want children to be removed autoamtically when its parents are already removed:
-
-```go
-// setup a world and ECS container
-w := donburi.NewWorld()
-ecs := ecslib.NewECS(w)
-
-// Add system to remove children automatically
-ecs.AddSystem(ecslib.System{
-  Update: hierarchy.HierarchySystem.RemoveChildren,
-})
-
 ```
 
 ## Internal Design for `World`
