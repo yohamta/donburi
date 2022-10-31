@@ -401,7 +401,6 @@ w := donburi.NewWorld()
 
 // setup parent
 parent := w.Entry(w.Create(transform.Transform))
-transform.Reset(parent) // Reset() initialize the transform data to be the default values
 
 // set world position and scale for the parent
 transform.SetWorldPosition(parent, dmath.Vec2{X: 1, Y: 2})
