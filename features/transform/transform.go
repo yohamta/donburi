@@ -15,7 +15,7 @@ type TransformData struct {
 	LocalRotation float64
 	LocalScale    dmath.Vec2
 
-	hasPrent bool
+	hasParent bool
 }
 
 var defaultValue = TransformData{
@@ -47,7 +47,7 @@ func SetParent(entry, parent *donburi.Entry, keepWorldPosition bool) {
 		panic("entry does not have transform component")
 	}
 	d := GetTransform(entry)
-	d.hasPrent = true
+	d.hasParent = true
 	if keepWorldPosition {
 		parentPos := WorldPosition(parent)
 
@@ -55,15 +55,19 @@ func SetParent(entry, parent *donburi.Entry, keepWorldPosition bool) {
 		d.LocalRotation -= WorldRotation(parent)
 
 		ws := WorldScale(parent)
-		d.LocalScale.X = d.LocalScale.X / ws.X
-		d.LocalScale.Y = d.LocalScale.Y / ws.Y
+		if ws.X != 0 {
+			d.LocalScale.X = d.LocalScale.X / ws.X
+		}
+		if ws.Y != 0 {
+			d.LocalScale.Y = d.LocalScale.Y / ws.Y
+		}
 	}
 }
 
 // GetParent returns parent of the entry.
 func GetParent(entry *donburi.Entry) (*donburi.Entry, bool) {
 	d := GetTransform(entry)
-	if !d.hasPrent {
+	if !d.hasParent {
 		return nil, false
 	}
 	return hierarchy.GetParent(entry)
@@ -92,7 +96,7 @@ func FindChildWithComponent(entry *donburi.Entry, componentType *donburi.Compone
 // SetWorldPosition sets world position to the entry.
 func SetWorldPosition(entry *donburi.Entry, pos dmath.Vec2) {
 	d := GetTransform(entry)
-	if !d.hasPrent {
+	if !d.hasParent {
 		d.LocalPosition = pos
 		return
 	}
@@ -106,7 +110,7 @@ func SetWorldPosition(entry *donburi.Entry, pos dmath.Vec2) {
 // WorldPosition returns world position of the entry.
 func WorldPosition(entry *donburi.Entry) dmath.Vec2 {
 	d := GetTransform(entry)
-	if !d.hasPrent {
+	if !d.hasParent {
 		return d.LocalPosition
 	}
 
@@ -118,7 +122,7 @@ func WorldPosition(entry *donburi.Entry) dmath.Vec2 {
 // SetWorldRotation sets world rotation to the entry.
 func SetWorldRotation(entry *donburi.Entry, rotation float64) {
 	d := GetTransform(entry)
-	if !d.hasPrent {
+	if !d.hasParent {
 		d.LocalRotation = rotation
 		return
 	}
@@ -130,7 +134,7 @@ func SetWorldRotation(entry *donburi.Entry, rotation float64) {
 // SetWorldScale sets world scale to the entry.
 func SetWorldScale(entry *donburi.Entry, scale dmath.Vec2) {
 	d := GetTransform(entry)
-	if !d.hasPrent {
+	if !d.hasParent {
 		d.LocalScale = scale
 		return
 	}
@@ -144,7 +148,7 @@ func SetWorldScale(entry *donburi.Entry, scale dmath.Vec2) {
 // WorldRotation returns world rotation of the entry.
 func WorldRotation(entry *donburi.Entry) float64 {
 	d := GetTransform(entry)
-	if !d.hasPrent {
+	if !d.hasParent {
 		return d.LocalRotation
 	}
 
@@ -156,7 +160,7 @@ func WorldRotation(entry *donburi.Entry) float64 {
 // WorldScale returns world scale of the entry.
 func WorldScale(entry *donburi.Entry) dmath.Vec2 {
 	d := GetTransform(entry)
-	if !d.hasPrent {
+	if !d.hasParent {
 		return d.LocalScale
 	}
 
