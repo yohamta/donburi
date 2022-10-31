@@ -10,6 +10,7 @@ type ComponentType = component.ComponentType
 // NewComponentType creates a new component type.
 // The function is used to create a new component of the type.
 // It receives a function that returns a pointer to a new component.
+// The first argument is a default value of the component.
 func NewComponentType[T any](opts ...interface{}) *ComponentType {
 	var t T
 	if len(opts) == 0 {
