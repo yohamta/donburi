@@ -195,7 +195,7 @@ func LookAt(entry *donburi.Entry, target dmath.Vec2) {
 	SetWorldRotation(entry, dmath.ToDegrees(radians))
 }
 
-var Transform = donburi.NewComponentType[TransformData]()
+var Transform = donburi.NewComponentType[TransformData](defaultValue)
 
 func GetTransform(entry *donburi.Entry) *TransformData {
 	return donburi.Get[TransformData](entry, Transform)

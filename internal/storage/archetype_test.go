@@ -8,8 +8,8 @@ import (
 
 func TestMatchesLayout(t *testing.T) {
 	var (
-		ca = component.NewComponentType(struct{}{})
-		cb = component.NewComponentType(struct{}{})
+		ca = component.NewComponentType(struct{}{}, nil)
+		cb = component.NewComponentType(struct{}{}, nil)
 	)
 
 	cmps := []*component.ComponentType{ca, cb}
@@ -21,8 +21,8 @@ func TestMatchesLayout(t *testing.T) {
 
 func TestPushEntity(t *testing.T) {
 	var (
-		ca = component.NewComponentType(struct{}{})
-		cb = component.NewComponentType(struct{}{})
+		ca = component.NewComponentType(struct{}{}, nil)
+		cb = component.NewComponentType(struct{}{}, nil)
 	)
 
 	cmps := []*component.ComponentType{ca, cb}

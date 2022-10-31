@@ -11,8 +11,8 @@ func TestComponents(t *testing.T) {
 		ID string
 	}
 	var (
-		ca = component.NewComponentType(ComponentData{})
-		cb = component.NewComponentType(ComponentData{})
+		ca = component.NewComponentType(ComponentData{}, nil)
+		cb = component.NewComponentType(ComponentData{}, nil)
 	)
 
 	components := NewComponents()
