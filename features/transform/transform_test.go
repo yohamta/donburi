@@ -12,7 +12,6 @@ func TestTransform(t *testing.T) {
 	w := donburi.NewWorld()
 
 	parent := w.Entry(w.Create(transform.Transform))
-	transform.Reset(parent)
 	transform.SetWorldPosition(parent, dmath.Vec2{X: 1, Y: 2})
 	transform.SetWorldScale(parent, dmath.Vec2{X: 2, Y: 3})
 
@@ -46,7 +45,6 @@ func TestTransformKeepWorldPosition(t *testing.T) {
 	w := donburi.NewWorld()
 
 	parent := w.Entry(w.Create(transform.Transform))
-	transform.Reset(parent)
 
 	transform.SetWorldPosition(parent, dmath.Vec2{X: 1, Y: 2})
 	transform.SetWorldRotation(parent, 90)
@@ -66,6 +64,17 @@ func TestTransformKeepWorldPosition(t *testing.T) {
 		Rotation: 90,
 		Scale:    dmath.Vec2{X: 1.5, Y: 1.5},
 	})
+}
+
+func TestTransformDefaultValue(t *testing.T) {
+	w := donburi.NewWorld()
+
+	entry := w.Entry(w.Create(transform.Transform))
+
+	value := donburi.Get[transform.TransformData](entry, transform.Transform)
+	if value.LocalScale.X != 1 || value.LocalScale.Y != 1 {
+		t.Errorf("expected local scale %v, but got %v", dmath.Vec2{X: 1, Y: 1}, value.LocalScale)
+	}
 }
 
 type testTransform struct {
