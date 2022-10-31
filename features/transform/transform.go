@@ -51,7 +51,7 @@ func SetParent(entry, parent *donburi.Entry, keepWorldPosition bool) {
 	if keepWorldPosition {
 		parentPos := WorldPosition(parent)
 
-		d.LocalPosition = d.LocalPosition.Sub(&parentPos)
+		d.LocalPosition = d.LocalPosition.Sub(parentPos)
 		d.LocalRotation -= WorldRotation(parent)
 
 		ws := WorldScale(parent)
@@ -112,7 +112,7 @@ func WorldPosition(entry *donburi.Entry) dmath.Vec2 {
 
 	parent := hierarchy.MustGetParent(entry)
 	parentPos := WorldPosition(parent)
-	return parentPos.Add(&d.LocalPosition)
+	return parentPos.Add(d.LocalPosition)
 }
 
 // SetWorldRotation sets world rotation to the entry.
@@ -162,7 +162,7 @@ func WorldScale(entry *donburi.Entry) dmath.Vec2 {
 
 	parent := hierarchy.MustGetParent(entry)
 	parentScale := WorldScale(parent)
-	return parentScale.Mul(&d.LocalScale)
+	return parentScale.Mul(d.LocalScale)
 }
 
 // Right returns right vector of the entry.
