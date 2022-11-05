@@ -7,16 +7,16 @@ import (
 	"github.com/yohamta/donburi/features/events"
 )
 
-type anEvent struct {
-	Value int
+type EnemyKilled struct {
+	EnemyID int
 }
 
-var anEventType = events.NewEventType(AnEventHandler)
+var EnemyKeilledEvent = events.NewEventType(HandleEnemyKilled)
 
 func TestEvents(t *testing.T) {
 	w := donburi.NewWorld()
 
-	anEventType.Publish(w, &anEvent{Value: 1})
+	EnemyKeilledEvent.Publish(w, &EnemyKilled{EnemyID: 1})
 
 	events.ProcessAllEvents(w)
 
@@ -26,15 +26,15 @@ func TestEvents(t *testing.T) {
 		t.Errorf("event should be received")
 	}
 
-	if ev.Value != 1 {
+	if ev.EnemyID != 1 {
 		t.Errorf("event should have value 1")
 	}
 }
 
 var (
-	lastReceivedEvent *anEvent = nil
+	lastReceivedEvent *EnemyKilled = nil
 )
 
-func AnEventHandler(w donburi.World, event *anEvent) {
+func HandleEnemyKilled(w donburi.World, event *EnemyKilled) {
 	lastReceivedEvent = event
 }
