@@ -16,7 +16,7 @@ var Debug = false
 // It is used to subscribe and publish events.
 type (
 	EventType[T any] struct {
-		Subscriber Subscriber[T]
+		subscribers []Subscriber[T]
 
 		eventName     string
 		eventBus      *donburi.ComponentType
@@ -47,11 +47,11 @@ func ProcessAllEvents(w donburi.World) {
 }
 
 // NewEventType creates a new event type.
-func NewEventType[T any](subscriber Subscriber[T]) *EventType[T] {
+func NewEventType[T any](subscribers ...Subscriber[T]) *EventType[T] {
 	eventBus := donburi.NewComponentType[eventBusData[T]]()
 	var t T
 	e := &EventType[T]{
-		Subscriber:    subscriber,
+		subscribers:   subscribers,
 		eventName:     reflect.TypeOf(t).Name(),
 		eventBus:      eventBus,
 		eventBusQuery: query.NewQuery(filter.Contains(eventBus)),
@@ -87,11 +87,13 @@ func (e *EventType[T]) ProcessEvents(w donburi.World) {
 		queue := eventBus.queue
 		eventBus.queue = nil
 		for _, event := range queue {
-			if Debug {
-				fmt.Printf("%T -> %T\n", event, e.Subscriber)
-			}
+			for _, s := range e.subscribers {
+				if Debug {
+					fmt.Printf("%T -> %T\n", event, s)
+				}
 
-			e.Subscriber(w, event)
+				s(w, event)
+			}
 		}
 	}
 }
