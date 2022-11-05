@@ -19,7 +19,6 @@ type (
 		Subscriber Subscriber[T]
 
 		eventName     string
-		eventId       eventId
 		eventBus      *donburi.ComponentType
 		eventBusQuery *query.Query
 	}
@@ -29,7 +28,6 @@ type (
 )
 
 type (
-	eventId             int
 	eventBusData[T any] struct {
 		subscribers Subscriber[T]
 		queue       []T
@@ -39,10 +37,14 @@ type (
 	}
 )
 
-var (
-	registeredEvents         = []*eventType{}
-	nextId           eventId = 0
-)
+var registeredEvents = []*eventType{}
+
+// ProcessAllEvents processes all events.
+func ProcessAllEvents(w donburi.World) {
+	for _, e := range registeredEvents {
+		e.process(w)
+	}
+}
 
 // NewEventType creates a new event type.
 func NewEventType[T any](subscriber Subscriber[T]) *EventType[T] {
@@ -51,11 +53,9 @@ func NewEventType[T any](subscriber Subscriber[T]) *EventType[T] {
 	e := &EventType[T]{
 		Subscriber:    subscriber,
 		eventName:     reflect.TypeOf(t).Name(),
-		eventId:       nextId,
 		eventBus:      eventBus,
 		eventBusQuery: query.NewQuery(filter.Contains(eventBus)),
 	}
-	nextId++
 	registeredEvents = append(registeredEvents, &eventType{
 		process: func(w donburi.World) {
 			e.ProcessEvents(w)
@@ -68,13 +68,6 @@ func NewEventType[T any](subscriber Subscriber[T]) *EventType[T] {
 		},
 	)
 	return e
-}
-
-// ProcessAllEvents processes all events.
-func ProcessAllEvents(w donburi.World) {
-	for _, e := range registeredEvents {
-		e.process(w)
-	}
 }
 
 // Publish publishes an event.
