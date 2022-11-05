@@ -455,8 +455,8 @@ type EnemyKilled struct {
   EnemyID int
 }
 
-// Define an EventType
-var EnemyKeilledEvent = events.NewEventType(HandleEnemyKilled)
+// Define an EventType with arbitrary number of subscribers
+var EnemyKeilledEvent = events.NewEventType(LevelUp, UpdateScore, ...)
 
 // Sending an Event
 func SomeSystem(world World) {
@@ -476,7 +476,7 @@ func (game *Game) Update() {
 }
 
 // Receives the events
-func HandleEnemyKilled(w donburi.World, event EnemyKilled) {
+func LevelUp(w donburi.World, event EnemyKilled) {
   // ...
 }
 ```
