@@ -456,27 +456,27 @@ type EnemyKilled struct {
 }
 
 // Define an EventType with arbitrary number of subscribers
-var EnemyKeilledEvent = events.NewEventType(LevelUp, UpdateScore, ...)
+var EnemyKilledEvent = events.NewEventType()
+
+// Add Handlers for the event
+EnemyKilledEvent.Subscribe(w, LevelUp)
+EnemyKilledEvent.Subscribe(w, UpdateScore)
 
 // Sending an Event
-func SomeSystem(world World) {
-  // ...
-  EnemyKeilledEvent.Publish(world, EnemyKilled{EnemyID: 1})
-  // ...
-}
+EnemyKilledEvent.Publish(world, EnemyKilled{EnemyID: 1})
 
-// Processing Events
-func (game *Game) Update() {
-  // ...
-  // Process specific events
-  EnemyKilledEvent.ProcessEvents()
-  // Process all other events
-  events.ProcessAllEvents(w)
-  // ...
-}
+// Process specific events
+EnemyKilledEvent.ProcessEvents()
+
+// Process all events
+events.ProcessAllEvents(w)
 
 // Receives the events
 func LevelUp(w donburi.World, event EnemyKilled) {
+  // ...
+}
+
+func UpdateScore(w donburi.World, event EnemyKilled) {
   // ...
 }
 ```

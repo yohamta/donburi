@@ -16,8 +16,6 @@ var Debug = false
 // It is used to subscribe and publish events.
 type (
 	EventType[T any] struct {
-		subscribers []Subscriber[T]
-
 		eventName     string
 		eventBus      *donburi.ComponentType
 		eventBusQuery *query.Query
@@ -29,7 +27,7 @@ type (
 
 type (
 	eventBusData[T any] struct {
-		subscribers Subscriber[T]
+		subscribers []Subscriber[T]
 		queue       []T
 	}
 	eventType struct {
@@ -47,11 +45,10 @@ func ProcessAllEvents(w donburi.World) {
 }
 
 // NewEventType creates a new event type.
-func NewEventType[T any](subscribers ...Subscriber[T]) *EventType[T] {
+func NewEventType[T any]() *EventType[T] {
 	eventBus := donburi.NewComponentType[eventBusData[T]]()
 	var t T
 	e := &EventType[T]{
-		subscribers:   subscribers,
 		eventName:     reflect.TypeOf(t).Name(),
 		eventBus:      eventBus,
 		eventBusQuery: query.NewQuery(filter.Contains(eventBus)),
@@ -68,6 +65,12 @@ func NewEventType[T any](subscribers ...Subscriber[T]) *EventType[T] {
 		},
 	)
 	return e
+}
+
+// RegisterHandler registers a subscriber for the event.
+func (e *EventType[T]) Subscribe(w donburi.World, subscriber Subscriber[T]) {
+	eventBus := e.mustFindEventBus(w)
+	eventBus.subscribers = append(eventBus.subscribers, subscriber)
 }
 
 // Publish publishes an event.
@@ -87,7 +90,7 @@ func (e *EventType[T]) ProcessEvents(w donburi.World) {
 		queue := eventBus.queue
 		eventBus.queue = nil
 		for _, event := range queue {
-			for _, s := range e.subscribers {
+			for _, s := range eventBus.subscribers {
 				if Debug {
 					fmt.Printf("%T -> %T\n", event, s)
 				}

@@ -11,12 +11,14 @@ type EnemyKilled struct {
 	EnemyID int
 }
 
-var EnemyKeilledEvent = events.NewEventType(HandleEnemyKilled)
+var EnemyKilledEvent = events.NewEventType[*EnemyKilled]()
 
 func TestEvents(t *testing.T) {
+
 	w := donburi.NewWorld()
 
-	EnemyKeilledEvent.Publish(w, &EnemyKilled{EnemyID: 1})
+	EnemyKilledEvent.Subscribe(w, HandleEnemyKilled)
+	EnemyKilledEvent.Publish(w, &EnemyKilled{EnemyID: 1})
 
 	events.ProcessAllEvents(w)
 
