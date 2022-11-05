@@ -440,7 +440,7 @@ transform.RemoveRecursive(parent)
 
 ### Events
 
-The [event package](https://pkg.go.dev/github.com/yohamta/donburi/features/math) allows us to send arbitrary data between systems in a Type-safe manner.
+The [events package](https://pkg.go.dev/github.com/yohamta/donburi/features/events) allows us to send arbitrary data between systems in a Type-safe manner.
 
 This package was adapted from [ariplane](https://github.com/m110/airplanes)'s code, which is created by [m110](https://github.com/m110). 
 
