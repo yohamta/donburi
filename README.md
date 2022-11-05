@@ -22,6 +22,7 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
 - [Features](#features-1)
   - [Math](#math)
   - [Transform](#transform)
+  - [Events](#events)
 - [Internal Design for `World`](#internal-design-for-world)
 - [How to contribute?](#how-to-contribute)
 - [Contributors](#contributors)
@@ -409,9 +410,9 @@ transform.SetWorldScale(parent, dmath.Vec2{X: 2, Y: 3})
 // setup child
 child := w.Entry(w.Create(transform.Transform))
 donburi.SetValue(child, transform.Transform, transform.TransformData{
-	LocalPosition: dmath.Vec2{X: 1, Y: 2},
-	LocalRotation: 90,
-	LocalScale:    dmath.Vec2{X: 2, Y: 3},
+  LocalPosition: dmath.Vec2{X: 1, Y: 2},
+  LocalRotation: 90,
+  LocalScale:    dmath.Vec2{X: 2, Y: 3},
 })
 
 // add the child to the parent
@@ -435,6 +436,49 @@ transform.RemoveChildrenRecursive(parent)
 
 // Remove children and the parent
 transform.RemoveRecursive(parent)
+```
+
+### Events
+
+The [event package](https://pkg.go.dev/github.com/yohamta/donburi/features/math) allows us to send arbitrary data between systems in a Type-safe manner.
+
+This package was adapted from [ariplane](https://github.com/m110/airplanes)'s code, which is created by [m110](https://github.com/m110). 
+
+Example Usage:
+
+```go
+
+import "github.com/yohamta/donburi/features/events"
+
+// Define any data
+type EnemyKilled struct {
+  EnemyID int
+}
+
+// Define an EventType with arbitrary number of subscribers
+var EnemyKeilledEvent = events.NewEventType(LevelUp, UpdateScore, ...)
+
+// Sending an Event
+func SomeSystem(world World) {
+  // ...
+  EnemyKeilledEvent.Publish(world, EnemyKilled{EnemyID: 1})
+  // ...
+}
+
+// Processing Events
+func (game *Game) Update() {
+  // ...
+  // Process specific events
+  EnemyKilledEvent.ProcessEvents()
+  // Process all other events
+  events.ProcessAllEvents(w)
+  // ...
+}
+
+// Receives the events
+func LevelUp(w donburi.World, event EnemyKilled) {
+  // ...
+}
 ```
 
 ## Internal Design for `World`

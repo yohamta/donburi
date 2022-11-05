@@ -43,6 +43,8 @@ type StorageAccessor struct {
 	Archetypes []*storage.Archetype
 }
 
+type initializer func(w World)
+
 type world struct {
 	id           WorldId
 	index        *storage.Index
@@ -55,6 +57,13 @@ type world struct {
 }
 
 var nextWorldId WorldId = 0
+
+var registeredInitializers []initializer
+
+// RegisterInitializer registers an initializer for a world.
+func RegisterInitializer(initializer initializer) {
+	registeredInitializers = append(registeredInitializers, initializer)
+}
 
 // NewWorld creates a new world.
 func NewWorld() World {
@@ -69,6 +78,9 @@ func NewWorld() World {
 		destroyed:    make([]Entity, 0, 256),
 		entries:      make([]*Entry, 1, 256),
 		nextEntityId: 1,
+	}
+	for _, initializer := range registeredInitializers {
+		initializer(w)
 	}
 	return w
 }
