@@ -29,6 +29,13 @@ func TestEvents(t *testing.T) {
 	if ev.EnemyID != 1 {
 		t.Errorf("event should have value 1")
 	}
+
+	lastReceivedEvent = nil
+	events.ProcessAllEvents(w)
+
+	if lastReceivedEvent != nil {
+		t.Errorf("event should not be received")
+	}
 }
 
 var (
