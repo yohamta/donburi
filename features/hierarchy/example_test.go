@@ -11,9 +11,7 @@ func TestHierarchy(t *testing.T) {
 	w := donburi.NewWorld()
 	ecs := ecslib.NewECS(w)
 
-	ecs.AddSystem(ecslib.System{
-		Update: HierarchySystem.RemoveChildren,
-	})
+	ecs.AddSystem(HierarchySystem.RemoveChildren)
 
 	parent := donburi.NewTag().SetName("parent")
 	child := donburi.NewTag().SetName("child")

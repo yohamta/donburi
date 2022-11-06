@@ -5,14 +5,7 @@ import (
 )
 
 // UpdateSystem is a system that updates the world.
-type UpdateSystem func(ecs *ECS)
+type System func(ecs *ECS)
 
 // DrawSystem is a system that draws the world.
-type DrawSystem func(ecs *ECS, screen *ebiten.Image)
-
-// System represents a system.
-type System struct {
-	Layer  LayerID
-	Update UpdateSystem
-	Draw   DrawSystem
-}
+type Renderer func(ecs *ECS, screen *ebiten.Image)

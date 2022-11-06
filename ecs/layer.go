@@ -9,22 +9,22 @@ import (
 
 type Layer struct {
 	*layer
-	systems []DrawSystem
+	renderers []Renderer
 }
 
 func newLayer(l *layer) *Layer {
-	return &Layer{l, []DrawSystem{}}
+	return &Layer{l, []Renderer{}}
 }
 
 func (l *Layer) draw(e *ECS, i *ebiten.Image) {
 	screen := i
-	for _, s := range l.systems {
+	for _, s := range l.renderers {
 		s(e, screen)
 	}
 }
 
-func (l *Layer) addDrawSystem(s DrawSystem) {
-	l.systems = append(l.systems, s)
+func (l *Layer) addRenderer(r Renderer) {
+	l.renderers = append(l.renderers, r)
 }
 
 var (
