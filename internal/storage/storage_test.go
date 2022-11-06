@@ -10,7 +10,7 @@ import (
 func TestStorage(t *testing.T) {
 	type Component struct{ ID string }
 	var (
-		componentType = component.NewComponentType[any](Component{}, nil)
+		componentType = component.NewMockComponentType[any](Component{}, nil)
 	)
 
 	st := NewStorage()

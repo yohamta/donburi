@@ -7,7 +7,7 @@ import (
 )
 
 func TestLayout(t *testing.T) {
-	compType := component.NewComponentType(struct{}{}, nil)
+	compType := component.NewMockComponentType(struct{}{}, nil)
 	components := []component.IComponentType{compType}
 	layout := NewLayout(components)
 
