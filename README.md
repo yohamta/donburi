@@ -19,11 +19,11 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
   - [Queries](#queries)
   - [Tags](#tags)
   - [Systems (Experimental)](#systems-experimental)
+  - [Debug](#debug)
 - [Features](#features-1)
   - [Math](#math)
   - [Transform](#transform)
   - [Events](#events)
-  - [Debug](#debug)
 - [Internal Design for `World`](#internal-design-for-world)
 - [How to contribute?](#how-to-contribute)
 - [Contributors](#contributors)
@@ -62,7 +62,7 @@ import "github.com/yohamta/donburi"
 world := donburi.NewWorld()
 ```
 
-Entities can be created via either `Create` (for a single entity) or `CreateMany` (for a collection of entities with the same component types). The world will create a unique ID for each entity upon insertion that you can use to refer to that entity later.
+Entities can be created via either `Create` (for a single entity) or `CreateMany` (for a collection of entities with the same component types). The world will create a unique ID for each entity upon insertion that we can use to refer to that entity later.
 
 ```go
 // Component is any struct that holds some kind of data.
@@ -82,7 +82,7 @@ var Velocity = donburi.NewComponentType[VelocityData]()
 // Component data will be initialized by default value of the struct.
 entity = world.Create(Position, Velocity);
 
-// You can use entity (it's a wrapper of int64) to get an Entry object from World
+// We can use entity (it's a wrapper of int64) to get an Entry object from World
 // which allows you to access the components that belong to the entity.
 entry := world.Entry(entity)
 
@@ -137,13 +137,11 @@ if SomeLogic.IsDead(world, someEntity) {
 
 Queries allow for high performance and expressive iteration through the entities in a world, to get component references, test if an entity has a component or to add and remove components.
 
-You can search for entities that have all of a set of components.
-
 ```go
-// You can define a query by declaring what componet you want to find.
+// Define a query by declaring what componet you want to find.
 query := query.NewQuery(filter.Contains(Position, Velocity))
 
-// You can then iterate through the entity found in the world
+// Iterate through the entities found in the world
 query.EachEntity(world, func(entry *donburi.Entry) {
   // An entry is an accessor to entity and its components.
   position := donburi.Get[PositionData](entry, Position)
@@ -154,7 +152,7 @@ query.EachEntity(world, func(entry *donburi.Entry) {
 })
 ```
 
-There are other types of filters such as `And`, `Or`, `Exact` and `Not`. You can combine them to find the target entities.
+There are other types of filters such as `And`, `Or`, `Exact` and `Not`. Filters can be combined wth to find the target entities.
 
 For example:
 
@@ -210,7 +208,7 @@ query.EachEntity(world, func(entry *donburi.Entry) {
 
 ### Tags
 
-You can attach one or multiple "Tag" components to an entity. "Tag"s are just components with no data.
+One or multiple "Tag" components can be attached to an entity. "Tag"s are just components with no data.
 
 Here is the utility function to create a tag component.
 
@@ -266,15 +264,32 @@ ecs.AddSystem(
 )
 ```
 
-You can also provide `Draw()` functions for Systems. The `Layer` option allows you to control the order of calling `Draw()` functions and where to render. An `Layer` is just an integer value from the user's perspective. The default value of `Layer` is just `0`.
+Each `System` can have a `Draw()` function.
 
+```go
+ecs.AddSystem(
+  ecs.System{
+    Update: UpdateBackground,
+    Draw:   DrawBackground,
+  }
+)
+
+// Draw all systems
+ecs.Draw(screen)
+```
+
+The `Layer` option of the `System` allows control of the order of rendering systems and to which screen to render. A `Layer` is just an `int` value. The default value is just `0`.
+
+
+For example:
 ```go
 
 const (
   LayerBackground ecslib.LayerID = iota
   LayerActors
-  LayerFX
 )
+
+// ...
 
 ecs.AddSystem(
   ecs.System{
@@ -282,27 +297,25 @@ ecs.AddSystem(
     Update: UpdateBackground,
     Draw:   DrawBackground,
   }
+  ecs.System{
+    Layer:  LayerActors,
+    Update: UpdateActors,
+    Draw:   DrawActors,
+  }
 )
-```
 
-Execute an ECS's `Update()` and `Draw()` to run systems as below:
-
-```go
-func (g *Game) Update() error {
-  g.ecs.Update()
-  return nil
-}
+// ...
 
 func (g *Game) Draw(screen *ebiten.Image) {
   screen.Clear()
   g.ecs.DrawLayer(LayerBackground, screen)
-  g.ecs.DrawLayer(LayerBunnies, screen)
-  g.ecs.DrawLayer(LayerMetrics, screen)
+  g.ecs.DrawLayer(LayerActors, screen)
 }
 ```
 
-The `ecs.Create()` and `ecs.NewQuery()` wrapper-functions allow you to create and query entities on a certain layer:
+The `ecs.Create()` and `ecs.NewQuery()` wrapper-functions allow to create and query entities on a certain `Layer`:
 
+For example:
 ```go
 var layer0 ecs.LayerID = 0
 
@@ -313,73 +326,21 @@ ecslib.Create(layer0, someComponents...)
 queryForLayer0 := ecslib.NewQuery(layer0, filter.Contains(someComponent))
 ```
 
-Example:
+### Debug
 
+The [debug package](https://pkg.go.dev/github.com/yohamta/donburi/features/debug) provides some debug utilities for `World`.
+
+For example:
 ```go
-import (
-  ecslib "github.com/yohamta/donburi/ecs"
-  "github.com/yohamta/donburi/features/hierarchy"
-)
+debug.PrintEntityCounts(world)
 
-const (
-  LayerBackground ecs.LayerID = iota
-  LayerBunnies
-  LayerMetrics
-)
-
-func newECS() *ecs.ECS {
-  world := donburi.NewWorld()
-  ecs := ecslib.NewECS(world)
-
-  ecs.AddSystems(
-    // Systems are executed in the order they are added.
-    ecs.System{
-      Update: system.NewSpawn().Update,
-    },
-    ecs.System{
-      Layer: LayerBackground,
-      Draw:  system.DrawBackground,
-    },
-    ecs.System{
-      Layer:  LayerMetrics,
-      Update: metrics.Update,
-      Draw:   metrics.Draw,
-    },
-    ecs.System{
-      Update: system.NewBounce(&g.bounds).Update,
-    },
-    ecs.System{
-      Update: system.Velocity.Update,
-    },
-    ecs.System{
-      Update: system.Gravity.Update,
-    },
-    ecs.System{
-      Layer: LayerBunnies,
-      Draw:  system.Render.Draw,
-    },
-  )
-
-  return ecs
-}
+// [Example Output]
+// Entity Counts:
+// Archetype Layout: {TransformData, Size, SpriteData, EffectData } has 61 entities
+// Archetype Layout: {TransformData, Size, SpriteData, ColliderData } has 59 entities
+// Archetype Layout: {TransformData, Size, SpriteData, WeaponData} has 49 entities
 // ...
-
-func (g *Game) Update() error {
-  g.ecs.Update()
-  return nil
-}
-
-func (g *Game) Draw(screen *ebiten.Image) {
-  screen.Clear()
-  g.ecs.DrawLayer(LayerBackground, screen)
-  g.ecs.DrawLayer(LayerBunnies, screen)
-  g.ecs.DrawLayer(LayerMetrics, screen)
-}
-
-// ...
-
 ```
-
 
 ## Features
 
@@ -393,11 +354,11 @@ See the [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/features/math) for
 
 The [transofrm package](https://github.com/yohamta/donburi/tree/main/features/transform) provides the `Tranform` Component and helpers.
 
-`transform` package allows us to handle `position`, `rotation`, `scale` data relative to the parent.
+It allows us to handle `position`, `rotation`, `scale` data relative to the parent.
 
 This package was adapted from [ariplane](https://github.com/m110/airplanes)'s code, which is created by [m110](https://github.com/m110). 
 
-Usage:
+For example:
 ```go
 w := donburi.NewWorld()
 
@@ -445,8 +406,7 @@ The [events package](https://pkg.go.dev/github.com/yohamta/donburi/features/even
 
 This package was adapted from [ariplane](https://github.com/m110/airplanes)'s code, which is created by [m110](https://github.com/m110). 
 
-Example Usage:
-
+For example:
 ```go
 
 import "github.com/yohamta/donburi/features/events"
@@ -483,23 +443,6 @@ func LevelUp(w donburi.World, event EnemyKilled) {
 func UpdateScore(w donburi.World, event EnemyKilled) {
   // .. processs the event for updating the player's score
 }
-```
-
-### Debug
-
-The [debug package](https://pkg.go.dev/github.com/yohamta/donburi/features/debug) provides us with some debugging utilities for worlds.
-
-Example:
-```go
-// Prints current entity count for each Archetype of a world
-debug.PrintEntityCounts(world)
-
-// [Example Output]
-// Entity Counts:
-// Archetype Layout: {TransformData, Size, SpriteData, EffectData } has 61 entities
-// Archetype Layout: {TransformData, Size, SpriteData, ColliderData } has 59 entities
-// Archetype Layout: {TransformData, Size, SpriteData, WeaponData} has 49 entities
-// ...
 ```
 
 ## Internal Design for `World`
