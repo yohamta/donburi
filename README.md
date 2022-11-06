@@ -455,16 +455,17 @@ type EnemyKilled struct {
   EnemyID int
 }
 
+// Define an EventType with the type of the event data
+var EnemyKilledEvent = events.NewEventType[EnemyKilled]()
+
+// Create a world
 world := donburi.NewWorld()
 
-// Define an EventType with arbitrary number of subscribers
-var EnemyKilledEvent = events.NewEventType()
-
-// Add Handlers for the event
+// Add handlers for the event
 EnemyKilledEvent.Subscribe(world, LevelUp)
 EnemyKilledEvent.Subscribe(world, UpdateScore)
 
-// Sending an Event
+// Sending an event
 EnemyKilledEvent.Publish(world, EnemyKilled{EnemyID: 1})
 
 // Process specific events
@@ -475,11 +476,11 @@ events.ProcessAllEvents(world)
 
 // Receives the events
 func LevelUp(w donburi.World, event EnemyKilled) {
-  // ...
+  // do stuff
 }
 
 func UpdateScore(w donburi.World, event EnemyKilled) {
-  // ...
+  // do stuff
 }
 ```
 
