@@ -23,6 +23,7 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
   - [Math](#math)
   - [Transform](#transform)
   - [Events](#events)
+  - [Debug](#debug)
 - [Internal Design for `World`](#internal-design-for-world)
 - [How to contribute?](#how-to-contribute)
 - [Contributors](#contributors)
@@ -482,6 +483,23 @@ func LevelUp(w donburi.World, event EnemyKilled) {
 func UpdateScore(w donburi.World, event EnemyKilled) {
   // .. processs the event for updating the player's score
 }
+```
+
+### Debug
+
+The [debug package](https://pkg.go.dev/github.com/yohamta/donburi/features/debug) provides us with some debugging utilities for worlds.
+
+Example:
+```go
+// Prints current entity count for each Archetype of a world
+debug.PrintEntityCounts(world)
+
+// [Example Output]
+// Entity Counts:
+// Archetype Layout: {TransformData, Size, SpriteData, EffectData } has 61 entities
+// Archetype Layout: {TransformData, Size, SpriteData, ColliderData } has 59 entities
+// Archetype Layout: {TransformData, Size, SpriteData, WeaponData} has 49 entities
+// ...
 ```
 
 ## Internal Design for `World`
