@@ -476,11 +476,11 @@ events.ProcessAllEvents(world)
 
 // Receives the events
 func LevelUp(w donburi.World, event EnemyKilled) {
-  // do stuff
+  // .. processs the event for levelup
 }
 
 func UpdateScore(w donburi.World, event EnemyKilled) {
-  // do stuff
+  // .. processs the event for updating the player's score
 }
 ```
 
