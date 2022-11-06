@@ -31,34 +31,15 @@ func NewGame() *Game {
 
 	metrics := system.NewMetrics(&g.bounds)
 
-	g.ecs.AddSystems(
-		// Systems are executed in the order they are added.
-		ecs.System{
-			Update: system.NewSpawn().Update,
-		},
-		ecs.System{
-			Layer: layers.LayerBackground,
-			Draw:  system.DrawBackground,
-		},
-		ecs.System{
-			Layer:  layers.LayerMetrics,
-			Update: metrics.Update,
-			Draw:   metrics.Draw,
-		},
-		ecs.System{
-			Update: system.NewBounce(&g.bounds).Update,
-		},
-		ecs.System{
-			Update: system.Velocity.Update,
-		},
-		ecs.System{
-			Update: system.Gravity.Update,
-		},
-		ecs.System{
-			Layer: layers.LayerBunnies,
-			Draw:  system.Render.Draw,
-		},
-	)
+	g.ecs.
+		AddSystem(system.NewSpawn().Update).
+		AddSystem(metrics.Update).
+		AddSystem(system.NewBounce(&g.bounds).Update).
+		AddSystem(system.Velocity.Update).
+		AddSystem(system.Gravity.Update).
+		AddRenderer(layers.LayerBackground, system.DrawBackground).
+		AddRenderer(layers.LayerMetrics, metrics.Draw).
+		AddRenderer(layers.LayerBunnies, system.Render.Draw)
 
 	return g
 }

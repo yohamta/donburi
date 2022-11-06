@@ -257,29 +257,19 @@ func SomeFunction(ecs *ecs.ECS) {
   // ...
 }
 
-ecs.AddSystem(
-  ecs.System{
-    Update: SomeFunction,
-  }
-)
+ecs.AddSystem(SomeFunction)
 ```
 
-Each `System` can have a `Draw()` function.
+We can provide `Renderer` for certain system.
 
 ```go
-ecs.AddSystem(
-  ecs.System{
-    Update: UpdateBackground,
-    Draw:   DrawBackground,
-  }
-)
+ecs.AddRenderer(ecs.LayerDefault, DrawBackground)
 
 // Draw all systems
 ecs.Draw(screen)
 ```
 
-The `Layer` option of the `System` allows control of the order of rendering systems and to which screen to render. A `Layer` is just an `int` value. The default value is just `0`.
-
+The `Layer` parameter allows us to control the order of rendering systems and to which screen to render. A `Layer` is just an `int` value. The default value is just `0`.
 
 For example:
 ```go
@@ -291,18 +281,11 @@ const (
 
 // ...
 
-ecs.AddSystem(
-  ecs.System{
-    Layer:  LayerBackground,
-    Update: UpdateBackground,
-    Draw:   DrawBackground,
-  }
-  ecs.System{
-    Layer:  LayerActors,
-    Update: UpdateActors,
-    Draw:   DrawActors,
-  }
-)
+ecs.
+  AddSystem(UpdateBackground).
+  AddSystem(UpdateActors).
+  AddRenderer(LayerBackground, DrawBackground).
+  AddRenderer(LayerActors, DrawActors)
 
 // ...
 

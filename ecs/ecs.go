@@ -11,6 +11,9 @@ import (
 // LayerID is used to specify a layer.
 type LayerID int
 
+// LayerDefault is the default layer.
+const LayerDefault LayerID = 0
+
 // ECS represents an entity-component-system.
 type ECS struct {
 	// World is the underlying world of the ECS.
@@ -18,9 +21,8 @@ type ECS struct {
 	// Time manages the time of the world.
 	Time *Time
 
-	layers         []*Layer
-	systems        []UpdateSystem
-	startupSystems []UpdateSystem
+	layers  []*Layer
+	systems []System
 }
 
 // NewQuery creates a new query.
@@ -38,30 +40,21 @@ func NewECS(w donburi.World) *ECS {
 		World: w,
 		Time:  NewTime(),
 
-		systems:        []UpdateSystem{},
-		layers:         []*Layer{},
-		startupSystems: []UpdateSystem{},
+		systems: []System{},
+		layers:  []*Layer{},
 	}
 
-	return ecs
-}
-
-// AddSystems adds systems.
-func (ecs *ECS) AddSystems(s ...System) *ECS {
-	for _, ss := range s {
-		ecs.AddSystem(ss)
-	}
 	return ecs
 }
 
 // AddSystem adds a system.
 func (ecs *ECS) AddSystem(s System) *ECS {
-	if s.Update != nil {
-		ecs.addUpdateSystem(s.Update)
-	}
-	if s.Draw != nil {
-		ecs.addDrawSystem(s.Layer, s.Draw)
-	}
+	ecs.systems = append(ecs.systems, s)
+	return ecs
+}
+
+func (ecs *ECS) AddRenderer(l LayerID, r Renderer) *ECS {
+	ecs.getLayer(l).addRenderer(r)
 	return ecs
 }
 
@@ -123,14 +116,7 @@ func (ecs *ECS) getLayer(layerID LayerID) *Layer {
 	return ecs.layers[layerID]
 }
 
-func (ecs *ECS) addUpdateSystem(systems ...UpdateSystem) *ECS {
-	for _, s := range systems {
-		ecs.systems = append(ecs.systems, s)
-	}
-	return ecs
-}
-
-func (ecs *ECS) addDrawSystem(l LayerID, s DrawSystem) *ECS {
-	ecs.getLayer(l).addDrawSystem(s)
+func (ecs *ECS) addRenderer(l LayerID, r Renderer) *ECS {
+	ecs.getLayer(l).addRenderer(r)
 	return ecs
 }
