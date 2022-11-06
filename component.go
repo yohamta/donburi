@@ -32,22 +32,20 @@ type ComponentType[T any] struct {
 	defaultVal interface{}
 }
 
-var nextComponentTypeId component.ComponentTypeId = 1
+// Get returns component data from the entry.
+func (c *ComponentType[T]) Get(entry *Entry) *T {
+	return (*T)(entry.Component(c))
+}
 
-// NewComponentType creates a new component type.
-// The argument is a struct that represents a data of the component.
-func newComponentType[T any](s T, defaultVal interface{}) *ComponentType[T] {
-	componentType := &ComponentType[T]{
-		id:         nextComponentTypeId,
-		typ:        reflect.TypeOf(s),
-		name:       reflect.TypeOf(s).Name(),
-		defaultVal: defaultVal,
-	}
-	if defaultVal != nil {
-		componentType.validateDefaultVal()
-	}
-	nextComponentTypeId++
-	return componentType
+// Set sets component data to the entry.
+func (c *ComponentType[T]) Set(entry *Entry, compoennt *T) {
+	entry.SetComponent(c, unsafe.Pointer(compoennt))
+}
+
+// SetValue sets the value of the component.
+func (c *ComponentType[T]) SetValue(entry *Entry, value T) {
+	comp := c.Get(entry)
+	*comp = value
 }
 
 // String returns the component type name.
@@ -91,4 +89,22 @@ func (c *ComponentType[T]) validateDefaultVal() {
 		err := fmt.Sprintf("default value is not assignable to component type: %s", c.name)
 		panic(err)
 	}
+}
+
+var nextComponentTypeId component.ComponentTypeId = 1
+
+// NewComponentType creates a new component type.
+// The argument is a struct that represents a data of the component.
+func newComponentType[T any](s T, defaultVal interface{}) *ComponentType[T] {
+	componentType := &ComponentType[T]{
+		id:         nextComponentTypeId,
+		typ:        reflect.TypeOf(s),
+		name:       reflect.TypeOf(s).Name(),
+		defaultVal: defaultVal,
+	}
+	if defaultVal != nil {
+		componentType.validateDefaultVal()
+	}
+	nextComponentTypeId++
+	return componentType
 }
