@@ -6,5 +6,5 @@ import "github.com/yohamta/donburi/internal/component"
 type LayoutFilter interface {
 
 	// MatchesLayout returns true if the entity matches the filter.
-	MatchesLayout(components []*component.ComponentType) bool
+	MatchesLayout(components []component.IComponentType) bool
 }

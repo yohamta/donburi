@@ -89,7 +89,7 @@ func RemoveChildrenRecursive(entry *donburi.Entry) {
 }
 
 // FindChildWithComponent finds child with specified component.
-func FindChildWithComponent(entry *donburi.Entry, componentType *donburi.ComponentType) (*donburi.Entry, bool) {
+func FindChildWithComponent(entry *donburi.Entry, componentType donburi.ComponentType) (*donburi.Entry, bool) {
 	return hierarchy.FindChildWithComponent(entry, componentType)
 }
 

@@ -22,14 +22,14 @@ func (it *ArchetypeIterator) Next() ArchetypeIndex {
 
 // Index is a structure that indexes archetypes by their component types.
 type Index struct {
-	layouts  [][]*component.ComponentType
+	layouts  [][]component.IComponentType
 	iterator *ArchetypeIterator
 }
 
 // NewIndex creates a new search index.
 func NewIndex() *Index {
 	return &Index{
-		layouts: [][]*component.ComponentType{},
+		layouts: [][]component.IComponentType{},
 		iterator: &ArchetypeIterator{
 			current: 0,
 		},

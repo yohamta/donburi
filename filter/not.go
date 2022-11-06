@@ -10,6 +10,6 @@ func Not(filter LayoutFilter) LayoutFilter {
 	return &not{filter: filter}
 }
 
-func (f *not) MatchesLayout(components []*component.ComponentType) bool {
+func (f *not) MatchesLayout(components []component.IComponentType) bool {
 	return !f.filter.MatchesLayout(components)
 }

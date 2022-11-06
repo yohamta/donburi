@@ -17,7 +17,7 @@ var Debug = false
 type (
 	EventType[T any] struct {
 		eventName     string
-		eventBus      *donburi.ComponentType
+		eventBus      donburi.ComponentType
 		eventBusQuery *query.Query
 	}
 

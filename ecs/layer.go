@@ -33,7 +33,7 @@ var (
 
 type layer struct {
 	id  LayerID
-	tag *donburi.ComponentType
+	tag donburi.ComponentType
 }
 
 func getLayer(layerID LayerID) *layer {

@@ -4,7 +4,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/internal/component"
 	"github.com/yohamta/donburi/query"
 )
 
@@ -79,14 +78,14 @@ func (ecs *ECS) Draw(screen *ebiten.Image) {
 }
 
 // Create creates a new entity
-func (ecs *ECS) Create(l LayerID, components ...*donburi.ComponentType) donburi.Entity {
+func (ecs *ECS) Create(l LayerID, components ...donburi.ComponentType) donburi.Entity {
 	entry := ecs.World.Entry(ecs.World.Create(components...))
 	entry.AddComponent(ecs.getLayer(l).tag)
 	return entry.Entity()
 }
 
 // Create creates a new entity
-func (ecs *ECS) CreateMany(l LayerID, n int, components ...*component.ComponentType) []donburi.Entity {
+func (ecs *ECS) CreateMany(l LayerID, n int, components ...donburi.ComponentType) []donburi.Entity {
 	comps := append(components, ecs.getLayer(l).tag)
 	return ecs.World.CreateMany(n, comps...)
 }

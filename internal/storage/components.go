@@ -23,7 +23,7 @@ func NewComponents() *Components {
 }
 
 // PUshComponent stores the new data of the component in the archetype.
-func (cs *Components) PushComponents(components []*component.ComponentType, archetypeIndex ArchetypeIndex) ComponentIndex {
+func (cs *Components) PushComponents(components []component.IComponentType, archetypeIndex ArchetypeIndex) ComponentIndex {
 	for _, componentType := range components {
 		if v := cs.storages[componentType.Id()]; v == nil {
 			cs.storages[componentType.Id()] = NewStorage()
@@ -45,7 +45,7 @@ func (cs *Components) Move(src ArchetypeIndex, dst ArchetypeIndex) {
 }
 
 // Storage returns the pointer to data of the component in the archetype.
-func (cs *Components) Storage(c *component.ComponentType) *Storage {
+func (cs *Components) Storage(c component.IComponentType) *Storage {
 	if storage := cs.storages[c.Id()]; storage != nil {
 		return storage
 	}
@@ -61,8 +61,7 @@ func (cs *Components) Remove(a *Archetype, ci ComponentIndex) {
 	cs.componentIndices[a.index]--
 }
 
-func (cs *Components) remove(ct *component.ComponentType,
-	ai ArchetypeIndex, ci ComponentIndex) {
+func (cs *Components) remove(ct component.IComponentType, ai ArchetypeIndex, ci ComponentIndex) {
 	storage := cs.Storage(ct)
 	storage.SwapRemove(ai, ci)
 }

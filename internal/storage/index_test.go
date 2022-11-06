@@ -16,8 +16,8 @@ func TestIndex(t *testing.T) {
 
 	index := NewIndex()
 
-	layoutA := NewLayout([]*component.ComponentType{ca})
-	layoutB := NewLayout([]*component.ComponentType{ca, cb})
+	layoutA := NewLayout([]component.IComponentType{ca})
+	layoutB := NewLayout([]component.IComponentType{ca, cb})
 
 	index.Push(layoutA)
 	index.Push(layoutB)

@@ -8,7 +8,7 @@ import (
 
 func TestLayout(t *testing.T) {
 	compType := component.NewComponentType(struct{}{}, nil)
-	components := []*component.ComponentType{compType}
+	components := []component.IComponentType{compType}
 	layout := NewLayout(components)
 
 	if layout.HasComponent(compType) == false {
