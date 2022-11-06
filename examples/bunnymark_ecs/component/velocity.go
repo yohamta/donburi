@@ -9,7 +9,3 @@ type VelocityData struct {
 }
 
 var Velocity = donburi.NewComponentType[VelocityData]()
-
-func GetVelocity(entry *donburi.Entry) *VelocityData {
-	return donburi.Get[VelocityData](entry, Velocity)
-}

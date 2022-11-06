@@ -47,7 +47,7 @@ func (s *Spawn) addBunnies(w donburi.World) {
 	if s.settings == nil {
 		query := query.NewQuery(filter.Contains(component.Settings))
 		query.EachEntity(w, func(entry *donburi.Entry) {
-			s.settings = component.GetSettings(entry)
+			s.settings = component.Settings.Get(entry)
 		})
 	}
 
@@ -61,7 +61,7 @@ func (s *Spawn) addBunnies(w donburi.World) {
 	)
 	for i, entity := range entities {
 		entry := w.Entry(entity)
-		position := component.GetPosition(entry)
+		position := component.Position.Get(entry)
 		*position = component.PositionData{
 			X: float64(i % 2), // Alternate screen edges
 		}
