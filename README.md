@@ -137,8 +137,8 @@ query := query.NewQuery(filter.Contains(Position, Velocity))
 // Iterate through the entities found in the world
 query.EachEntity(world, func(entry *donburi.Entry) {
   // An entry is an accessor to entity and its components.
-  position := donburi.Get[PositionData](entry, Position)
-  velocity := donburi.Get[VelocityData](entry, Velocity)
+  position := Position.Get(entry)
+  velocity := Velocity.Get(entry)
   
   position.X += velocity.X
   position.Y += velocity.Y
