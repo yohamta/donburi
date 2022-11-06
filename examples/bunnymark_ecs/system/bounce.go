@@ -30,9 +30,9 @@ func NewBounce(bounds *image.Rectangle) *bounce {
 
 func (b *bounce) Update(ecs *ecs.ECS) {
 	b.query.EachEntity(ecs.World, func(entry *donburi.Entry) {
-		position := component.GetPosition(entry)
-		velocity := component.GetVelocity(entry)
-		sprite := component.GetSprite(entry)
+		position := component.Position.Get(entry)
+		velocity := component.Velocity.Get(entry)
+		sprite := component.Sprite.Get(entry)
 
 		sw, sh := float64(b.bounds.Dx()), float64(b.bounds.Dy())
 		iw, ih := float64(sprite.Image.Bounds().Dx()), float64(sprite.Image.Bounds().Dy())

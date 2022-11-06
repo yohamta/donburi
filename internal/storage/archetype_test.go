@@ -6,13 +6,18 @@ import (
 	"github.com/yohamta/donburi/internal/component"
 )
 
+type (
+	componentA = struct{}
+	componentB = struct{}
+)
+
 func TestMatchesLayout(t *testing.T) {
 	var (
-		ca = component.NewComponentType(struct{}{}, nil)
-		cb = component.NewComponentType(struct{}{}, nil)
+		ca = component.NewMockComponentType(componentA{}, nil)
+		cb = component.NewMockComponentType(componentB{}, nil)
 	)
 
-	cmps := []*component.ComponentType{ca, cb}
+	cmps := []component.IComponentType{ca, cb}
 	archetype := NewArchetype(0, NewLayout(cmps))
 	if !archetype.LayoutMatches(cmps) {
 		t.Errorf("archetype should match the layout")
@@ -21,11 +26,11 @@ func TestMatchesLayout(t *testing.T) {
 
 func TestPushEntity(t *testing.T) {
 	var (
-		ca = component.NewComponentType(struct{}{}, nil)
-		cb = component.NewComponentType(struct{}{}, nil)
+		ca = component.NewMockComponentType(struct{}{}, nil)
+		cb = component.NewMockComponentType(struct{}{}, nil)
 	)
 
-	cmps := []*component.ComponentType{ca, cb}
+	cmps := []component.IComponentType{ca, cb}
 	archetype := NewArchetype(0, NewLayout(cmps))
 
 	archetype.PushEntity(0)

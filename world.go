@@ -17,9 +17,9 @@ type World interface {
 	// Id returns the unique identifier for the world.
 	Id() WorldId
 	// Create creates a new entity with the specified components.
-	Create(components ...*component.ComponentType) Entity
+	Create(components ...component.IComponentType) Entity
 	// CreateMany creates a new entity with the specified components.
-	CreateMany(n int, components ...*component.ComponentType) []Entity
+	CreateMany(n int, components ...component.IComponentType) []Entity
 	// Entry returns an entry for the specified entity.
 	Entry(entity Entity) *Entry
 	// Remove removes the specified entity.
@@ -91,7 +91,7 @@ func (w *world) Id() WorldId {
 	return w.id
 }
 
-func (w *world) CreateMany(num int, components ...*component.ComponentType) []Entity {
+func (w *world) CreateMany(num int, components ...component.IComponentType) []Entity {
 	archetypeIndex := w.getArchetypeForComponents(components)
 	entities := make([]Entity, 0, num)
 	for i := 0; i < num; i++ {
@@ -100,7 +100,7 @@ func (w *world) CreateMany(num int, components ...*component.ComponentType) []En
 	return entities
 }
 
-func (w *world) Create(components ...*component.ComponentType) Entity {
+func (w *world) Create(components ...component.IComponentType) Entity {
 	archetypeIndex := w.getArchetypeForComponents(components)
 	return w.createEntity(archetypeIndex)
 }
@@ -250,7 +250,7 @@ func (w *world) insertArcheType(layout *storage.Layout) storage.ArchetypeIndex {
 	return arch_index
 }
 
-func (w *world) getArchetypeForComponents(components []*component.ComponentType) storage.ArchetypeIndex {
+func (w *world) getArchetypeForComponents(components []component.IComponentType) storage.ArchetypeIndex {
 	if len(components) == 0 {
 		panic("entity must have at least one component")
 	}
@@ -263,7 +263,7 @@ func (w *world) getArchetypeForComponents(components []*component.ComponentType)
 	return w.insertArcheType(storage.NewLayout(components))
 }
 
-func (w *world) noDuplicates(components []*ComponentType) bool {
+func (w *world) noDuplicates(components []component.IComponentType) bool {
 	// check if there're duplicate values inside components slice
 	for i := 0; i < len(components); i++ {
 		for j := i + 1; j < len(components); j++ {

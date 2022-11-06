@@ -9,7 +9,3 @@ type PositionData struct {
 }
 
 var Position = donburi.NewComponentType[PositionData]()
-
-func GetPosition(entry *donburi.Entry) *PositionData {
-	return donburi.Get[PositionData](entry, Position)
-}

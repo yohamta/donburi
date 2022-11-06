@@ -20,7 +20,3 @@ type SettingsData struct {
 }
 
 var Settings = donburi.NewComponentType[SettingsData]()
-
-func GetSettings(entry *donburi.Entry) *SettingsData {
-	return donburi.Get[SettingsData](entry, Settings)
-}

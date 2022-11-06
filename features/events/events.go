@@ -17,7 +17,7 @@ var Debug = false
 type (
 	EventType[T any] struct {
 		eventName     string
-		eventBus      *donburi.ComponentType
+		eventBus      *donburi.ComponentType[T]
 		eventBusQuery *query.Query
 	}
 
@@ -51,7 +51,7 @@ func ProcessAllEvents(w donburi.World) {
 
 // NewEventType creates a new event type.
 func NewEventType[T any]() *EventType[T] {
-	eventBus := donburi.NewComponentType[eventBusData[T]]()
+	eventBus := donburi.NewComponentType[T]()
 	var t T
 	e := &EventType[T]{
 		eventName:     reflect.TypeOf(t).Name(),

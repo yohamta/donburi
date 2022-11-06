@@ -22,8 +22,8 @@ var Gravity *gravity = &gravity{
 
 func (g *gravity) Update(ecs *ecs.ECS) {
 	g.query.EachEntity(ecs.World, func(entry *donburi.Entry) {
-		gravity := component.GetGravity(entry)
-		velocity := component.GetVelocity(entry)
+		gravity := component.Gravity.Get(entry)
+		velocity := component.Velocity.Get(entry)
 
 		velocity.Y += gravity.Value
 	})

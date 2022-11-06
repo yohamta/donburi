@@ -9,7 +9,3 @@ type GravityData struct {
 }
 
 var Gravity = donburi.NewComponentType[GravityData]()
-
-func GetGravity(entry *donburi.Entry) *GravityData {
-	return donburi.Get[GravityData](entry, Gravity)
-}

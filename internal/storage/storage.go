@@ -23,7 +23,7 @@ func NewStorage() *Storage {
 }
 
 // PushComponent stores the new data of the component in the archetype.
-func (cs *Storage) PushComponent(component *component.ComponentType, archetypeIndex ArchetypeIndex) {
+func (cs *Storage) PushComponent(component component.IComponentType, archetypeIndex ArchetypeIndex) {
 	if v := cs.storages[archetypeIndex]; v == nil {
 		cs.storages[archetypeIndex] = []unsafe.Pointer{}
 	}

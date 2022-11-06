@@ -9,13 +9,13 @@ import (
 
 // Layout represents a layout of components.
 type Layout struct {
-	componentTypes []*component.ComponentType
+	componentTypes []component.IComponentType
 }
 
 // NewLayout creates a new entity layout.
-func NewLayout(components []*component.ComponentType) *Layout {
+func NewLayout(components []component.IComponentType) *Layout {
 	layout := &Layout{
-		componentTypes: []*component.ComponentType{},
+		componentTypes: []component.IComponentType{},
 	}
 
 	for _, ct := range components {
@@ -26,17 +26,17 @@ func NewLayout(components []*component.ComponentType) *Layout {
 }
 
 // Components returns the components of the layout.
-func (l *Layout) Components() []*component.ComponentType {
+func (l *Layout) Components() []component.IComponentType {
 	return l.componentTypes
 }
 
 // AddComponent registers a component type to the layout.
-func (l *Layout) AddComponent(componentType *component.ComponentType) {
+func (l *Layout) AddComponent(componentType component.IComponentType) {
 	l.componentTypes = append(l.componentTypes, componentType)
 }
 
 // HasComponent returns true if the layout has the given component type.
-func (l *Layout) HasComponent(componentType *component.ComponentType) bool {
+func (l *Layout) HasComponent(componentType component.IComponentType) bool {
 	for _, ct := range l.componentTypes {
 		if ct == componentType {
 			return true

@@ -11,8 +11,8 @@ func TestComponents(t *testing.T) {
 		ID string
 	}
 	var (
-		ca = component.NewComponentType(ComponentData{}, nil)
-		cb = component.NewComponentType(ComponentData{}, nil)
+		ca = component.NewMockComponentType(ComponentData{}, nil)
+		cb = component.NewMockComponentType(ComponentData{}, nil)
 	)
 
 	components := NewComponents()
@@ -24,13 +24,13 @@ func TestComponents(t *testing.T) {
 		ID      string
 	}{
 		{
-			NewLayout([]*component.ComponentType{ca}),
+			NewLayout([]component.IComponentType{ca}),
 			0,
 			0,
 			"a",
 		},
 		{
-			NewLayout([]*component.ComponentType{ca, cb}),
+			NewLayout([]component.IComponentType{ca, cb}),
 			1,
 			1,
 			"b",

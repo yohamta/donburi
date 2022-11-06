@@ -53,7 +53,7 @@ func AppendChild(parent *donburi.Entry, child *donburi.Entry) {
 }
 
 // FindChildrenWithComponent
-func FindChildWithComponent(entry *donburi.Entry, componentType *donburi.ComponentType) (*donburi.Entry, bool) {
+func FindChildWithComponent(entry *donburi.Entry, componentType donburi.IComponentType) (*donburi.Entry, bool) {
 	if children, ok := GetChildren(entry); ok {
 		for _, c := range children {
 			if c.Valid() && c.HasComponent(componentType) {
