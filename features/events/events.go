@@ -30,18 +30,23 @@ type (
 		subscribers []Subscriber[T]
 		queue       []T
 	}
-	eventType struct {
-		process func(w donburi.World)
+	eventTypeData struct {
+		eventName string
+		process   func(w donburi.World)
 	}
 )
 
-var registeredEvents = []*eventType{}
+var (
+	eventType  = donburi.NewComponentType[eventTypeData]()
+	eventQuery = query.NewQuery(filter.Contains(eventType))
+)
 
 // ProcessAllEvents processes all events.
 func ProcessAllEvents(w donburi.World) {
-	for _, e := range registeredEvents {
-		e.process(w)
-	}
+	eventQuery.EachEntity(w, func(e *donburi.Entry) {
+		eventType := getEventType(e)
+		eventType.process(w)
+	})
 }
 
 // NewEventType creates a new event type.
@@ -53,22 +58,22 @@ func NewEventType[T any]() *EventType[T] {
 		eventBus:      eventBus,
 		eventBusQuery: query.NewQuery(filter.Contains(eventBus)),
 	}
-	registeredEvents = append(registeredEvents, &eventType{
-		process: func(w donburi.World) {
-			e.ProcessEvents(w)
-		},
-	})
-	donburi.RegisterInitializer(
-		func(w donburi.World) {
-			entity := w.Entry(w.Create(eventBus))
-			donburi.Set(entity, eventBus, newEventBusData[T]())
-		},
-	)
 	return e
 }
 
 // RegisterHandler registers a subscriber for the event.
 func (e *EventType[T]) Subscribe(w donburi.World, subscriber Subscriber[T]) {
+	if e.eventBusQuery.Count(w) == 0 {
+		entity := w.Entry(w.Create(e.eventBus, eventType))
+		donburi.Set(entity, e.eventBus, newEventBusData[T]())
+		donburi.SetValue(entity, eventType, eventTypeData{
+			eventName: e.eventName,
+			process: func(w donburi.World) {
+				e.ProcessEvents(w)
+			},
+		})
+	}
+
 	eventBus := e.mustFindEventBus(w)
 	eventBus.subscribers = append(eventBus.subscribers, subscriber)
 }
@@ -107,6 +112,10 @@ func (e *EventType[T]) mustFindEventBus(w donburi.World) *eventBusData[T] {
 		panic("event bus not found")
 	}
 	return donburi.Get[eventBusData[T]](eventBus, e.eventBus)
+}
+
+func getEventType(e *donburi.Entry) *eventTypeData {
+	return donburi.Get[eventTypeData](e, eventType)
 }
 
 func newEventBusData[T any]() *eventBusData[T] {
