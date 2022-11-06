@@ -86,25 +86,18 @@ entity = world.Create(Position, Velocity);
 // which allows you to access the components that belong to the entity.
 entry := world.Entry(entity)
 
-position := donburi.Get[PositionData](entry, Position)
-velocity := donburi.Get[VelocityData](entry, Velocity)
+// You can set or get the data via the ComponentType
+Position.SetValue(math.Vec2{X: 10, Y: 20})
+Velocity.SetValue(math.Vec2{X: 1, Y: 2})
+
+position := Position.Get(entry)
+velocity := Velocity.Get(entry)
+
 position.X += velocity.X
 position.Y += velocity.y
 ```
 
-We can define helper functions to get components for better readability. This was advice from [eliasdaler](https://github.com/eliasdaler).
-
-```go
-func GetPosition(entry *donburi.Entry) *PositionData {
-  return donburi.Get[PositionData](entry, Position)
-}
-
-func GetVelocity(entry *donburi.Entry) *VelocityData {
-  return donburi.Get[VelocityData](entry, Velocity)
-}
-```
-
-Components can be added and removed through Entry objects.
+Components can be added and removed through `Entry` objects.
 
 ```go
 // Fetch the first entity with PlayerTag component
@@ -183,22 +176,22 @@ query := query.NewQuery(
 // In our query we can check if the entity has some of the optional components before attempting to retrieve them
 query.EachEntity(world, func(entry *donburi.Entry) {
   // We'll always be able to access Position and Size
-  position := donburi.Get[PositionData](entry, Position)
-  size := donburi.Get[SizeData](entry, Size)
+  position := Position.Get(entry)
+  size := Size.Get(entry)
   
   
   if entry.HasComponent(Sprite) {
-    sprite := donburi.Get[SpriteData](entry, Sprite)
+    sprite := Sprite.Get(entry)
     // .. do sprite things
   }
   
   if entry.HasComponent(Text) {
-    text := donburi.Get[TextData](entry, Text)
+    text := Text.Get(entry)
     // .. do text things
   }
   
   if entry.HasComponent(Shape) {
-    shape := donburi.Get[ShapeData](entry, Shape)
+    shape := Shape.Get(entry)
     // .. do shape things
   }
   
@@ -354,7 +347,7 @@ transform.SetWorldScale(parent, dmath.Vec2{X: 2, Y: 3})
 
 // setup child
 child := w.Entry(w.Create(transform.Transform))
-donburi.SetValue(child, transform.Transform, transform.TransformData{
+transform.Transform.SetValue(child, transform.TransformData{
   LocalPosition: dmath.Vec2{X: 1, Y: 2},
   LocalRotation: 90,
   LocalScale:    dmath.Vec2{X: 2, Y: 3},
