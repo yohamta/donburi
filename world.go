@@ -31,6 +31,8 @@ type World interface {
 	// StorageAccessor returns an accessor for the world's storage.
 	// It is used to access components and archetypes by queries.
 	StorageAccessor() StorageAccessor
+	// ArcheTypes returns the archetypes in the world.
+	Archetypes() []*storage.Archetype
 }
 
 // StorageAccessor is an accessor for the world's storage.
@@ -223,6 +225,10 @@ func (w *world) StorageAccessor() StorageAccessor {
 		w.components,
 		w.archetypes,
 	}
+}
+
+func (w *world) Archetypes() []*storage.Archetype {
+	return w.archetypes
 }
 
 func (w *world) nextEntity() Entity {

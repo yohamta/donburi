@@ -59,3 +59,8 @@ func (archetype *Archetype) LayoutMatches(components []*component.ComponentType)
 func (archetype *Archetype) PushEntity(entity entity.Entity) {
 	archetype.entities = append(archetype.entities, entity)
 }
+
+// Count returns the number of entities in the archetype.
+func (archetype *Archetype) Count() int {
+	return len(archetype.entities)
+}
