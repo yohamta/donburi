@@ -4,14 +4,14 @@
 
 Donburi is just another Entity Component System library for Ebitengine inspired by [legion](https://github.com/amethyst/legion).
 
-It aims to be a feature rich and high performance [ECS Library](https://en.wikipedia.org/wiki/Entity_component_system).
+It aims to be a feature rich and high performance [ECS](https://en.wikipedia.org/wiki/Entity_component_system) Library.
 
 [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi)
 
 ## Contents
 
 - [Contents](#contents)
-- [Features](#features)
+- [Summary](#summary)
 - [Examples](#examples)
 - [Installation](#installation)
 - [Getting Started](#getting-started)
@@ -20,7 +20,7 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
   - [Tags](#tags)
   - [Systems (Experimental)](#systems-experimental)
   - [Debug](#debug)
-- [Features](#features-1)
+- [Features](#features)
   - [Math](#math)
   - [Transform](#transform)
   - [Events](#events)
@@ -28,15 +28,14 @@ It aims to be a feature rich and high performance [ECS Library](https://en.wikip
 - [How to contribute?](#how-to-contribute)
 - [Contributors](#contributors)
 
-## Features
+## Summary
 
 - It introduces the concept of [Archetype](https://docs.unity3d.com/Packages/com.unity.entities@0.2/manual/ecs_core.html), which allows us to query entities very efficiently based on the components layout.
 - It is possible to combine `And`, `Or`, and `Not` conditions to perform complex queries for components.
-- It avoids reflection on every frame for performance.
+- It avoids reflection for performance.
 - Ability to dynamically add or remove components from an entity.
-- APIs with Go Generics
-
-There are many features that need to be added in the future (e.g., parent-child relationship, event-notification system etc).
+- Type-safe APIs powered by Generics
+- Provides [Features](#features) that are common in game dev (e.g., `math`, `transform`, `hieralchy`, `events`, etc) built on top of the ECS architecture.
 
 ## Examples
 
@@ -226,6 +225,8 @@ query.EachEntity(world, func(entry *donburi.Entry) {
 
 ### Systems (Experimental)
 
+**⚠ this feature is currently experimental, the API may change.**
+
 The [ECS package](https://github.com/yohamta/donburi/tree/main/ecs) provides so-called **System** feature in ECS which can be used together with a `World` instance.
 
 See the [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) and [Example](https://github.com/yohamta/donburi/tree/master/examples/bunnymark_ecs).
@@ -319,6 +320,8 @@ debug.PrintEntityCounts(world)
 ```
 
 ## Features
+
+Under the [features](https://github.com/yohamta/donburi/tree/main/features) directory, we develop common functions for game dev. Any kind of [Issues](https://github.com/yohamta/donburi/issues) or [PRs](https://github.com/yohamta/donburi/pulls) will be very appreciated.
 
 ### Math
 
