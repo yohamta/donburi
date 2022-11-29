@@ -225,7 +225,7 @@ query.EachEntity(world, func(entry *donburi.Entry) {
 
 ### Systems (Experimental)
 
-**⚠ this feature is currently experimental, the API may change.**
+**⚠ this feature is currently experimental, the API can be changed in the future.**
 
 The [ECS package](https://github.com/yohamta/donburi/tree/main/ecs) provides so-called **System** feature in ECS which can be used together with a `World` instance.
 
