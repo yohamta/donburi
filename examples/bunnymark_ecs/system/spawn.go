@@ -10,8 +10,6 @@ import (
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/helper"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/layers"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type Spawn struct {
@@ -47,10 +45,9 @@ func (s *Spawn) Update(ecs *ecs.ECS) {
 
 func (s *Spawn) addBunnies(ecs *ecs.ECS) {
 	if s.settings == nil {
-		query := query.NewQuery(filter.Contains(component.Settings))
-		query.EachEntity(ecs.World, func(entry *donburi.Entry) {
+		if entry, ok := component.Settings.FirstEntity(ecs.World); ok {
 			s.settings = component.Settings.Get(entry)
-		})
+		}
 	}
 
 	entities := ecs.CreateMany(

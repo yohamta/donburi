@@ -8,11 +8,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/text"
-	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font/basicfont"
 )
@@ -30,10 +27,9 @@ func NewMetrics(bounds *image.Rectangle) *Metrics {
 
 func (m *Metrics) Update(ecs *ecs.ECS) {
 	if m.settings == nil {
-		query := query.NewQuery(filter.Contains(component.Settings))
-		query.EachEntity(ecs.World, func(entry *donburi.Entry) {
+		if entry, ok := component.Settings.FirstEntity(ecs.World); ok {
 			m.settings = component.Settings.Get(entry)
-		})
+		}
 	}
 	select {
 	case <-m.settings.Ticker.C:

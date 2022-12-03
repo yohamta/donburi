@@ -5,15 +5,14 @@ import (
 	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type gravity struct {
-	query *query.Query
+	query *donburi.Query
 }
 
 var Gravity *gravity = &gravity{
-	query: query.NewQuery(
+	query: donburi.NewQuery(
 		filter.Contains(
 			component.Velocity,
 			component.Gravity,

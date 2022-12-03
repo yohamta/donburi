@@ -8,18 +8,17 @@ import (
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/helper"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type bounce struct {
 	bounds *image.Rectangle
-	query  *query.Query
+	query  *donburi.Query
 }
 
 func NewBounce(bounds *image.Rectangle) *bounce {
 	return &bounce{
 		bounds: bounds,
-		query: query.NewQuery(
+		query: donburi.NewQuery(
 			filter.Contains(
 				component.Position,
 				component.Velocity,

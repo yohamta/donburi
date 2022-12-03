@@ -80,7 +80,7 @@ var Velocity = donburi.NewComponentType[VelocityData]()
 
 // Create an entity by specifying components that the entity will have.
 // Component data will be initialized by default value of the struct.
-entity = world.Create(Position, Velocity);
+entity = world.Create(Position, Velocity)
 
 // We can use entity (it's a wrapper of int64) to get an Entry object from World
 // which allows you to access the components that belong to the entity.
@@ -101,10 +101,10 @@ Components can be added and removed through `Entry` objects.
 
 ```go
 // Fetch the first entity with PlayerTag component
-query := query.NewQuery(filter.Contains(PlayerTag))
+query := donburi.NewQuery(filter.Contains(PlayerTag))
 // Query.FirstEntity() returns only the first entity that 
 // matches the query.
-if entry, ok := query.FirstEntity(world); ok {
+if entry, ok := donburi.FirstEntity(world); ok {
   donburi.Add(entry, Position, &PositionData{
     X: 100,
     Y: 100,
@@ -126,13 +126,46 @@ if SomeLogic.IsDead(world, someEntity) {
 }
 ```
 
+Entities can be retrieved using the `First` and `EachEntity` methods of Components as follows:
+
+```go
+// GameState Component
+type GameStateData struct {
+  // .. some data
+}
+var GameState = donburi.NewComponentType[GameStateData]()
+
+// Bullet Component
+type BulletData struct {
+  // .. some data
+}
+var Bullet = donburi.NewComponentType[BulletData]()
+
+// Init the world and create entities
+world := donburi.NewWorld()
+world.Create(GameState)
+world.CreateMany(100, Bullet)
+
+// Query the first GameState entity
+if entry, ok := GameState.First(world); ok {
+  gameState := GameState.Get(entry)
+  // .. do stuff with the gameState entity
+}
+
+// Query all Bullet entities
+Bullet.EachEntity(world, func(entry *donburi.Entry) {
+  bullet := Bullet.Get(entry)
+  // .. do stuff with the bullet entity
+})
+```
+
 ### Queries
 
 Queries allow for high performance and expressive iteration through the entities in a world, to get component references, test if an entity has a component or to add and remove components.
 
 ```go
 // Define a query by declaring what componet you want to find.
-query := query.NewQuery(filter.Contains(Position, Velocity))
+query := donburi.NewQuery(filter.Contains(Position, Velocity))
 
 // Iterate through the entities found in the world
 query.EachEntity(world, func(entry *donburi.Entry) {
@@ -151,7 +184,7 @@ For example:
 
 ```go
 // This query retrieves entities that have an NpcTag and no Position component.
-query := query.NewQuery(filter.And(
+query := donburi.NewQuery(filter.And(
   filter.Contains(NpcTag),
   filter.Not(filter.Contains(Position))))
 ```
@@ -162,7 +195,7 @@ For example:
 
 ```go
 // We have a query for all entities that have Position and Size, but also any of Sprite, Text or Shape.
-query := query.NewQuery(
+query := donburi.NewQuery(
   filter.And(
     filter.Contains(Position, Size),
     filter.Or(
@@ -218,8 +251,7 @@ var EnemyTag = donburi.NewTag()
 world.CreateMany(100, EnemyTag, Position, Velocity)
 
 // Search entities with EnemyTag
-query := query.NewQuery(filter.Contains(EnemyTag))
-query.EachEntity(world, func(entry *donburi.Entry) {
+EnemyTag.EachEntity(world, func(entry *donburi.Entry) {
   // Perform some operation on the Entities with the EnemyTag component.
 }
 ```

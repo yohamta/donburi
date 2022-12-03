@@ -3,7 +3,7 @@ package storage
 import (
 	"testing"
 
-	"github.com/yohamta/donburi/internal/component"
+	"github.com/yohamta/donburi/component"
 )
 
 func TestComponents(t *testing.T) {
@@ -11,8 +11,8 @@ func TestComponents(t *testing.T) {
 		ID string
 	}
 	var (
-		ca = component.NewMockComponentType(ComponentData{}, nil)
-		cb = component.NewMockComponentType(ComponentData{}, nil)
+		ca = NewMockComponentType(ComponentData{}, nil)
+		cb = NewMockComponentType(ComponentData{}, nil)
 	)
 
 	components := NewComponents()

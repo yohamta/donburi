@@ -6,7 +6,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 func TestECS(t *testing.T) {
@@ -124,7 +123,7 @@ type testSystem struct {
 	DrawImage        *ebiten.Image
 	UpdateCount      int
 	DrawCount        int
-	Query            *query.Query
+	Query            *donburi.Query
 	QueryCountUpdate int
 	QueryCountDraw   int
 }

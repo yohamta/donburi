@@ -3,7 +3,7 @@ package storage
 import (
 	"testing"
 
-	"github.com/yohamta/donburi/internal/component"
+	"github.com/yohamta/donburi/component"
 )
 
 type (
@@ -13,8 +13,8 @@ type (
 
 func TestMatchesLayout(t *testing.T) {
 	var (
-		ca = component.NewMockComponentType(componentA{}, nil)
-		cb = component.NewMockComponentType(componentB{}, nil)
+		ca = NewMockComponentType(componentA{}, nil)
+		cb = NewMockComponentType(componentB{}, nil)
 	)
 
 	cmps := []component.IComponentType{ca, cb}
@@ -26,8 +26,8 @@ func TestMatchesLayout(t *testing.T) {
 
 func TestPushEntity(t *testing.T) {
 	var (
-		ca = component.NewMockComponentType(struct{}{}, nil)
-		cb = component.NewMockComponentType(struct{}{}, nil)
+		ca = NewMockComponentType(struct{}{}, nil)
+		cb = NewMockComponentType(struct{}{}, nil)
 	)
 
 	cmps := []component.IComponentType{ca, cb}

@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"github.com/yohamta/donburi/internal/component"
+	"github.com/yohamta/donburi/component"
 	"github.com/yohamta/donburi/internal/entity"
 )
 

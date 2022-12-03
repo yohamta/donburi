@@ -3,7 +3,7 @@ package storage
 import (
 	"unsafe"
 
-	"github.com/yohamta/donburi/internal/component"
+	"github.com/yohamta/donburi/component"
 )
 
 // Storage is a structure that stores the pointer to data of each component.

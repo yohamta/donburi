@@ -8,11 +8,10 @@ import (
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/layers"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type render struct {
-	query *query.Query
+	query *donburi.Query
 }
 
 var Render = &render{

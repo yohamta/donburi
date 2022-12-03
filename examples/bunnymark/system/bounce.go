@@ -7,18 +7,17 @@ import (
 	"github.com/yohamta/donburi/examples/bunnymark/component"
 	"github.com/yohamta/donburi/examples/bunnymark/helper"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type Bounce struct {
 	bounds *image.Rectangle
-	query  *query.Query
+	query  *donburi.Query
 }
 
 func NewBounce(bounds *image.Rectangle) *Bounce {
 	return &Bounce{
 		bounds: bounds,
-		query: query.NewQuery(filter.Contains(
+		query: donburi.NewQuery(filter.Contains(
 			component.Position,
 			component.Velocity,
 			component.Sprite,

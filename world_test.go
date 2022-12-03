@@ -8,7 +8,6 @@ import (
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/internal/entity"
 	"github.com/yohamta/donburi/internal/storage"
-	"github.com/yohamta/donburi/query"
 )
 
 type vec2f struct {
@@ -205,7 +204,7 @@ func TestRemoveAndCreateEntity(t *testing.T) {
 
 	entityB := world.Create(tagA)
 
-	query := query.NewQuery(filter.Contains(tagA))
+	query := donburi.NewQuery(filter.Contains(tagA))
 	entry, ok := query.FirstEntity(world)
 	if !ok {
 		t.Fatalf("Entity should be found")

@@ -1,6 +1,6 @@
 package filter
 
-import "github.com/yohamta/donburi/internal/component"
+import "github.com/yohamta/donburi/component"
 
 type not struct {
 	filter LayoutFilter

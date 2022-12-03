@@ -4,16 +4,15 @@ import (
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type hierarchySystem struct {
-	query *query.Query
+	query *donburi.Query
 }
 
 // HierarchySystem is a system that removes children of invalid parents.
 var HierarchySystem = &hierarchySystem{
-	query: query.NewQuery(filter.Contains(parentComponent)),
+	query: donburi.NewQuery(filter.Contains(parentComponent)),
 }
 
 // RemoveChildren removes children of invalid parents.

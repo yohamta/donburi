@@ -10,8 +10,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/examples/bunnymark/component"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font/basicfont"
 )
@@ -29,10 +27,11 @@ func NewMetrics(bounds *image.Rectangle) *Metrics {
 
 func (m *Metrics) Update(w donburi.World) {
 	if m.settings == nil {
-		query := query.NewQuery(filter.Contains(component.Settings))
-		query.EachEntity(w, func(entry *donburi.Entry) {
+		if entry, ok := component.Settings.FirstEntity(w); ok {
 			m.settings = component.Settings.Get(entry)
-		})
+		} else {
+			panic("no settings")
+		}
 	}
 	select {
 	case <-m.settings.Ticker.C:

@@ -6,7 +6,6 @@ import (
 
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 // Debug enables debug logging.
@@ -18,7 +17,7 @@ type (
 	EventType[T any] struct {
 		eventName     string
 		eventBus      *donburi.ComponentType[T]
-		eventBusQuery *query.Query
+		eventBusQuery *donburi.Query
 	}
 
 	// Subscriber is a function that handles an event.
@@ -38,7 +37,7 @@ type (
 
 var (
 	eventType  = donburi.NewComponentType[eventTypeData]()
-	eventQuery = query.NewQuery(filter.Contains(eventType))
+	eventQuery = donburi.NewQuery(filter.Contains(eventType))
 )
 
 // ProcessAllEvents processes all events.
@@ -56,7 +55,7 @@ func NewEventType[T any]() *EventType[T] {
 	e := &EventType[T]{
 		eventName:     reflect.TypeOf(t).Name(),
 		eventBus:      eventBus,
-		eventBusQuery: query.NewQuery(filter.Contains(eventBus)),
+		eventBusQuery: donburi.NewQuery(filter.Contains(eventBus)),
 	}
 	return e
 }

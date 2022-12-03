@@ -1,6 +1,6 @@
 package filter
 
-import "github.com/yohamta/donburi/internal/component"
+import "github.com/yohamta/donburi/component"
 
 func containsComponent(components []component.IComponentType, c component.IComponentType) bool {
 	for _, component := range components {

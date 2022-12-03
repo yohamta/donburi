@@ -3,8 +3,8 @@ package donburi
 import (
 	"fmt"
 
+	"github.com/yohamta/donburi/component"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/internal/component"
 	"github.com/yohamta/donburi/internal/entity"
 	"github.com/yohamta/donburi/internal/storage"
 )
