@@ -25,7 +25,7 @@ It aims to be a feature rich and high performance [ECS](https://en.wikipedia.org
   - [Transform](#transform)
   - [Events](#events)
 - [Projects Using Donburi](#projects-using-donburi)
-- [Internal architecture](#internal-architecture)
+- [Architecture](#architecture)
 - [How to contribute?](#how-to-contribute)
 - [Contributors](#contributors)
 
