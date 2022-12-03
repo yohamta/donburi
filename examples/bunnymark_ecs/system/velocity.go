@@ -5,15 +5,14 @@ import (
 	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type velocity struct {
-	query *query.Query
+	query *donburi.Query
 }
 
 var Velocity = &velocity{
-	query: query.NewQuery(
+	query: donburi.NewQuery(
 		filter.Contains(
 			component.Position,
 			component.Velocity,

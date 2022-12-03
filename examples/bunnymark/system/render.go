@@ -6,16 +6,15 @@ import (
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/examples/bunnymark/component"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type Render struct {
-	query *query.Query
+	query *donburi.Query
 }
 
 func NewRender() *Render {
 	return &Render{
-		query: query.NewQuery(filter.Contains(
+		query: donburi.NewQuery(filter.Contains(
 			component.Position,
 			component.Hue,
 			component.Sprite,

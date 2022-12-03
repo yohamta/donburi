@@ -6,6 +6,7 @@ import (
 	"unsafe"
 
 	"github.com/yohamta/donburi/component"
+	"github.com/yohamta/donburi/filter"
 )
 
 // IComponentType is an interface for component types.
@@ -30,6 +31,7 @@ type ComponentType[T any] struct {
 	typ        reflect.Type
 	name       string
 	defaultVal interface{}
+	query      *Query
 }
 
 // Get returns component data from the entry.
@@ -42,8 +44,14 @@ func (c *ComponentType[T]) Set(entry *Entry, compoennt *T) {
 	entry.SetComponent(c, unsafe.Pointer(compoennt))
 }
 
-// Each
+// EachEntity iterates over the entities that have the component.
 func (c *ComponentType[T]) EachEntity(w World, callback func(*Entry)) {
+	c.query.EachEntity(w, callback)
+}
+
+// FirstEntity returns the first entity that has the component.
+func (c *ComponentType[T]) FirstEntity(w World) (*Entry, bool) {
+	return c.query.FirstEntity(w)
 }
 
 // SetValue sets the value of the component.
@@ -106,6 +114,7 @@ func newComponentType[T any](s T, defaultVal interface{}) *ComponentType[T] {
 		name:       reflect.TypeOf(s).Name(),
 		defaultVal: defaultVal,
 	}
+	componentType.query = NewQuery(filter.Contains(componentType))
 	if defaultVal != nil {
 		componentType.validateDefaultVal()
 	}

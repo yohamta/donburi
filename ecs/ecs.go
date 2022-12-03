@@ -4,7 +4,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 // LayerID is used to specify a layer.
@@ -25,12 +24,12 @@ type ECS struct {
 }
 
 // NewQuery creates a new query.
-func NewQuery(l LayerID, f filter.LayoutFilter) *query.Query {
+func NewQuery(l LayerID, f filter.LayoutFilter) *donburi.Query {
 	layerFilter := filter.Contains(getLayer(l).tag)
 	if f == nil {
-		return query.NewQuery(layerFilter)
+		return donburi.NewQuery(layerFilter)
 	}
-	return query.NewQuery(filter.And(layerFilter, f))
+	return donburi.NewQuery(filter.And(layerFilter, f))
 }
 
 // NewECS creates a new ECS with the specified world.

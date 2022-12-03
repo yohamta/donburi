@@ -4,16 +4,15 @@ import (
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/examples/bunnymark/component"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type Velocity struct {
-	query *query.Query
+	query *donburi.Query
 }
 
 func NewVelocity() *Velocity {
 	return &Velocity{
-		query: query.NewQuery(filter.Contains(component.Position, component.Velocity)),
+		query: donburi.NewQuery(filter.Contains(component.Position, component.Velocity)),
 	}
 }
 

@@ -8,8 +8,6 @@ import (
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/examples/bunnymark/component"
 	"github.com/yohamta/donburi/examples/bunnymark/helper"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type Spawn struct {
@@ -45,10 +43,11 @@ func (s *Spawn) Update(w donburi.World) {
 
 func (s *Spawn) addBunnies(w donburi.World) {
 	if s.settings == nil {
-		query := query.NewQuery(filter.Contains(component.Settings))
-		query.EachEntity(w, func(entry *donburi.Entry) {
+		if entry, ok := component.Settings.FirstEntity(w); ok {
 			s.settings = component.Settings.Get(entry)
-		})
+		} else {
+			panic("no settings")
+		}
 	}
 
 	entities := w.CreateMany(
