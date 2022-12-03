@@ -1,17 +1,19 @@
-package component
+package storage
 
 import (
 	"fmt"
 	"reflect"
 	"unsafe"
+
+	"github.com/yohamta/donburi/component"
 )
 
 var (
-	nextMockComponentTypeId ComponentTypeId = 1
+	nextMockComponentTypeId component.ComponentTypeId = 1
 )
 
 type MockComponentType[T any] struct {
-	id         ComponentTypeId
+	id         component.ComponentTypeId
 	typ        reflect.Type
 	defaultVal interface{}
 }
@@ -26,7 +28,7 @@ func NewMockComponentType[T any](t T, defaultVal interface{}) *MockComponentType
 	return m
 }
 
-func (m *MockComponentType[T]) Id() ComponentTypeId {
+func (m *MockComponentType[T]) Id() component.ComponentTypeId {
 	return m.id
 }
 

@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"unsafe"
 
-	"github.com/yohamta/donburi/internal/component"
+	"github.com/yohamta/donburi/component"
 )
 
 // IComponentType is an interface for component types.
@@ -40,6 +40,10 @@ func (c *ComponentType[T]) Get(entry *Entry) *T {
 // Set sets component data to the entry.
 func (c *ComponentType[T]) Set(entry *Entry, compoennt *T) {
 	entry.SetComponent(c, unsafe.Pointer(compoennt))
+}
+
+// Each
+func (c *ComponentType[T]) EachEntity(w World, callback func(*Entry)) {
 }
 
 // SetValue sets the value of the component.

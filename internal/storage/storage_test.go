@@ -3,14 +3,12 @@ package storage
 import (
 	"testing"
 	"unsafe"
-
-	"github.com/yohamta/donburi/internal/component"
 )
 
 func TestStorage(t *testing.T) {
 	type Component struct{ ID string }
 	var (
-		componentType = component.NewMockComponentType[any](Component{}, nil)
+		componentType = NewMockComponentType[any](Component{}, nil)
 	)
 
 	st := NewStorage()

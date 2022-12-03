@@ -1,8 +1,8 @@
 package storage
 
 import (
+	"github.com/yohamta/donburi/component"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/internal/component"
 )
 
 type ArchetypeIterator struct {

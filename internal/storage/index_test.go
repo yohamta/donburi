@@ -3,15 +3,15 @@ package storage
 import (
 	"testing"
 
+	"github.com/yohamta/donburi/component"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/internal/component"
 )
 
 func TestIndex(t *testing.T) {
 	var (
-		ca = component.NewMockComponentType(struct{}{}, nil)
-		cb = component.NewMockComponentType(struct{}{}, nil)
-		cc = component.NewMockComponentType(struct{}{}, nil)
+		ca = NewMockComponentType(struct{}{}, nil)
+		cb = NewMockComponentType(struct{}{}, nil)
+		cc = NewMockComponentType(struct{}{}, nil)
 	)
 
 	index := NewIndex()
