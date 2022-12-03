@@ -24,7 +24,8 @@ It aims to be a feature rich and high performance [ECS](https://en.wikipedia.org
   - [Math](#math)
   - [Transform](#transform)
   - [Events](#events)
-- [Internal Design for `World`](#internal-design-for-world)
+- [Projects Using Donburi](#projects-using-donburi)
+- [Internal architecture](#internal-architecture)
 - [How to contribute?](#how-to-contribute)
 - [Contributors](#contributors)
 
@@ -424,9 +425,10 @@ func UpdateScore(w donburi.World, event EnemyKilled) {
 }
 ```
 
-## Internal Design for `World`
+## Projects Using Donburi
+- [airplanes](https://github.com/m110/airplanes) - A 2D shoot 'em up game by [m110](https://github.com/m110)
 
-It is a bit complex, so please refer to the following diagram to understand it.
+## Architecture
 
 ![arch](assets/architecture.png)
 
