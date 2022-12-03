@@ -126,32 +126,33 @@ if SomeLogic.IsDead(world, someEntity) {
 }
 ```
 
-Entities can be retrieved using the `First` and `EachEntity` methods of the `Component` as follows:
+Entities can be retrieved using the `First` and `EachEntity` methods of Components as follows:
 
 ```go
-// components
+// GameState Component
 type GameStateData struct {
   // .. some data
 }
 var GameState = donburi.NewComponentType[GameStateData]()
 
+// Bullet Component
 type BulletData struct {
   // .. some data
 }
 var Bullet = donburi.NewComponentType[BulletData]()
 
-// init world and create entities
+// Init the world and create entities
 world := donburi.NewWorld()
 world.Create(GameState)
 world.CreateMany(100, Bullet)
 
-// query the first GameState entity
+// Query the first GameState entity
 if entry, ok := GameState.First(world); ok {
   gameState := GameState.Get(entry)
   // .. do stuff with the gameState entity
 }
 
-// query all Bullet entity
+// Query all Bullet entities
 Bullet.EachEntity(world, func(entry *donburi.Entry) {
   bullet := Bullet.Get(entry)
   // .. do stuff with the bullet entity
