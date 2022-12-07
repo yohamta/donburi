@@ -1,6 +1,8 @@
 package main
 
 import (
+	_ "embed"
+
 	"image"
 	"log"
 	"math/rand"
@@ -8,8 +10,12 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi/examples/platformer/config"
+	"github.com/yohamta/donburi/examples/platformer/fonts"
 	"github.com/yohamta/donburi/examples/platformer/scenes"
 )
+
+//go:embed assets/fonts/excel.ttf
+var excelFont []byte
 
 type Scene interface {
 	Update()
@@ -22,6 +28,8 @@ type Game struct {
 }
 
 func NewGame() *Game {
+	fonts.LoadFont(fonts.Excel, excelFont)
+
 	g := &Game{
 		bounds: image.Rectangle{},
 		scene:  scenes.NewPlatformerScene(),
