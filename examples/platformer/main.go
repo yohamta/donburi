@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/yohamta/donburi/examples/platformer/config"
 	"github.com/yohamta/donburi/examples/platformer/scenes"
 )
 
@@ -45,7 +46,7 @@ func (g *Game) Layout(width, height int) (int, int) {
 }
 
 func main() {
-	ebiten.SetWindowSize(640, 360)
+	ebiten.SetWindowSize(config.C.Width, config.C.Height)
 	ebiten.SetWindowResizable(false)
 	rand.Seed(time.Now().UTC().UnixNano())
 	if err := ebiten.RunGame(NewGame()); err != nil {
