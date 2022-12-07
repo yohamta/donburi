@@ -54,6 +54,16 @@ func (c *ComponentType[T]) FirstEntity(w World) (*Entry, bool) {
 	return c.query.FirstEntity(w)
 }
 
+// MustFirstEntity returns the first entity that has the component or panics.
+func (c *ComponentType[T]) MustFirstEntity(w World) *Entry {
+	e, ok := c.query.FirstEntity(w)
+	if !ok {
+		panic(fmt.Sprintf("no entity has the component %s", c.name))
+	}
+
+	return e
+}
+
 // SetValue sets the value of the component.
 func (c *ComponentType[T]) SetValue(entry *Entry, value T) {
 	comp := c.Get(entry)
