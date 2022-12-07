@@ -7,44 +7,36 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/ecs"
-
-	_ "net/http/pprof"
+	"github.com/yohamta/donburi/examples/platformer/scenes"
 )
 
+type Scene interface {
+	Update()
+	Draw(screen *ebiten.Image)
+}
+
 type Game struct {
-	ecs    *ecs.ECS
 	bounds image.Rectangle
+	scene  Scene
 }
 
 func NewGame() *Game {
 	g := &Game{
 		bounds: image.Rectangle{},
-		ecs:    createECS(),
+		scene:  scenes.NewPlatformerScene(),
 	}
 
 	return g
 }
 
-func createECS() *ecs.ECS {
-	world := createWorld()
-	ecs := ecs.NewECS(world)
-	return ecs
-}
-
-func createWorld() donburi.World {
-	world := donburi.NewWorld()
-	return world
-}
-
 func (g *Game) Update() error {
-	g.ecs.Update()
+	g.scene.Update()
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Clear()
+	g.scene.Draw(screen)
 }
 
 func (g *Game) Layout(width, height int) (int, int) {
