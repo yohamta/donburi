@@ -78,8 +78,8 @@ func (ps *PlatformerScene) init() {
 		factory.CreatePlatform(ps.ecs, resolv.NewObject(352, 64+192, 48, 8, "platform")),
 		// Create the floating platform.
 		factory.CreateFloatingPlatform(ps.ecs, resolv.NewObject(128, gh-32, 128, 8, "platform")),
+		// A ramp, which is unique as it has a non-rectangular shape. For this, we will specify a different shape for collision testing.
+		factory.CreateRamp(ps.ecs, resolv.NewObject(320, gh-56, 64, 32, "ramp")),
 	)
 
-	// A ramp, which is unique as it has a non-rectangular shape. For this, we will specify a different shape for collision testing.
-	dresolv.Add(space, factory.CreateRamp(ps.ecs, resolv.NewObject(320, gh-56, 64, 32, "ramp")))
 }
