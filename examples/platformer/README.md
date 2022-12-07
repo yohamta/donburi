@@ -1,6 +1,6 @@
 ![](./assets/images/example.gif)
 
-# Resolv Example using ECS architecture
+# Resolv Example using the ECS architecture
 
 This example code is created based on the example of [resolv](https://github.com/SolarLune/resolv) created by [SolarLune](https://github.com/SolarLune).
 
