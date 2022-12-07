@@ -13,23 +13,22 @@ import (
 )
 
 func DrawHelp(ecs *ecs.ECS, screen *ebiten.Image) {
-	drawText(screen, 16, 16,
-		"~ Platformer Demo ~",
-		"Move Player: Left, Right Arrow",
-		"Jump: X Key",
-		"Wallslide: Move into wall in air",
-		"Walljump: Jump while wallsliding",
-		"Fall through platforms: Down + X",
-		"",
-		"F1: Toggle Debug View",
-		"F2: Show / Hide help text",
-		"F4: Toggle fullscreen",
-		"R: Restart world",
-		"E: Next world",
-		"Q: Previous world",
-		fmt.Sprintf("%d FPS (frames per second)", int(ebiten.CurrentFPS())),
-		fmt.Sprintf("%d TPS (ticks per second)", int(ebiten.CurrentTPS())),
-	)
+	settings := GetOrCreateSettings(ecs)
+	if settings.ShowHelpText {
+		drawText(screen, 16, 16,
+			"~ Platformer Demo ~",
+			"Move Player: Left, Right Arrow",
+			"Jump: X Key",
+			"Wallslide: Move into wall in air",
+			"Walljump: Jump while wallsliding",
+			"Fall through platforms: Down + X",
+			"",
+			"F1: Toggle Debug View",
+			"F2: Show / Hide help text",
+			fmt.Sprintf("%d FPS (frames per second)", int(ebiten.CurrentFPS())),
+			fmt.Sprintf("%d TPS (ticks per second)", int(ebiten.CurrentTPS())),
+		)
+	}
 }
 
 func drawText(screen *ebiten.Image, x, y int, textLines ...string) {
