@@ -44,7 +44,7 @@ To check all examples, visit [this](https://github.com/yohamta/donburi/tree/mast
 
 The bunnymark example was adapted from [mizu](https://github.com/sedyh/mizu)'s code, which is made by [sedyh](https://github.com/sedyh). 
 
-<a href="https://github.com/yohamta/donburi/tree/master/examples/bunnymark"> <img width="200" src="https://user-images.githubusercontent.com/1475839/150521292-9d3ec2c9-b96f-4cc1-a778-57dabfbd46b6.gif"></a> 
+<a href="https://github.com/yohamta/donburi/tree/master/examples/bunnymark"> <img width="200" src="https://user-images.githubusercontent.com/1475839/150521292-9d3ec2c9-b96f-4cc1-a778-57dabfbd46b6.gif"></a> <a href="https://github.com/yohamta/donburi/tree/master/examples/platformer"> <img width="200" src="./examples/platformer/assets/images/example.gif"></a> 
 
 ## Installation
 
