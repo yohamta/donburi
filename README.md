@@ -102,9 +102,9 @@ Components can be added and removed through `Entry` objects.
 ```go
 // Fetch the first entity with PlayerTag component
 query := donburi.NewQuery(filter.Contains(PlayerTag))
-// Query.FirstEntity() returns only the first entity that 
+// Query.First() returns only the first entity that 
 // matches the query.
-if entry, ok := donburi.FirstEntity(world); ok {
+if entry, ok := donburi.First(world); ok {
   donburi.Add(entry, Position, &PositionData{
     X: 100,
     Y: 100,
@@ -126,7 +126,7 @@ if SomeLogic.IsDead(world, someEntity) {
 }
 ```
 
-Entities can be retrieved using the `First` and `EachEntity` methods of Components as follows:
+Entities can be retrieved using the `First` and `Each` methods of Components as follows:
 
 ```go
 // GameState Component
@@ -153,7 +153,7 @@ if entry, ok := GameState.First(world); ok {
 }
 
 // Query all Bullet entities
-Bullet.EachEntity(world, func(entry *donburi.Entry) {
+Bullet.Each(world, func(entry *donburi.Entry) {
   bullet := Bullet.Get(entry)
   // .. do stuff with the bullet entity
 })
@@ -168,7 +168,7 @@ Queries allow for high performance and expressive iteration through the entities
 query := donburi.NewQuery(filter.Contains(Position, Velocity))
 
 // Iterate through the entities found in the world
-query.EachEntity(world, func(entry *donburi.Entry) {
+query.Each(world, func(entry *donburi.Entry) {
   // An entry is an accessor to entity and its components.
   position := Position.Get(entry)
   velocity := Velocity.Get(entry)
@@ -207,7 +207,7 @@ query := donburi.NewQuery(
 )
 
 // In our query we can check if the entity has some of the optional components before attempting to retrieve them
-query.EachEntity(world, func(entry *donburi.Entry) {
+query.Each(world, func(entry *donburi.Entry) {
   // We'll always be able to access Position and Size
   position := Position.Get(entry)
   size := Size.Get(entry)
@@ -251,7 +251,7 @@ var EnemyTag = donburi.NewTag()
 world.CreateMany(100, EnemyTag, Position, Velocity)
 
 // Search entities with EnemyTag
-EnemyTag.EachEntity(world, func(entry *donburi.Entry) {
+EnemyTag.Each(world, func(entry *donburi.Entry) {
   // Perform some operation on the Entities with the EnemyTag component.
 }
 ```

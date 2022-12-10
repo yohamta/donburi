@@ -17,7 +17,7 @@ func NewVelocity() *Velocity {
 }
 
 func (v *Velocity) Update(w donburi.World) {
-	v.query.EachEntity(w, func(entry *donburi.Entry) {
+	v.query.Each(w, func(entry *donburi.Entry) {
 		position := component.Position.Get(entry)
 		velocity := component.Velocity.Get(entry)
 

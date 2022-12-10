@@ -13,7 +13,7 @@ import (
 )
 
 func DrawRamp(ecs *ecs.ECS, screen *ebiten.Image) {
-	tags.Ramp.EachEntity(ecs.World, func(e *donburi.Entry) {
+	tags.Ramp.Each(ecs.World, func(e *donburi.Entry) {
 		o := dresolv.GetObject(e)
 		drawColor := color.RGBA{255, 50, 100, 255}
 		tri := o.Shape.(*resolv.ConvexPolygon)

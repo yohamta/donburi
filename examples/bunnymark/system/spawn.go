@@ -43,7 +43,7 @@ func (s *Spawn) Update(w donburi.World) {
 
 func (s *Spawn) addBunnies(w donburi.World) {
 	if s.settings == nil {
-		if entry, ok := component.Settings.FirstEntity(w); ok {
+		if entry, ok := component.Settings.First(w); ok {
 			s.settings = component.Settings.Get(entry)
 		} else {
 			panic("no settings")

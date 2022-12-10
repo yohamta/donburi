@@ -16,7 +16,7 @@ import (
 
 func UpdatePlayer(ecs *ecs.ECS) {
 	// Now we update the Player's movement. This is the real bread-and-butter of this example, naturally.
-	playerEntry, _ := components.Player.FirstEntity(ecs.World)
+	playerEntry, _ := components.Player.First(ecs.World)
 	player := components.Player.Get(playerEntry)
 	playerObject := dresolv.GetObject(playerEntry)
 
@@ -273,7 +273,7 @@ func UpdatePlayer(ecs *ecs.ECS) {
 }
 
 func DrawPlayer(ecs *ecs.ECS, screen *ebiten.Image) {
-	tags.Player.EachEntity(ecs.World, func(e *donburi.Entry) {
+	tags.Player.Each(ecs.World, func(e *donburi.Entry) {
 		player := components.Player.Get(e)
 		o := dresolv.GetObject(e)
 		playerColor := color.RGBA{0, 255, 60, 255}

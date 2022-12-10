@@ -31,8 +31,8 @@ func NewQuery(filter filter.LayoutFilter) *Query {
 	}
 }
 
-// EachEntity iterates over all entities that match the query.
-func (q *Query) EachEntity(w World, callback func(*Entry)) {
+// Each iterates over all entities that match the query.
+func (q *Query) Each(w World, callback func(*Entry)) {
 	accessor := w.StorageAccessor()
 	result := q.evaluateQuery(w, &accessor)
 	iter := storage.NewEntityIterator(0, accessor.Archetypes, result)
@@ -48,6 +48,11 @@ func (q *Query) EachEntity(w World, callback func(*Entry)) {
 	}
 }
 
+// deprecated: use Each instead
+func (q *Query) EachEntity(w World, callback func(*Entry)) {
+	q.Each(w, callback)
+}
+
 // Count returns the number of entities that match the query.
 func (q *Query) Count(w World) int {
 	accessor := w.StorageAccessor()
@@ -61,8 +66,8 @@ func (q *Query) Count(w World) int {
 	return ret
 }
 
-// FirstEntity returns the first entity that matches the query.
-func (q *Query) FirstEntity(w World) (entry *Entry, ok bool) {
+// First returns the first entity that matches the query.
+func (q *Query) First(w World) (entry *Entry, ok bool) {
 	accessor := w.StorageAccessor()
 	result := q.evaluateQuery(w, &accessor)
 	iter := storage.NewEntityIterator(0, accessor.Archetypes, result)
@@ -76,6 +81,11 @@ func (q *Query) FirstEntity(w World) (entry *Entry, ok bool) {
 		}
 	}
 	return nil, false
+}
+
+// deprecated: use First instead
+func (q *Query) FirstEntity(w World) (entry *Entry, ok bool) {
+	return q.First(w)
 }
 
 func (q *Query) evaluateQuery(world World, accessor *StorageAccessor) []storage.ArchetypeIndex {

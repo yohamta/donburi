@@ -205,7 +205,7 @@ func TestRemoveAndCreateEntity(t *testing.T) {
 	entityB := world.Create(tagA)
 
 	query := donburi.NewQuery(filter.Contains(tagA))
-	entry, ok := query.FirstEntity(world)
+	entry, ok := query.First(world)
 	if !ok {
 		t.Fatalf("Entity should be found")
 	}

@@ -20,7 +20,7 @@ var HierarchySystem = &hierarchySystem{
 // You don't need to use this system function when you use
 // hierarchy.RemoveRecursive() or hierarchy.RemoveChildrenRecursive() instead.
 func (hs *hierarchySystem) RemoveChildren(ecs *ecs.ECS) {
-	hs.query.EachEntity(ecs.World, func(entry *donburi.Entry) {
+	hs.query.Each(ecs.World, func(entry *donburi.Entry) {
 		if !entry.Valid() {
 			return
 		}

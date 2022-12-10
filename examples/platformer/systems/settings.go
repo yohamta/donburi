@@ -20,13 +20,13 @@ func UpdateSettings(ecs *ecs.ECS) {
 }
 
 func GetOrCreateSettings(ecs *ecs.ECS) *components.SettingsData {
-	if _, ok := components.Settings.FirstEntity(ecs.World); !ok {
+	if _, ok := components.Settings.First(ecs.World); !ok {
 		ent := ecs.World.Entry(ecs.World.Create(components.Settings))
 		components.Settings.SetValue(ent, components.SettingsData{
 			ShowHelpText: true,
 		})
 	}
 
-	ent, _ := components.Settings.FirstEntity(ecs.World)
+	ent, _ := components.Settings.First(ecs.World)
 	return components.Settings.Get(ent)
 }

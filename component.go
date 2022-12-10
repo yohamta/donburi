@@ -44,24 +44,39 @@ func (c *ComponentType[T]) Set(entry *Entry, compoennt *T) {
 	entry.SetComponent(c, unsafe.Pointer(compoennt))
 }
 
-// EachEntity iterates over the entities that have the component.
+// Each iterates over the entities that have the component.
+func (c *ComponentType[T]) Each(w World, callback func(*Entry)) {
+	c.query.Each(w, callback)
+}
+
+// deprecated: use Each instead
 func (c *ComponentType[T]) EachEntity(w World, callback func(*Entry)) {
-	c.query.EachEntity(w, callback)
+	c.Each(w, callback)
 }
 
-// FirstEntity returns the first entity that has the component.
+// First returns the first entity that has the component.
+func (c *ComponentType[T]) First(w World) (*Entry, bool) {
+	return c.query.First(w)
+}
+
+// deprecated: use First instead
 func (c *ComponentType[T]) FirstEntity(w World) (*Entry, bool) {
-	return c.query.FirstEntity(w)
+	return c.First(w)
 }
 
-// MustFirstEntity returns the first entity that has the component or panics.
-func (c *ComponentType[T]) MustFirstEntity(w World) *Entry {
-	e, ok := c.query.FirstEntity(w)
+// MustFirst returns the first entity that has the component or panics.
+func (c *ComponentType[T]) MustFirst(w World) *Entry {
+	e, ok := c.query.First(w)
 	if !ok {
 		panic(fmt.Sprintf("no entity has the component %s", c.name))
 	}
 
 	return e
+}
+
+// deprecated: use MustFirst instead
+func (c *ComponentType[T]) MustFirstEntity(w World) *Entry {
+	return c.MustFirst(w)
 }
 
 // SetValue sets the value of the component.

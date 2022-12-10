@@ -27,7 +27,7 @@ func NewMetrics(bounds *image.Rectangle) *Metrics {
 
 func (m *Metrics) Update(ecs *ecs.ECS) {
 	if m.settings == nil {
-		if entry, ok := component.Settings.FirstEntity(ecs.World); ok {
+		if entry, ok := component.Settings.First(ecs.World); ok {
 			m.settings = component.Settings.Get(entry)
 		}
 	}
