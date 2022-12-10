@@ -22,7 +22,7 @@ func NewRender() *Render {
 }
 
 func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
-	r.query.EachEntity(w, func(entry *donburi.Entry) {
+	r.query.Each(w, func(entry *donburi.Entry) {
 		position := component.Position.Get(entry)
 		hue := component.Hue.Get(entry)
 		sprite := component.Sprite.Get(entry)

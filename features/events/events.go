@@ -42,7 +42,7 @@ var (
 
 // ProcessAllEvents processes all events.
 func ProcessAllEvents(w donburi.World) {
-	eventQuery.EachEntity(w, func(e *donburi.Entry) {
+	eventQuery.Each(w, func(e *donburi.Entry) {
 		eventType := getEventType(e)
 		eventType.process(w)
 	})
@@ -106,7 +106,7 @@ func (e *EventType[T]) ProcessEvents(w donburi.World) {
 }
 
 func (e *EventType[T]) mustFindEventBus(w donburi.World) *eventBusData[T] {
-	eventBus, ok := e.eventBusQuery.FirstEntity(w)
+	eventBus, ok := e.eventBusQuery.First(w)
 	if !ok {
 		panic("event bus not found")
 	}

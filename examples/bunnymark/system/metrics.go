@@ -27,7 +27,7 @@ func NewMetrics(bounds *image.Rectangle) *Metrics {
 
 func (m *Metrics) Update(w donburi.World) {
 	if m.settings == nil {
-		if entry, ok := component.Settings.FirstEntity(w); ok {
+		if entry, ok := component.Settings.First(w); ok {
 			m.settings = component.Settings.Get(entry)
 		} else {
 			panic("no settings")

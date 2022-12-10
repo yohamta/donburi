@@ -12,7 +12,7 @@ import (
 )
 
 func DrawWall(ecs *ecs.ECS, screen *ebiten.Image) {
-	tags.Wall.EachEntity(ecs.World, func(e *donburi.Entry) {
+	tags.Wall.Each(ecs.World, func(e *donburi.Entry) {
 		o := dresolv.GetObject(e)
 		drawColor := color.RGBA{60, 60, 60, 255}
 		ebitenutil.DrawRect(screen, o.X, o.Y, o.W, o.H, drawColor)

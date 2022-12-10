@@ -45,7 +45,7 @@ func (s *Spawn) Update(ecs *ecs.ECS) {
 
 func (s *Spawn) addBunnies(ecs *ecs.ECS) {
 	if s.settings == nil {
-		if entry, ok := component.Settings.FirstEntity(ecs.World); ok {
+		if entry, ok := component.Settings.First(ecs.World); ok {
 			s.settings = component.Settings.Get(entry)
 		}
 	}

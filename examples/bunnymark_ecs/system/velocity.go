@@ -20,7 +20,7 @@ var Velocity = &velocity{
 }
 
 func (v *velocity) Update(ecs *ecs.ECS) {
-	v.query.EachEntity(ecs.World, func(entry *donburi.Entry) {
+	v.query.Each(ecs.World, func(entry *donburi.Entry) {
 		position := component.Position.Get(entry)
 		velocity := component.Velocity.Get(entry)
 

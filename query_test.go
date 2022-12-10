@@ -21,7 +21,7 @@ func TestQuery(t *testing.T) {
 
 	query := donburi.NewQuery(filter.Contains(queryTagA))
 	count := 0
-	query.EachEntity(world, func(entry *donburi.Entry) {
+	query.Each(world, func(entry *donburi.Entry) {
 		count++
 		if entry.Archetype().Layout().HasComponent(queryTagA) == false {
 			t.Errorf("PlayerTag should be in ent archetype")
@@ -85,14 +85,14 @@ func TestFirstEntity(t *testing.T) {
 
 	// find first entity withqueryTagC
 	query := donburi.NewQuery(filter.Contains(queryTagC))
-	entry, ok := query.FirstEntity(world)
+	entry, ok := query.First(world)
 	if entry == nil || ok == false {
 		t.Errorf("entry with queryTagC should not be nil")
 	}
 
 	entry.Remove()
 
-	entry, ok = query.FirstEntity(world)
+	entry, ok = query.First(world)
 	if entry != nil || ok {
 		t.Errorf("entry with queryTagC should be nil")
 	}

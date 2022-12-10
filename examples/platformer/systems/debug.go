@@ -14,7 +14,7 @@ func DrawDebug(ecs *ecs.ECS, screen *ebiten.Image) {
 	if !settings.Debug {
 		return
 	}
-	spaceEntry, ok := components.Space.FirstEntity(ecs.World)
+	spaceEntry, ok := components.Space.First(ecs.World)
 	if !ok {
 		return
 	}

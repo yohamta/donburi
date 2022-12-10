@@ -25,7 +25,7 @@ var Render = &render{
 }
 
 func (r *render) Draw(ecs *ecs.ECS, screen *ebiten.Image) {
-	r.query.EachEntity(ecs.World, func(entry *donburi.Entry) {
+	r.query.Each(ecs.World, func(entry *donburi.Entry) {
 		position := component.Position.Get(entry)
 		hue := component.Hue.Get(entry)
 		sprite := component.Sprite.Get(entry)

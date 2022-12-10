@@ -8,7 +8,7 @@ import (
 )
 
 func UpdateObjects(ecs *ecs.ECS) {
-	components.Object.EachEntity(ecs.World, func(e *donburi.Entry) {
+	components.Object.Each(ecs.World, func(e *donburi.Entry) {
 		obj := dresolv.GetObject(e)
 		obj.Update()
 	})
