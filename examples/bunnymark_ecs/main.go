@@ -4,6 +4,7 @@ import (
 	"image"
 	"log"
 	"math/rand"
+	"sync"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -21,13 +22,12 @@ import (
 type Game struct {
 	ecs    *ecs.ECS
 	bounds image.Rectangle
+	once   sync.Once
 }
 
-func NewGame() *Game {
-	g := &Game{
-		bounds: image.Rectangle{},
-		ecs:    createECS(),
-	}
+func (g *Game) configure() {
+	g.bounds = image.Rectangle{}
+	g.ecs = ecs.NewECS(spawnWorld())
 
 	metrics := system.NewMetrics(&g.bounds)
 
@@ -40,17 +40,27 @@ func NewGame() *Game {
 		AddRenderer(layers.LayerBackground, system.DrawBackground).
 		AddRenderer(layers.LayerMetrics, metrics.Draw).
 		AddRenderer(layers.LayerBunnies, system.Render.Draw)
-
-	return g
 }
 
-func createECS() *ecs.ECS {
-	world := createWorld()
-	ecs := ecs.NewECS(world)
-	return ecs
+func (g *Game) Update() error {
+	g.once.Do(g.configure)
+	g.ecs.Update()
+	return nil
 }
 
-func createWorld() donburi.World {
+func (g *Game) Draw(screen *ebiten.Image) {
+	screen.Clear()
+	g.ecs.DrawLayer(layers.LayerBackground, screen)
+	g.ecs.DrawLayer(layers.LayerBunnies, screen)
+	g.ecs.DrawLayer(layers.LayerMetrics, screen)
+}
+
+func (g *Game) Layout(width, height int) (int, int) {
+	g.bounds = image.Rect(0, 0, width, height)
+	return width, height
+}
+
+func spawnWorld() donburi.World {
 	world := donburi.NewWorld()
 	settings := world.Entry(world.Create(component.Settings))
 	donburi.SetValue(
@@ -70,30 +80,13 @@ func createWorld() donburi.World {
 	return world
 }
 
-func (g *Game) Update() error {
-	g.ecs.Update()
-	return nil
-}
-
-func (g *Game) Draw(screen *ebiten.Image) {
-	screen.Clear()
-	g.ecs.DrawLayer(layers.LayerBackground, screen)
-	g.ecs.DrawLayer(layers.LayerBunnies, screen)
-	g.ecs.DrawLayer(layers.LayerMetrics, screen)
-}
-
-func (g *Game) Layout(width, height int) (int, int) {
-	g.bounds = image.Rect(0, 0, width, height)
-	return width, height
-}
-
 func main() {
 	ebiten.SetWindowSize(800, 600)
 	ebiten.SetWindowSizeLimits(300, 200, -1, -1)
 	ebiten.SetFPSMode(ebiten.FPSModeVsyncOffMaximum)
-	ebiten.SetWindowResizable(true)
+	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	rand.Seed(time.Now().UTC().UnixNano())
-	if err := ebiten.RunGame(NewGame()); err != nil {
+	if err := ebiten.RunGame(&Game{}); err != nil {
 		log.Fatal(err)
 	}
 }

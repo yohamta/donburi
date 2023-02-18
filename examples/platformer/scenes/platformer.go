@@ -2,6 +2,7 @@ package scenes
 
 import (
 	"image/color"
+	"sync"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/solarlune/resolv"
@@ -15,10 +16,21 @@ import (
 )
 
 type PlatformerScene struct {
-	ecs *ecs.ECS
+	ecs  *ecs.ECS
+	once sync.Once
 }
 
-func NewPlatformerScene() *PlatformerScene {
+func (ps *PlatformerScene) Update() {
+	ps.once.Do(ps.configure)
+	ps.ecs.Update()
+}
+
+func (ps *PlatformerScene) Draw(screen *ebiten.Image) {
+	screen.Fill(color.RGBA{20, 20, 40, 255})
+	ps.ecs.Draw(screen)
+}
+
+func (ps *PlatformerScene) configure() {
 	ecs := ecs.NewECS(donburi.NewWorld())
 
 	ecs.AddSystem(systems.UpdateFloatingPlatform)
@@ -34,22 +46,8 @@ func NewPlatformerScene() *PlatformerScene {
 	ecs.AddRenderer(layers.Default, systems.DrawDebug)
 	ecs.AddRenderer(layers.Default, systems.DrawHelp)
 
-	ps := &PlatformerScene{ecs: ecs}
-	ps.init()
+	ps.ecs = ecs
 
-	return ps
-}
-
-func (ps *PlatformerScene) Update() {
-	ps.ecs.Update()
-}
-
-func (ps *PlatformerScene) Draw(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{20, 20, 40, 255})
-	ps.ecs.Draw(screen)
-}
-
-func (ps *PlatformerScene) init() {
 	gw, gh := float64(config.C.Width), float64(config.C.Height)
 
 	// Define the world's Space. Here, a Space is essentially a grid (the game's width and height, or 640x360), made up of 16x16 cells. Each cell can have 0 or more Objects within it,

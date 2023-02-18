@@ -32,7 +32,7 @@ func NewGame() *Game {
 
 	g := &Game{
 		bounds: image.Rectangle{},
-		scene:  scenes.NewPlatformerScene(),
+		scene:  &scenes.PlatformerScene{},
 	}
 
 	return g
