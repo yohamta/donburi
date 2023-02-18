@@ -9,7 +9,7 @@ import (
 )
 
 func CreateRamp(ecs *ecs.ECS, obj *resolv.Object) *donburi.Entry {
-	ramp := archetypes.NewRamp(ecs)
+	ramp := archetypes.Ramp.Spawn(ecs)
 	dresolv.SetObject(ramp, obj)
 
 	// We will construct the shape using a ConvexPolygon. It's essentially an elogated triangle, but with a "floor" afterwards,

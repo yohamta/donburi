@@ -9,7 +9,7 @@ import (
 )
 
 func CreateWall(ecs *ecs.ECS, obj *resolv.Object) *donburi.Entry {
-	wall := archetypes.NewWall(ecs)
+	wall := archetypes.Wall.Spawn(ecs)
 	dresolv.SetObject(wall, obj)
 	return wall
 }
