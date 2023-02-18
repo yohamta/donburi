@@ -12,6 +12,7 @@ func TestArchetype(t *testing.T) {
 	ca := donburi.NewTag().SetName("A")
 	cb := donburi.NewTag().SetName("B")
 	cc := donburi.NewTag().SetName("C")
+	cd := donburi.NewTag().SetName("D")
 
 	archetypeA := ecs.NewArchetype(ca)
 	archetypeB := ecs.NewArchetype(cb, cc)
@@ -27,4 +28,10 @@ func TestArchetype(t *testing.T) {
 	assert.False(t, e2.HasComponent(ca))
 	assert.True(t, e2.HasComponent(cb))
 	assert.True(t, e2.HasComponent(cc))
+
+	e3 := archetypeA.Spawn(ecsInstance, cd)
+	assert.True(t, e3.HasComponent(ca))
+	assert.False(t, e3.HasComponent(cb))
+	assert.False(t, e3.HasComponent(cc))
+	assert.True(t, e3.HasComponent(cd))
 }
