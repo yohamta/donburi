@@ -10,7 +10,7 @@ import (
 )
 
 func CreatePlayer(ecs *ecs.ECS) *donburi.Entry {
-	player := archetypes.NewPlayer(ecs)
+	player := archetypes.Player.Spawn(ecs)
 
 	obj := resolv.NewObject(32, 128, 16, 24)
 	dresolv.SetObject(player, obj)

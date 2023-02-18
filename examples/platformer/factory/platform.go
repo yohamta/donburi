@@ -12,14 +12,14 @@ import (
 )
 
 func CreatePlatform(ecs *ecs.ECS, object *resolv.Object) *donburi.Entry {
-	platform := archetypes.NewPlatform(ecs)
+	platform := archetypes.Platform.Spawn(ecs)
 	dresolv.SetObject(platform, object)
 
 	return platform
 }
 
 func CreateFloatingPlatform(ecs *ecs.ECS, object *resolv.Object) *donburi.Entry {
-	platform := archetypes.NewFloatingPlatform(ecs)
+	platform := archetypes.FloatingPlatform.Spawn(ecs)
 	dresolv.SetObject(platform, object)
 
 	// The floating platform moves using a *gween.Sequence sequence of tweens, moving it back and forth.

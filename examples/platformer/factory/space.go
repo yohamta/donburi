@@ -10,7 +10,7 @@ import (
 )
 
 func CreateSpace(ecs *ecs.ECS) *donburi.Entry {
-	space := archetypes.NewSpace(ecs)
+	space := archetypes.Space.Spawn(ecs)
 
 	cfg := config.C
 	spaceData := resolv.NewSpace(cfg.Width, cfg.Height, 16, 16)
