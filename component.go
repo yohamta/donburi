@@ -40,8 +40,8 @@ func (c *ComponentType[T]) Get(entry *Entry) *T {
 }
 
 // Set sets component data to the entry.
-func (c *ComponentType[T]) Set(entry *Entry, compoennt *T) {
-	entry.SetComponent(c, unsafe.Pointer(compoennt))
+func (c *ComponentType[T]) Set(entry *Entry, component *T) {
+	entry.SetComponent(c, unsafe.Pointer(component))
 }
 
 // Each iterates over the entities that have the component.
