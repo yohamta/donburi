@@ -60,7 +60,8 @@ func (cs *Components) Storage(c component.IComponentType) *Storage {
 
 // Remove removes the component from the storage.
 func (cs *Components) Remove(a *Archetype, ci ComponentIndex) {
-	for _, ct := range a.Layout().Components() {
+	components := a.Layout().Components()
+	for _, ct := range components {
 		cs.remove(ct, a.index, ci)
 	}
 	cs.componentIndices[a.index]--
