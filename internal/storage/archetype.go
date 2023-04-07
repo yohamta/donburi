@@ -2,7 +2,6 @@ package storage
 
 import (
 	"github.com/yohamta/donburi/component"
-	"github.com/yohamta/donburi/internal/entity"
 )
 
 type ArchetypeIndex int
@@ -11,7 +10,7 @@ type ArchetypeIndex int
 // This structure allows to quickly find entities based on their components.
 type Archetype struct {
 	index    ArchetypeIndex
-	entities []entity.Entity
+	entities []Entity
 	layout   *Layout
 }
 
@@ -19,7 +18,7 @@ type Archetype struct {
 func NewArchetype(index ArchetypeIndex, layout *Layout) *Archetype {
 	return &Archetype{
 		index:    index,
-		entities: make([]entity.Entity, 0, 256),
+		entities: make([]Entity, 0, 256),
 		layout:   layout,
 	}
 }
@@ -30,12 +29,12 @@ func (archetype *Archetype) Layout() *Layout {
 }
 
 // Entities returns all entities in this archetype.
-func (archetype *Archetype) Entities() []entity.Entity {
+func (archetype *Archetype) Entities() []Entity {
 	return archetype.entities
 }
 
 // SwapRemove removes an entity from the archetype and returns it.
-func (archetype *Archetype) SwapRemove(entity_index int) entity.Entity {
+func (archetype *Archetype) SwapRemove(entity_index int) Entity {
 	removed := archetype.entities[entity_index]
 	archetype.entities[entity_index] = archetype.entities[len(archetype.entities)-1]
 	archetype.entities = archetype.entities[:len(archetype.entities)-1]
@@ -56,7 +55,7 @@ func (archetype *Archetype) LayoutMatches(components []component.IComponentType)
 }
 
 // PushEntity adds an entity to the archetype.
-func (archetype *Archetype) PushEntity(entity entity.Entity) {
+func (archetype *Archetype) PushEntity(entity Entity) {
 	archetype.entities = append(archetype.entities, entity)
 }
 

@@ -6,7 +6,6 @@ import (
 	"unsafe"
 
 	"github.com/yohamta/donburi/component"
-	"github.com/yohamta/donburi/internal/entity"
 	"github.com/yohamta/donburi/internal/storage"
 )
 
@@ -14,7 +13,7 @@ import (
 type Entry struct {
 	World *world
 
-	id     entity.EntityId
+	id     storage.EntityId
 	entity Entity
 	loc    *storage.Location
 }
@@ -54,7 +53,7 @@ func Valid(e *Entry) bool {
 }
 
 // Id returns the entity id.
-func (e *Entry) Id() entity.EntityId {
+func (e *Entry) Id() storage.EntityId {
 	return e.id
 }
 

@@ -2,7 +2,6 @@ package donburi
 
 import (
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/internal/entity"
 	"github.com/yohamta/donburi/internal/storage"
 )
 
@@ -36,7 +35,7 @@ func (q *Query) Each(w World, callback func(*Entry)) {
 	accessor := w.StorageAccessor()
 	result := q.evaluateQuery(w, &accessor)
 	iter := storage.NewEntityIterator(0, accessor.Archetypes, result)
-	f := func(entity entity.Entity) {
+	f := func(entity storage.Entity) {
 		entry := w.Entry(entity)
 		callback(entry)
 	}
