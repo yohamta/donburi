@@ -1,7 +1,5 @@
 package storage
 
-import "github.com/yohamta/donburi/internal/entity"
-
 // EntityIterator is an iterator for entity lists in archetypes.
 type EntityIterator struct {
 	current    int
@@ -24,7 +22,7 @@ func (it *EntityIterator) HasNext() bool {
 }
 
 // Next returns the next entity list.
-func (it *EntityIterator) Next() []entity.Entity {
+func (it *EntityIterator) Next() []Entity {
 	archetypeIndex := it.indices[it.current]
 	it.current++
 	return it.archetypes[archetypeIndex].Entities()

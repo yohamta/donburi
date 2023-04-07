@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/internal/entity"
 	"github.com/yohamta/donburi/internal/storage"
 )
 
@@ -95,7 +94,7 @@ func TestArchetype(t *testing.T) {
 func TestAddComponent(t *testing.T) {
 	world := donburi.NewWorld()
 
-	entities := []entity.Entity{
+	entities := []storage.Entity{
 		world.Create(tagA, transform),
 		world.Create(tagA, transform),
 		world.Create(tagA, transform),
@@ -123,7 +122,7 @@ func TestAddComponent(t *testing.T) {
 func TestRemoveComponent(t *testing.T) {
 	world := donburi.NewWorld()
 
-	entities := []entity.Entity{
+	entities := []storage.Entity{
 		world.Create(tagA, transform, velocity),
 		world.Create(tagA, transform, velocity),
 		world.Create(tagA, transform, velocity),

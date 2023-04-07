@@ -5,7 +5,6 @@ import (
 
 	"github.com/yohamta/donburi/component"
 	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/internal/entity"
 	"github.com/yohamta/donburi/internal/storage"
 )
 
@@ -55,7 +54,7 @@ type world struct {
 	archetypes   []*storage.Archetype
 	destroyed    []Entity
 	entries      []*Entry
-	nextEntityId entity.EntityId
+	nextEntityId storage.EntityId
 }
 
 var nextWorldId WorldId = 0
@@ -235,7 +234,7 @@ func (w *world) nextEntity() Entity {
 	if len(w.destroyed) == 0 {
 		id := w.nextEntityId
 		w.nextEntityId++
-		return entity.NewEntity(id)
+		return storage.NewEntity(id)
 	}
 	entity := w.destroyed[len(w.destroyed)-1]
 	w.destroyed = w.destroyed[:len(w.destroyed)-1]
