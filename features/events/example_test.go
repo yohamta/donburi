@@ -70,6 +70,21 @@ func TestUnsubscribe(t *testing.T) {
 	}
 }
 
+func TestEventsWithNoSubscribers(t *testing.T) {
+
+	w := donburi.NewWorld()
+
+	EnemyKilledEvent.Publish(w, &EnemyKilled{EnemyID: 1})
+
+	events.ProcessAllEvents(w)
+
+	ev := lastReceivedEvent
+
+	if ev != nil {
+		t.Errorf("event should not be received")
+	}
+}
+
 var (
 	lastReceivedEvent *EnemyKilled = nil
 )

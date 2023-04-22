@@ -62,42 +62,31 @@ func NewEventType[T any]() *EventType[T] {
 
 // Subscribe registers a subscriber for the event.
 func (e *EventType[T]) Subscribe(w donburi.World, subscriber Subscriber[T]) {
-	if e.eventBusQuery.Count(w) == 0 {
-		entity := w.Entry(w.Create(e.eventBus, eventType))
-		donburi.Set(entity, e.eventBus, newEventBusData[T]())
-		donburi.SetValue(entity, eventType, eventTypeData{
-			eventName: e.eventName,
-			process: func(w donburi.World) {
-				e.ProcessEvents(w)
-			},
-		})
-	}
-
 	eventBus := e.mustFindEventBus(w)
 	eventBus.subscribers = append(eventBus.subscribers, subscriber)
 }
 
 // Find the index of a subscriber
 func (e *EventType[T]) findSubscriber(w donburi.World, subscriber Subscriber[T]) (int, bool) {
-    if e.eventBusQuery.Count(w) != 0 {
-        eventBus := e.mustFindEventBus(w)
-        for i, s := range eventBus.subscribers {
-            if reflect.ValueOf(s).Pointer() == reflect.ValueOf(subscriber).Pointer() {
-                return i, true
-            }
-        }
-    }
-    return 0, false
+	if e.eventBusQuery.Count(w) != 0 {
+		eventBus := e.mustFindEventBus(w)
+		for i, s := range eventBus.subscribers {
+			if reflect.ValueOf(s).Pointer() == reflect.ValueOf(subscriber).Pointer() {
+				return i, true
+			}
+		}
+	}
+	return 0, false
 }
 
 // Unsubscribe removes a subscriber for the event.
 func (e *EventType[T]) Unsubscribe(w donburi.World, subscriber Subscriber[T]) {
-    index, found := e.findSubscriber(w, subscriber)
-    if found {
-        eventBus := e.mustFindEventBus(w)
-        eventBus.subscribers[index] = eventBus.subscribers[len(eventBus.subscribers)-1]
-        eventBus.subscribers = eventBus.subscribers[:len(eventBus.subscribers)-1]
-    }
+	index, found := e.findSubscriber(w, subscriber)
+	if found {
+		eventBus := e.mustFindEventBus(w)
+		eventBus.subscribers[index] = eventBus.subscribers[len(eventBus.subscribers)-1]
+		eventBus.subscribers = eventBus.subscribers[:len(eventBus.subscribers)-1]
+	}
 }
 
 // Publish publishes an event.
@@ -131,7 +120,14 @@ func (e *EventType[T]) ProcessEvents(w donburi.World) {
 func (e *EventType[T]) mustFindEventBus(w donburi.World) *eventBusData[T] {
 	eventBus, ok := e.eventBusQuery.First(w)
 	if !ok {
-		panic("event bus not found")
+		eventBus = w.Entry(w.Create(e.eventBus, eventType))
+		donburi.Set(eventBus, e.eventBus, newEventBusData[T]())
+		donburi.SetValue(eventBus, eventType, eventTypeData{
+			eventName: e.eventName,
+			process: func(w donburi.World) {
+				e.ProcessEvents(w)
+			},
+		})
 	}
 	return donburi.Get[eventBusData[T]](eventBus, e.eventBus)
 }
