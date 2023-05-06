@@ -459,6 +459,7 @@ func UpdateScore(w donburi.World, event EnemyKilled) {
 
 ## Projects Using Donburi
 - [airplanes](https://github.com/m110/airplanes) - A 2D shoot 'em up game by [m110](https://github.com/m110)
+- [goingo](https://github.com/joelschutz/goingo) - Go game implemented in the Go language by [joelschutz](https://github.com/joelschutz)
 
 ## Architecture
 
