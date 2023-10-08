@@ -22,17 +22,13 @@ func (it *ArchetypeIterator) Next() ArchetypeIndex {
 
 // Index is a structure that indexes archetypes by their component types.
 type Index struct {
-	layouts  [][]component.IComponentType
-	iterator *ArchetypeIterator
+	layouts [][]component.IComponentType
 }
 
 // NewIndex creates a new search index.
 func NewIndex() *Index {
 	return &Index{
 		layouts: [][]component.IComponentType{},
-		iterator: &ArchetypeIterator{
-			current: 0,
-		},
 	}
 }
 
@@ -43,14 +39,16 @@ func (idx *Index) Push(layout *Layout) {
 
 // SearchFrom searches for archetypes that match the given filter from the given index.
 func (idx *Index) SearchFrom(f filter.LayoutFilter, start int) *ArchetypeIterator {
-	idx.iterator.current = 0
-	idx.iterator.values = []ArchetypeIndex{}
+	iterator := &ArchetypeIterator{
+		current: 0,
+	}
+	iterator.values = []ArchetypeIndex{}
 	for i := start; i < len(idx.layouts); i++ {
 		if f.MatchesLayout(idx.layouts[i]) {
-			idx.iterator.values = append(idx.iterator.values, ArchetypeIndex(i))
+			iterator.values = append(iterator.values, ArchetypeIndex(i))
 		}
 	}
-	return idx.iterator
+	return iterator
 }
 
 // Search searches for archetypes that match the given filter.
