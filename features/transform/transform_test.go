@@ -43,9 +43,9 @@ func TestTransform(t *testing.T) {
 	transform.RemoveParent(parent, false)
 
 	testWorldTransform(t, child, &testTransform{
-		Position: dmath.Vec2{X: 2, Y: 4},
-		Rotation: 90,
-		Scale:    dmath.Vec2{X: 4, Y: 9},
+		Position: dmath.Vec2{X: 1, Y: 2},
+		Rotation: 180,
+		Scale:    dmath.Vec2{X: 2, Y: 3},
 	})
 }
 

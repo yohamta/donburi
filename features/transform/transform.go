@@ -41,6 +41,7 @@ func AppendChild(parent, child *donburi.Entry, keepWorldPosition bool) {
 	SetParent(child, parent, keepWorldPosition)
 }
 
+// ChangeParent changes parent of the entry.
 func ChangeParent(child, parent *donburi.Entry, keepWorldPosition bool) {
 	if !child.HasComponent(Transform) {
 		panic("entry does not have transform component")

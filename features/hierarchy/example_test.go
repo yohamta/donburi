@@ -172,6 +172,57 @@ func TestFindChildren(t *testing.T) {
 	}
 }
 
+func TestChangeParent(t *testing.T) {
+	w := donburi.NewWorld()
+
+	parent1 := donburi.NewTag().SetName("parent1")
+	parent2 := donburi.NewTag().SetName("parent2")
+	child := donburi.NewTag().SetName("child")
+
+	p1e := w.Entry(w.Create(parent1))
+	p2e := w.Entry(w.Create(parent2))
+	ce := w.Entry(w.Create(child))
+
+	// no parent exists
+	ChangeParent(ce, p1e)
+	testChildren(t, []childrenTest{
+		{
+			Parent:   p1e,
+			Children: []*donburi.Entry{ce},
+		},
+		{
+			Parent:   p2e,
+			Children: []*donburi.Entry{},
+		},
+	})
+
+	// change to same parent
+	ChangeParent(ce, p1e)
+	testChildren(t, []childrenTest{
+		{
+			Parent:   p1e,
+			Children: []*donburi.Entry{ce},
+		},
+		{
+			Parent:   p2e,
+			Children: []*donburi.Entry{},
+		},
+	})
+
+	// change parent
+	ChangeParent(ce, p2e)
+	testChildren(t, []childrenTest{
+		{
+			Parent:   p1e,
+			Children: []*donburi.Entry{},
+		},
+		{
+			Parent:   p2e,
+			Children: []*donburi.Entry{ce},
+		},
+	})
+}
+
 type childrenTest struct {
 	Parent   *donburi.Entry
 	Children []*donburi.Entry
@@ -192,42 +243,4 @@ func testChildren(t *testing.T, tests []childrenTest) {
 			}
 		}
 	}
-}
-
-func TestChangeParent(t *testing.T) {
-	w := donburi.NewWorld()
-
-	parent1 := donburi.NewTag().SetName("parent1")
-	parent2 := donburi.NewTag().SetName("parent2")
-	child := donburi.NewTag().SetName("child")
-
-	p1e := w.Entry(w.Create(parent1))
-	p2e := w.Entry(w.Create(parent2))
-	ce := w.Entry(w.Create(child))
-
-	ChangeParent(ce, p1e)
-	testChildren(t, []childrenTest{
-		{
-			Parent:   p1e,
-			Children: []*donburi.Entry{ce},
-		},
-		{
-			Parent:   p2e,
-			Children: []*donburi.Entry{},
-		},
-	})
-
-	SetParent(ce, p1e)
-	ChangeParent(ce, p2e)
-
-	testChildren(t, []childrenTest{
-		{
-			Parent:   p1e,
-			Children: []*donburi.Entry{},
-		},
-		{
-			Parent:   p2e,
-			Children: []*donburi.Entry{ce},
-		},
-	})
 }
