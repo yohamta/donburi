@@ -89,6 +89,39 @@ func HasParent(entry *donburi.Entry) bool {
 	return entry.HasComponent(parentComponent)
 }
 
+// ChangeParent changes a parent of the entry.
+func ChangeParent(child *donburi.Entry, newParent *donburi.Entry) {
+	if !newParent.Valid() {
+		panic("newParent is not valid")
+	}
+	if !child.Valid() {
+		panic("child is not valid")
+	}
+	if !newParent.HasComponent(childrenComponent) {
+		newParent.AddComponent(childrenComponent)
+	}
+
+	if oldParent, ok := GetParent(child); ok {
+		if oldParent == newParent {
+			return
+		}
+
+		if oldParent.Valid() {
+			oldChildren := donburi.Get[childrenData](oldParent, childrenComponent)
+			for i, c := range oldChildren.Children {
+				if c == child {
+					oldChildren.Children = append(oldChildren.Children[:i], oldChildren.Children[i+1:]...)
+					break
+				}
+			}
+		}
+
+		child.RemoveComponent(parentComponent)
+	}
+
+	SetParent(child, newParent)
+}
+
 func getParentData(entry *donburi.Entry) (*parentData, bool) {
 	if HasParent(entry) {
 		p := donburi.Get[parentData](entry, parentComponent)
