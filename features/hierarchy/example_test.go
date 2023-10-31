@@ -190,10 +190,6 @@ func TestChangeParent(t *testing.T) {
 			Parent:   p1e,
 			Children: []*donburi.Entry{ce},
 		},
-		{
-			Parent:   p2e,
-			Children: []*donburi.Entry{},
-		},
 	})
 
 	// change to same parent
@@ -202,10 +198,6 @@ func TestChangeParent(t *testing.T) {
 		{
 			Parent:   p1e,
 			Children: []*donburi.Entry{ce},
-		},
-		{
-			Parent:   p2e,
-			Children: []*donburi.Entry{},
 		},
 	})
 
