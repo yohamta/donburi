@@ -41,6 +41,16 @@ func AppendChild(parent, child *donburi.Entry, keepWorldPosition bool) {
 	SetParent(child, parent, keepWorldPosition)
 }
 
+// ChangeParent changes parent of the entry.
+func ChangeParent(child, parent *donburi.Entry, keepWorldPosition bool) {
+	if !child.HasComponent(Transform) {
+		panic("entry does not have transform component")
+	}
+	RemoveParent(child, keepWorldPosition)
+	hierarchy.ChangeParent(child, parent)
+	SetParent(child, parent, keepWorldPosition)
+}
+
 // SetParent sets parent to the entry.
 func SetParent(entry, parent *donburi.Entry, keepWorldPosition bool) {
 	if !entry.HasComponent(Transform) {
@@ -71,6 +81,30 @@ func GetParent(entry *donburi.Entry) (*donburi.Entry, bool) {
 		return nil, false
 	}
 	return hierarchy.GetParent(entry)
+}
+
+// RemoveParent removes parent of the entry.
+func RemoveParent(entry *donburi.Entry, keepWorldPosition bool) {
+	d := GetTransform(entry)
+	if !d.hasParent {
+		return
+	}
+	parent, _ := GetParent(entry)
+	d.hasParent = false
+	if keepWorldPosition {
+		parentPos := WorldPosition(parent)
+
+		d.LocalPosition = d.LocalPosition.Add(parentPos)
+		d.LocalRotation += WorldRotation(parent)
+
+		ws := WorldScale(parent)
+		if ws.X != 0 {
+			d.LocalScale.X = d.LocalScale.X * ws.X
+		}
+		if ws.Y != 0 {
+			d.LocalScale.Y = d.LocalScale.Y * ws.Y
+		}
+	}
 }
 
 // GetChildren returns children of the entry.

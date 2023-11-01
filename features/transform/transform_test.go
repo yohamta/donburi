@@ -39,6 +39,14 @@ func TestTransform(t *testing.T) {
 		Rotation: 180,
 		Scale:    dmath.Vec2{X: 2, Y: 3},
 	})
+
+	transform.RemoveParent(parent, false)
+
+	testWorldTransform(t, child, &testTransform{
+		Position: dmath.Vec2{X: 1, Y: 2},
+		Rotation: 180,
+		Scale:    dmath.Vec2{X: 2, Y: 3},
+	})
 }
 
 func TestTransformKeepWorldPosition(t *testing.T) {
@@ -58,6 +66,14 @@ func TestTransformKeepWorldPosition(t *testing.T) {
 	})
 
 	transform.AppendChild(parent, child, true)
+
+	testWorldTransform(t, child, &testTransform{
+		Position: dmath.Vec2{X: 1, Y: 2},
+		Rotation: 90,
+		Scale:    dmath.Vec2{X: 1.5, Y: 1.5},
+	})
+
+	transform.RemoveParent(parent, true)
 
 	testWorldTransform(t, child, &testTransform{
 		Position: dmath.Vec2{X: 1, Y: 2},
