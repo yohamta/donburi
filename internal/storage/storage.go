@@ -24,6 +24,9 @@ func NewStorage() *Storage {
 
 // PushComponent stores the new data of the component in the archetype.
 func (cs *Storage) PushComponent(component component.IComponentType, archetypeIndex ArchetypeIndex) {
+	if len(cs.storages) <= int(archetypeIndex) {
+		cs.ensureCapacity(archetypeIndex)
+	}
 	if v := cs.storages[archetypeIndex]; v == nil {
 		cs.storages[archetypeIndex] = []unsafe.Pointer{}
 	}
@@ -44,6 +47,10 @@ func (cs *Storage) SetComponent(archetypeIndex ArchetypeIndex, componentIndex Co
 
 // MoveComponent moves the pointer to data of the component in the archetype.
 func (cs *Storage) MoveComponent(source ArchetypeIndex, index ComponentIndex, dst ArchetypeIndex) {
+	if len(cs.storages) <= int(dst) {
+		cs.ensureCapacity(dst)
+	}
+
 	src_slice := cs.storages[source]
 	dst_slice := cs.storages[dst]
 
@@ -73,4 +80,10 @@ func (cs *Storage) Contains(archetypeIndex ArchetypeIndex, componentIndex Compon
 		return false
 	}
 	return cs.storages[archetypeIndex][componentIndex] != nil
+}
+
+func (cs *Storage) ensureCapacity(archetypeIndex ArchetypeIndex) {
+	newStorages := make([][]unsafe.Pointer, len(cs.storages)*2)
+	copy(newStorages, cs.storages)
+	cs.storages = newStorages
 }
