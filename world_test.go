@@ -193,6 +193,25 @@ func TestDeleteEntity(t *testing.T) {
 	}
 }
 
+func TestArchetypeStorageExpands(t *testing.T) {
+	world := donburi.NewWorld()
+	dummy := donburi.NewTag()
+	entry := world.Entry(world.Create(dummy))
+	const N = 256
+	for i := 0; i < N; i++ {
+		tag := donburi.NewTag()
+		entry.AddComponent(tag)
+	}
+	q := donburi.NewQuery(filter.Contains(dummy))
+	e, ok := q.First(world)
+	if !ok {
+		t.Fatalf("Entity should be found")
+	}
+	if len(e.Archetype().Layout().Components()) != N+1 {
+		t.Fatalf("Archetype should have 301 components")
+	}
+}
+
 func TestRemoveAndCreateEntity(t *testing.T) {
 	world := donburi.NewWorld()
 
