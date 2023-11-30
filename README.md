@@ -87,8 +87,8 @@ entity = world.Create(Position, Velocity)
 entry := world.Entry(entity)
 
 // You can set or get the data via the ComponentType
-Position.SetValue(math.Vec2{X: 10, Y: 20})
-Velocity.SetValue(math.Vec2{X: 1, Y: 2})
+Position.SetValue(entry, math.Vec2{X: 10, Y: 20})
+Velocity.SetValue(entry, math.Vec2{X: 1, Y: 2})
 
 position := Position.Get(entry)
 velocity := Velocity.Get(entry)
