@@ -104,7 +104,7 @@ Components can be added and removed through `Entry` objects.
 query := donburi.NewQuery(filter.Contains(PlayerTag))
 // Query.First() returns only the first entity that 
 // matches the query.
-if entry, ok := donburi.First(world); ok {
+if entry, ok := query.First(world); ok {
   donburi.Add(entry, Position, &PositionData{
     X: 100,
     Y: 100,
