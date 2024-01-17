@@ -1,12 +1,10 @@
 <img align="right" width="150" src="https://user-images.githubusercontent.com/1475839/150521755-977f545b-4436-4059-87ac-1129541ad236.png" alt="donburi" title="donburi" /> <h1>Donburi</h1>
 
-<img src="https://github.com/yohamta/donburi/actions/workflows/test.yaml/badge.svg" />
+<img src="https://github.com/yohamta/donburi/actions/workflows/test.yaml/badge.svg" /> [![Go Reference](https://pkg.go.dev/badge/github.com/yohamta/donburi.svg)](https://pkg.go.dev/github.com/yohamta/donburi)
 
 Donburi is just another Entity Component System library for Ebitengine inspired by [legion](https://github.com/amethyst/legion).
 
 It aims to be a feature rich and high performance [ECS](https://en.wikipedia.org/wiki/Entity_component_system) Library.
-
-[GoDoc](https://pkg.go.dev/github.com/yohamta/donburi)
 
 ## Contents
 
