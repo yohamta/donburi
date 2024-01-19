@@ -72,6 +72,9 @@ func (ecs *ECS) DrawLayer(l LayerID, screen *ebiten.Image) {
 // Draw executes all draw systems.
 func (ecs *ECS) Draw(screen *ebiten.Image) {
 	for _, l := range ecs.layers {
+		if l == nil {
+			continue
+		}
 		l.draw(ecs, screen)
 	}
 }
