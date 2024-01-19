@@ -112,6 +112,17 @@ func TestECSLayer(t *testing.T) {
 	}
 }
 
+func TestEmptyDefaultLayer(t *testing.T) {
+	world := donburi.NewWorld()
+	ecs := NewECS(world)
+
+	TestLayer := LayerID(1)
+
+	ecs.AddRenderer(TestLayer, func(ecs *ECS, image *ebiten.Image) {})
+
+	ecs.Draw(ebiten.NewImage(1, 1))
+}
+
 var (
 	testUpdatedIndex int
 	testDrawedIndex  int
