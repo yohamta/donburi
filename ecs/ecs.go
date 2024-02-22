@@ -1,7 +1,6 @@
 package ecs
 
 import (
-	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 )
@@ -51,7 +50,8 @@ func (ecs *ECS) AddSystem(s System) *ECS {
 	return ecs
 }
 
-func (ecs *ECS) AddRenderer(l LayerID, r Renderer) *ECS {
+// AddRenderer adds a renderer.
+func (ecs *ECS) AddRenderer(l LayerID, r any) *ECS {
 	ecs.getLayer(l).addRenderer(r)
 	return ecs
 }
@@ -65,17 +65,17 @@ func (ecs *ECS) Update() {
 }
 
 // DrawLayer executes all draw systems of the specified layer.
-func (ecs *ECS) DrawLayer(l LayerID, screen *ebiten.Image) {
-	ecs.getLayer(l).draw(ecs, screen)
+func (ecs *ECS) DrawLayer(l LayerID, arg any) {
+	ecs.getLayer(l).draw(ecs, arg)
 }
 
 // Draw executes all draw systems.
-func (ecs *ECS) Draw(screen *ebiten.Image) {
+func (ecs *ECS) Draw(arg any) {
 	for _, l := range ecs.layers {
 		if l == nil {
 			continue
 		}
-		l.draw(ecs, screen)
+		l.draw(ecs, arg)
 	}
 }
 
@@ -115,9 +115,4 @@ func (ecs *ECS) getLayer(layerID LayerID) *Layer {
 		ecs.layers[layerID] = newLayer(getLayer(layerID))
 	}
 	return ecs.layers[layerID]
-}
-
-func (ecs *ECS) addRenderer(l LayerID, r Renderer) *ECS {
-	ecs.getLayer(l).addRenderer(r)
-	return ecs
 }

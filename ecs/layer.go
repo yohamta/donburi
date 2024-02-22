@@ -2,29 +2,54 @@ package ecs
 
 import (
 	"fmt"
+	"reflect"
 
-	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 )
 
 type Layer struct {
 	*layer
-	renderers []Renderer
+	renderers map[string][]any
 }
 
 func newLayer(l *layer) *Layer {
-	return &Layer{l, []Renderer{}}
+	return &Layer{l, make(map[string][]any)}
 }
 
-func (l *Layer) draw(e *ECS, i *ebiten.Image) {
-	screen := i
-	for _, s := range l.renderers {
-		s(e, screen)
+func keyForType(typ reflect.Type) string {
+	return fmt.Sprintf("%s/%s", typ.PkgPath(), typ.Name())
+}
+
+func invoke(fn any, e *ECS, arg any) {
+	v := reflect.ValueOf(fn)
+	v.Call([]reflect.Value{reflect.ValueOf(e), reflect.ValueOf(arg)})
+}
+
+func (l *Layer) draw(e *ECS, arg any) {
+	key := keyForType(reflect.TypeOf(arg))
+	for _, fn := range l.renderers[key] {
+		invoke(fn, e, arg)
 	}
 }
 
-func (l *Layer) addRenderer(r Renderer) {
-	l.renderers = append(l.renderers, r)
+func (l *Layer) addRenderer(r any) {
+	// check renderer type is func(*ECS, any)
+	typ := reflect.TypeOf(r)
+	if typ.Kind() != reflect.Func {
+		panic("renderer must be a function")
+	}
+	if typ.NumIn() != 2 {
+		panic("renderer must have 2 arguments")
+	}
+	if typ.In(0) != reflect.TypeOf(&ECS{}) {
+		panic("first argument must be *ECS")
+	}
+	if typ.NumOut() != 0 {
+		panic("renderer must not have return values")
+	}
+	// add renderer
+	key := keyForType(typ.In(1))
+	l.renderers[key] = append(l.renderers[key], r)
 }
 
 var (

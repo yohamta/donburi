@@ -17,6 +17,9 @@
 # VSCode
 .vscode
 
+# Goland
+.idea
+
 # Mac
 .DS_Store
 

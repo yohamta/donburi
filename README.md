@@ -2,9 +2,9 @@
 
 <img src="https://github.com/yohamta/donburi/actions/workflows/test.yaml/badge.svg" /> [![Go Reference](https://pkg.go.dev/badge/github.com/yohamta/donburi.svg)](https://pkg.go.dev/github.com/yohamta/donburi)
 
-Donburi is just another Entity Component System library for Ebitengine inspired by [legion](https://github.com/amethyst/legion).
+Donburi is an Entity Component System library for Go / Ebitengine inspired by [legion](https://github.com/amethyst/legion).
 
-It aims to be a feature rich and high performance [ECS](https://en.wikipedia.org/wiki/Entity_component_system) Library.
+It aims to be a feature rich and high-performance [ECS](https://en.wikipedia.org/wiki/Entity_component_system) Library.
 
 ## Contents
 
@@ -34,6 +34,7 @@ It aims to be a feature rich and high performance [ECS](https://en.wikipedia.org
 - It avoids reflection for performance.
 - Ability to dynamically add or remove components from an entity.
 - Type-safe APIs powered by Generics
+- Zero dependencies
 - Provides [Features](#features) that are common in game dev (e.g., `math`, `transform`, `hieralchy`, `events`, etc) built on top of the ECS architecture.
 
 ## Examples

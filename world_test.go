@@ -3,7 +3,6 @@ package donburi_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/internal/storage"
@@ -218,7 +217,9 @@ func TestRemoveAndCreateEntity(t *testing.T) {
 	entityA := world.Create(tagA)
 
 	world.Remove(entityA)
-	require.False(t, world.Valid(entityA))
+	if world.Valid(entityA) {
+		t.Errorf("Entity should be invalid")
+	}
 
 	entityB := world.Create(tagA)
 
