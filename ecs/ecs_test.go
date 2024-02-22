@@ -3,7 +3,6 @@ package ecs
 import (
 	"testing"
 
-	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 )
@@ -23,7 +22,7 @@ func TestECS(t *testing.T) {
 
 	for _, sys := range systems {
 		ecs.AddSystem(sys.system.Update)
-		ecs.addRenderer(sys.layer, sys.system.Draw)
+		ecs.AddRenderer(sys.layer, sys.system.Draw)
 	}
 
 	ecs.Update()
@@ -48,7 +47,7 @@ func TestECS(t *testing.T) {
 		}
 	}
 
-	ecs.Draw(ebiten.NewImage(1, 1))
+	ecs.Draw("test")
 
 	drawTests := []struct {
 		system              *testSystem
@@ -99,10 +98,10 @@ func TestECSLayer(t *testing.T) {
 
 	for _, sys := range systems {
 		ecs.AddSystem(sys.system.Update)
-		ecs.addRenderer(sys.layer, sys.system.Draw)
+		ecs.AddRenderer(sys.layer, sys.system.Draw)
 	}
 
-	ecs.DrawLayer(0, ebiten.NewImage(1, 1))
+	ecs.DrawLayer(0, "test")
 
 	if systems[0].system.QueryCountDraw != 1 {
 		t.Errorf("expected query count draw %d, got %d", 1, systems[0].system.QueryCountDraw)
@@ -118,9 +117,9 @@ func TestEmptyDefaultLayer(t *testing.T) {
 
 	TestLayer := LayerID(1)
 
-	ecs.AddRenderer(TestLayer, func(ecs *ECS, image *ebiten.Image) {})
+	ecs.AddRenderer(TestLayer, func(ecs *ECS, arg string) {})
 
-	ecs.Draw(ebiten.NewImage(1, 1))
+	ecs.Draw("test")
 }
 
 var (
@@ -131,7 +130,7 @@ var (
 type testSystem struct {
 	UpdatedIndex     int
 	DrawedIndex      int
-	DrawImage        *ebiten.Image
+	DrawArg          string
 	UpdateCount      int
 	DrawCount        int
 	Query            *donburi.Query
@@ -150,9 +149,9 @@ func (ts *testSystem) Update(ecs *ECS) {
 	}
 }
 
-func (ts *testSystem) Draw(ecs *ECS, image *ebiten.Image) {
+func (ts *testSystem) Draw(ecs *ECS, arg string) {
 	ts.DrawedIndex = testDrawedIndex
-	ts.DrawImage = image
+	ts.DrawArg = arg
 	ts.DrawCount++
 
 	testDrawedIndex++
