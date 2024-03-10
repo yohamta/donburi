@@ -363,7 +363,7 @@ See the [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/features/math) for
 
 ### Transform
 
-The [transofrm package](https://github.com/yohamta/donburi/tree/main/features/transform) provides the `Tranform` Component and helpers.
+The [transform package](https://github.com/yohamta/donburi/tree/main/features/transform) provides the `Tranform` Component and helpers.
 
 It allows us to handle `position`, `rotation`, `scale` data relative to the parent.
 
