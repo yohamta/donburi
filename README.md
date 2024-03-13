@@ -201,8 +201,8 @@ query := donburi.NewQuery(
       filter.Contains(Sprite),
       filter.Contains(Text),
       filter.Contains(Shape),
-    )
-  )
+    ),
+  ),
 )
 
 // In our query we can check if the entity has some of the optional components before attempting to retrieve them
