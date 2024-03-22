@@ -3,6 +3,7 @@ package donburi
 import (
 	"bytes"
 	"fmt"
+	"reflect"
 	"unsafe"
 
 	"github.com/yohamta/donburi/component"
@@ -21,6 +22,23 @@ type Entry struct {
 // Get returns the component from the entry
 func Get[T any](e *Entry, ctype component.IComponentType) *T {
 	return (*T)(e.Component(ctype))
+}
+
+// GetComponents uses reflection to convert the unsafe.Pointers of an entry into its component data instances.
+// Note that this is likely to be slow and should not be used in hot paths or if not necessary.
+func GetComponents(e *Entry) []any {
+	archetypeIdx := e.loc.Archetype
+	s := e.World.StorageAccessor().Archetypes[archetypeIdx]
+	cs := s.ComponentTypes()
+	var instances []any
+	for _, ctyp := range cs {
+		instancePtr := e.Component(ctyp)
+		componentType := ctyp.Typ()
+		val := reflect.NewAt(componentType, instancePtr)
+		valInstance := reflect.Indirect(val).Interface()
+		instances = append(instances, valInstance)
+	}
+	return instances
 }
 
 // Add adds the component to the entry.

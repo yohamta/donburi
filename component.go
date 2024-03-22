@@ -34,6 +34,11 @@ type ComponentType[T any] struct {
 	query      *Query
 }
 
+// Typ returns the reflect.Type of the ComponentType.
+func (c *ComponentType[T]) Typ() reflect.Type {
+	return c.typ
+}
+
 // Get returns component data from the entry.
 func (c *ComponentType[T]) Get(entry *Entry) *T {
 	return (*T)(entry.Component(c))
