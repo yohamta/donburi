@@ -33,6 +33,11 @@ func (archetype *Archetype) Entities() []Entity {
 	return archetype.entities
 }
 
+// ComponentTypes returns a slice of all component types in the archetype.
+func (archetype *Archetype) ComponentTypes() []component.IComponentType {
+	return archetype.Layout().componentTypes
+}
+
 // SwapRemove removes an entity from the archetype and returns it.
 func (archetype *Archetype) SwapRemove(entity_index int) Entity {
 	removed := archetype.entities[entity_index]

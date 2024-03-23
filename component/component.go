@@ -1,6 +1,7 @@
 package component
 
 import (
+	"reflect"
 	"unsafe"
 )
 
@@ -11,5 +12,6 @@ type (
 type IComponentType interface {
 	Id() ComponentTypeId
 	New() unsafe.Pointer
+	Typ() reflect.Type
 	Name() string
 }
