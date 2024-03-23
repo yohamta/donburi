@@ -6,6 +6,25 @@ import (
 	"github.com/yohamta/donburi"
 )
 
+func TestSetValue(t *testing.T) {
+	var (
+		transform = donburi.NewComponentType[transformData]()
+	)
+	world := donburi.NewWorld()
+	a := world.Create(transform)
+	entryA := world.Entry(a)
+
+	trData := transformData{
+		Position: vec2f{10, 20},
+	}
+	donburi.SetValue(entryA, transform, trData)
+	got := donburi.GetValue[transformData](entryA, transform)
+
+	if got != trData {
+		t.Errorf("got: %v, want: %v", got, trData)
+	}
+}
+
 func TestGetComponents(t *testing.T) {
 	var (
 		transform = donburi.NewComponentType[transformData]()
