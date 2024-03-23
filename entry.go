@@ -53,8 +53,12 @@ func Set[T any](e *Entry, ctype component.IComponentType, component *T) {
 
 // SetValue sets the value of the component.
 func SetValue[T any](e *Entry, ctype component.IComponentType, value T) {
-	c := Get[T](e, ctype)
-	*c = value
+	*Get[T](e, ctype) = value
+}
+
+// GetValue gets the value of the component.
+func GetValue[T any](e *Entry, ctype component.IComponentType) T {
+	return *Get[T](e, ctype)
 }
 
 // Remove removes the component from the entry.

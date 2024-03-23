@@ -50,3 +50,7 @@ func (m *MockComponentType[T]) setDefaultVal(ptr unsafe.Pointer) {
 func (m *MockComponentType[T]) Name() string {
 	return fmt.Sprintf("%s[%s]", reflect.TypeOf(m).Name(), m.typ.Name())
 }
+
+func (m *MockComponentType[T]) Typ() reflect.Type {
+	return m.typ
+}
