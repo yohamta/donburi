@@ -34,11 +34,11 @@ type World interface {
 	Archetypes() []*storage.Archetype
 
 	// OnCreate registers a callback function that gets triggered when an entity is created.
-	OnCreate(callback func(entity Entity))
+	OnCreate(callback func(world World, entity Entity))
 
 	// OnRemove registers a callback function that gets triggered when an entity is removed.
 	// Note that it is called before the entity is removed from the ECS.
-	OnRemove(callback func(entity Entity))
+	OnRemove(callback func(world World, entity Entity))
 }
 
 // StorageAccessor is an accessor for the world's storage.
@@ -63,8 +63,8 @@ type world struct {
 	entries      []*Entry
 	nextEntityId storage.EntityId
 
-	removeCallbacks []func(entity Entity)
-	createCallbacks []func(entity Entity)
+	removeCallbacks []func(world World, entity Entity)
+	createCallbacks []func(world World, entity Entity)
 }
 
 var nextWorldId WorldId = 0
@@ -123,7 +123,7 @@ func (w *world) createEntity(archetypeIndex storage.ArchetypeIndex) Entity {
 	w.createEntry(entity)
 
 	for _, callback := range w.createCallbacks {
-		callback(entity)
+		callback(w, entity)
 	}
 
 	return entity
@@ -175,7 +175,7 @@ func (w *world) Remove(ent Entity) {
 	if w.Valid(ent) {
 		// Called before any operations so that user code can access all the data it might need
 		for _, callback := range w.removeCallbacks {
-			callback(ent)
+			callback(w, ent)
 		}
 
 		loc := w.entities.LocationMap[ent.Id()]
@@ -246,11 +246,11 @@ func (w *world) StorageAccessor() StorageAccessor {
 	}
 }
 
-func (w *world) OnCreate(callback func(entity Entity)) {
+func (w *world) OnCreate(callback func(world World, entity Entity)) {
 	w.createCallbacks = append(w.createCallbacks, callback)
 }
 
-func (w *world) OnRemove(callback func(entity Entity)) {
+func (w *world) OnRemove(callback func(world World, entity Entity)) {
 	w.removeCallbacks = append(w.removeCallbacks, callback)
 }
 

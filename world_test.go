@@ -235,7 +235,7 @@ func TestRemoveAndCreateEntity(t *testing.T) {
 	}
 
 	world.Remove(entityA)
-	
+
 	if !calledRemove {
 		t.Fatalf("OnCreate event must have been called at this point")
 	}
