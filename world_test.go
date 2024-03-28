@@ -220,11 +220,11 @@ func TestRemoveAndCreateEntity(t *testing.T) {
 		t.Fatalf("OnCreate/OnRemove event should not have been called at this point")
 	}
 
-	world.OnCreate(func(entity donburi.Entity) {
+	world.OnCreate(func(world donburi.World, entity donburi.Entity) {
 		calledCreate = true
 	})
 
-	world.OnRemove(func(entity donburi.Entity) {
+	world.OnRemove(func(world donburi.World, entity donburi.Entity) {
 		calledRemove = true
 	})
 
