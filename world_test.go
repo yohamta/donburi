@@ -214,9 +214,32 @@ func TestArchetypeStorageExpands(t *testing.T) {
 func TestRemoveAndCreateEntity(t *testing.T) {
 	world := donburi.NewWorld()
 
+	var calledCreate, calledRemove bool
+
+	if calledCreate || calledRemove {
+		t.Fatalf("OnCreate/OnRemove event should not have been called at this point")
+	}
+
+	world.OnCreate(func(world donburi.World, entity donburi.Entity) {
+		calledCreate = true
+	})
+
+	world.OnRemove(func(world donburi.World, entity donburi.Entity) {
+		calledRemove = true
+	})
+
 	entityA := world.Create(tagA)
 
+	if !calledCreate {
+		t.Fatalf("OnCreate event must have been called at this point")
+	}
+
 	world.Remove(entityA)
+
+	if !calledRemove {
+		t.Fatalf("OnCreate event must have been called at this point")
+	}
+
 	if world.Valid(entityA) {
 		t.Errorf("Entity should be invalid")
 	}
