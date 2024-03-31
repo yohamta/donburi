@@ -12,7 +12,8 @@ type Entity uint64
 type EntityId uint32
 
 const idMask Entity = 0xFFFFFFFF00000000
-const versionMask Entity = 0xFFFFFFF
+const versionMask Entity = 0x0FFFFFF
+const readyMask Entity = 0x1000000
 
 // NewEntity creates a new entity.
 // The id is a unique identifier for the entity.
@@ -34,9 +35,17 @@ func (e Entity) Version() uint32 {
 	return uint32(e & Entity(versionMask))
 }
 
+func (e Entity) IsReady() bool {
+	return e&readyMask != 0
+}
+
+func (e Entity) Ready() Entity {
+	return e | readyMask
+}
+
 // IncVersion increments the entity version.
 func (e Entity) IncVersion() Entity {
-	return e&idMask | ((e + 1) & versionMask)
+	return e&idMask | ((e+1)&versionMask)&^readyMask
 }
 
 func (e Entity) String() string {

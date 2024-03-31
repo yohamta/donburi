@@ -20,45 +20,40 @@ type Entry struct {
 }
 
 // Get returns the component from the entry
-func Get[T any](e *Entry, ctype component.IComponentType) *T {
-	return (*T)(e.Component(ctype))
+func Get[T any](e *Entry, c component.IComponentType) *T {
+	return (*T)(e.Component(c))
 }
 
 // GetComponents uses reflection to convert the unsafe.Pointers of an entry into its component data instances.
 // Note that this is likely to be slow and should not be used in hot paths or if not necessary.
 func GetComponents(e *Entry) []any {
-	archetypeIdx := e.loc.Archetype
-	s := e.World.StorageAccessor().Archetypes[archetypeIdx]
-	cs := s.ComponentTypes()
 	var instances []any
-	for _, ctyp := range cs {
-		instancePtr := e.Component(ctyp)
-		componentType := ctyp.Typ()
-		val := reflect.NewAt(componentType, instancePtr)
-		valInstance := reflect.Indirect(val).Interface()
-		instances = append(instances, valInstance)
+	for _, c := range e.World.StorageAccessor().Archetypes[e.loc.Archetype].ComponentTypes() {
+		instances = append(instances, reflect.Indirect(
+			reflect.NewAt(c.Typ(), e.Component(c))).Interface(),
+		)
 	}
 	return instances
 }
 
 // Add adds the component to the entry.
-func Add[T any](e *Entry, ctype component.IComponentType, component *T) {
-	e.AddComponent(ctype, unsafe.Pointer(component))
+func Add[T any](e *Entry, c component.IComponentType, component *T) {
+	e.AddComponent(c, unsafe.Pointer(component))
 }
 
 // Set sets the comopnent of the entry.
-func Set[T any](e *Entry, ctype component.IComponentType, component *T) {
-	e.SetComponent(ctype, unsafe.Pointer(component))
+func Set[T any](e *Entry, c component.IComponentType, component *T) {
+	e.SetComponent(c, unsafe.Pointer(component))
 }
 
 // SetValue sets the value of the component.
-func SetValue[T any](e *Entry, ctype component.IComponentType, value T) {
-	*Get[T](e, ctype) = value
+func SetValue[T any](e *Entry, c component.IComponentType, value T) {
+	*Get[T](e, c) = value
 }
 
 // GetValue gets the value of the component.
-func GetValue[T any](e *Entry, ctype component.IComponentType) T {
-	return *Get[T](e, ctype)
+func GetValue[T any](e *Entry, c component.IComponentType) T {
+	return *Get[T](e, c)
 }
 
 // Remove removes the component from the entry.
@@ -85,60 +80,50 @@ func (e *Entry) Entity() Entity {
 }
 
 // Component returns the component.
-func (e *Entry) Component(ctype component.IComponentType) unsafe.Pointer {
-	c := e.loc.Component
-	a := e.loc.Archetype
-	return e.World.components.Storage(ctype).Component(a, c)
+func (e *Entry) Component(c component.IComponentType) unsafe.Pointer {
+	return e.World.components.Storage(c).Component(e.loc.Archetype, e.loc.Component)
 }
 
 // SetComponent sets the component.
-func (e *Entry) SetComponent(ctype component.IComponentType, component unsafe.Pointer) {
-	c := e.loc.Component
-	a := e.loc.Archetype
-	e.World.components.Storage(ctype).SetComponent(a, c, component)
+func (e *Entry) SetComponent(c component.IComponentType, component unsafe.Pointer) {
+	e.World.components.Storage(c).SetComponent(e.loc.Archetype, e.loc.Component, component)
 }
 
 // AddComponent adds the component to the entity.
-func (e *Entry) AddComponent(ctype component.IComponentType, components ...unsafe.Pointer) {
+func (e *Entry) AddComponent(c component.IComponentType, components ...unsafe.Pointer) {
 	if len(components) > 1 {
 		panic("AddComponent: component argument must be a single value")
 	}
-	if !e.HasComponent(ctype) {
-		c := e.loc.Component
-		a := e.loc.Archetype
-
-		base_layout := e.World.archetypes[a].Layout().Components()
-		target_arc := e.World.getArchetypeForComponents(append(base_layout, ctype))
-		e.World.TransferArchetype(a, target_arc, c)
-
+	if !e.HasComponent(c) {
+		archetypeIndex := e.loc.Archetype
+		targetArchetype := e.World.getArchetypeForComponents(
+			append(e.World.archetypes[archetypeIndex].Layout().Components(), c),
+		)
+		e.World.TransferArchetype(archetypeIndex, targetArchetype, e.loc.Component)
 		e.loc = e.World.Entry(e.entity).loc
 	}
 	if len(components) == 1 {
-		e.SetComponent(ctype, components[0])
+		e.SetComponent(c, components[0])
 	}
 }
 
 // RemoveComponent removes the component from the entity.
-func (e *Entry) RemoveComponent(ctype component.IComponentType) {
-	if !e.Archetype().Layout().HasComponent(ctype) {
+func (e *Entry) RemoveComponent(c component.IComponentType) {
+	if !e.Archetype().Layout().HasComponent(c) {
 		return
 	}
 
-	c := e.loc.Component
-	a := e.loc.Archetype
-
-	base_layout := e.World.archetypes[a].Layout().Components()
-	target_layout := make([]component.IComponentType, 0, len(base_layout)-1)
-	for _, c2 := range base_layout {
-		if c2 == ctype {
+	baseLayout := e.World.archetypes[e.loc.Archetype].Layout().Components()
+	targetLayout := make([]component.IComponentType, 0, len(baseLayout)-1)
+	for _, c2 := range baseLayout {
+		if c2 == c {
 			continue
 		}
-		target_layout = append(target_layout, c2)
+		targetLayout = append(targetLayout, c2)
 	}
 
-	target_arc := e.World.getArchetypeForComponents(target_layout)
-	e.World.TransferArchetype(e.loc.Archetype, target_arc, c)
-
+	targetArchetype := e.World.getArchetypeForComponents(targetLayout)
+	e.World.TransferArchetype(e.loc.Archetype, targetArchetype, e.loc.Component)
 	e.loc = e.World.Entry(e.entity).loc
 }
 
@@ -159,8 +144,8 @@ func (e *Entry) Archetype() *storage.Archetype {
 }
 
 // HasComponent returns true if the entity has the given component type.
-func (e *Entry) HasComponent(componentType component.IComponentType) bool {
-	return e.Archetype().Layout().HasComponent(componentType)
+func (e *Entry) HasComponent(c component.IComponentType) bool {
+	return e.Archetype().Layout().HasComponent(c)
 }
 
 func (e *Entry) String() string {
