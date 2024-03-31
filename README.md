@@ -23,6 +23,8 @@ It aims to be a feature rich and high-performance [ECS](https://en.wikipedia.org
   - [Transform](#transform)
   - [Events](#events)
 - [Projects Using Donburi](#projects-using-donburi)
+  - [Games](#games)
+  - [Libraries](#libraries)
 - [Architecture](#architecture)
 - [How to contribute?](#how-to-contribute)
 - [Contributors](#contributors)
@@ -457,9 +459,15 @@ func UpdateScore(w donburi.World, event EnemyKilled) {
 ```
 
 ## Projects Using Donburi
+
+### Games
+
 - [airplanes](https://github.com/m110/airplanes) - A 2D shoot 'em up game by [m110](https://github.com/m110)
 - [goingo](https://github.com/joelschutz/goingo) - Go game implemented in the Go language by [joelschutz](https://github.com/joelschutz)
 - [revdriller](https://github.com/yohamta/revdriller) - An action puzzle game by yohamta
+
+### Libraries
+- [necs](https://github.com/leap-fish/necs) - Networked Entity Component System; a networking layer for donburi by [gin](https://github.com/imthatgin)
 
 ## Architecture
 
