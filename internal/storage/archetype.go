@@ -2,6 +2,7 @@ package storage
 
 import (
 	"github.com/yohamta/donburi/component"
+	"sync"
 )
 
 type ArchetypeIndex int
@@ -12,6 +13,15 @@ type Archetype struct {
 	index    ArchetypeIndex
 	entities []Entity
 	layout   *Layout
+	lock     sync.Mutex
+}
+
+func (archetype *Archetype) Lock() {
+	archetype.lock.Lock()
+}
+
+func (archetype *Archetype) Unlock() {
+	archetype.lock.Unlock()
 }
 
 // NewArchetype creates a new archetype.
@@ -39,9 +49,9 @@ func (archetype *Archetype) ComponentTypes() []component.IComponentType {
 }
 
 // SwapRemove removes an entity from the archetype and returns it.
-func (archetype *Archetype) SwapRemove(entity_index int) Entity {
-	removed := archetype.entities[entity_index]
-	archetype.entities[entity_index] = archetype.entities[len(archetype.entities)-1]
+func (archetype *Archetype) SwapRemove(entityIndex int) Entity {
+	removed := archetype.entities[entityIndex]
+	archetype.entities[entityIndex] = archetype.entities[len(archetype.entities)-1]
 	archetype.entities = archetype.entities[:len(archetype.entities)-1]
 	return removed
 }

@@ -38,10 +38,8 @@ func (idx *Index) Push(layout *Layout) {
 }
 
 // SearchFrom searches for archetypes that match the given filter from the given index.
-func (idx *Index) SearchFrom(f filter.LayoutFilter, start int) *ArchetypeIterator {
-	iterator := &ArchetypeIterator{
-		current: 0,
-	}
+func (idx *Index) SearchFrom(f filter.LayoutFilter, start int) ArchetypeIterator {
+	iterator := ArchetypeIterator{current: 0}
 	iterator.values = []ArchetypeIndex{}
 	for i := start; i < len(idx.layouts); i++ {
 		if f.MatchesLayout(idx.layouts[i]) {
@@ -52,6 +50,6 @@ func (idx *Index) SearchFrom(f filter.LayoutFilter, start int) *ArchetypeIterato
 }
 
 // Search searches for archetypes that match the given filter.
-func (idx *Index) Search(filter filter.LayoutFilter) *ArchetypeIterator {
+func (idx *Index) Search(filter filter.LayoutFilter) ArchetypeIterator {
 	return idx.SearchFrom(filter, 0)
 }

@@ -22,8 +22,8 @@ func (it *EntityIterator) HasNext() bool {
 }
 
 // Next returns the next entity list.
-func (it *EntityIterator) Next() []Entity {
+func (it *EntityIterator) Next() *Archetype {
 	archetypeIndex := it.indices[it.current]
 	it.current++
-	return it.archetypes[archetypeIndex].Entities()
+	return it.archetypes[archetypeIndex]
 }
