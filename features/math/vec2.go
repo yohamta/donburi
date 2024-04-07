@@ -118,3 +118,7 @@ func (v Vec2) Angle(other Vec2) float64 {
 func (v Vec2) Distance(other Vec2) float64 {
 	return math.Sqrt(math.Pow(v.X-other.X, 2) + math.Pow(v.Y-other.Y, 2))
 }
+
+func (v Vec2) XY() (float64, float64) {
+	return v.X, v.Y
+}
