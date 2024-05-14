@@ -44,6 +44,11 @@ func (c *ComponentType[T]) Get(entry *Entry) *T {
 	return (*T)(entry.Component(c))
 }
 
+// GetValue returns value of the component from the entry.
+func (c *ComponentType[T]) GetValue(entry *Entry) T {
+	return *Get[T](entry, c)
+}
+
 // Set sets component data to the entry.
 func (c *ComponentType[T]) Set(entry *Entry, component *T) {
 	entry.SetComponent(c, unsafe.Pointer(component))
