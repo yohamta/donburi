@@ -88,7 +88,12 @@ func (q *Query) EachOrdered(w World, callback func(*Entry), orderComponent IComp
 }
 
 func convertToOrderable(ptr unsafe.Pointer, typ reflect.Type) (IOrderable, bool) {
-	return nil, false
+	if ptr == nil {
+		return nil, false
+	}
+
+	orderable, ok := (reflect.NewAt(typ, ptr).Interface()).(IOrderable)
+	return orderable, ok
 }
 
 // deprecated: use Each instead
