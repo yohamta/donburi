@@ -1,13 +1,19 @@
 package donburi
 
 import (
+	"cmp"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/internal/storage"
+	"slices"
 )
 
 type cache struct {
 	archetypes []storage.ArchetypeIndex
 	seen       int
+}
+
+type IOrderable interface {
+	Order() int
 }
 
 // Query represents a query for entities.
@@ -43,6 +49,46 @@ func (q *Query) Each(w World, callback func(*Entry)) {
 				callback(entry)
 			}
 		}
+		archetype.Unlock()
+	}
+}
+
+func (q *Query) EachOrdered(w World, callback func(*Entry), orderComponent IComponentType) {
+	accessor := w.StorageAccessor()
+	iter := storage.NewEntityIterator(0, accessor.Archetypes, q.evaluateQuery(w, &accessor))
+	for iter.HasNext() {
+		archetype := iter.Next()
+		archetype.Lock()
+
+		ents := archetype.Entities()
+		slices.SortFunc(ents, func(firstEnt, secondEnt Entity) int {
+			first := w.Entry(firstEnt)
+			second := w.Entry(secondEnt)
+
+			var firstOrder, secondOrder int
+
+			// Convert first entry component
+			firstPtr := first.Component(orderComponent)
+			if firstOrderable, canOrder := convertToOrderable(firstPtr, orderComponent.Typ()); canOrder {
+				firstOrder = firstOrderable.Order()
+			}
+
+			// Convert second entry component
+			secondPtr := second.Component(orderComponent)
+			if secondOrderable, canOrder := convertToOrderable(secondPtr, orderComponent.Typ()); canOrder {
+				secondOrder = secondOrderable.Order()
+			}
+
+			return cmp.Compare(firstOrder, secondOrder)
+		})
+
+		for _, entity := range ents {
+			entry := w.Entry(entity)
+			if entry.entity.IsReady() {
+				callback(entry)
+			}
+		}
+
 		archetype.Unlock()
 	}
 }
