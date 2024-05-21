@@ -51,6 +51,7 @@ func BenchmarkQuery_EachOrdered(b *testing.B) {
 	}
 
 	query := donburi.NewQuery(filter.Contains(orderableTest))
+	orderedQuery := donburi.NewOrderedQuery(filter.Contains(orderableTest), orderableTest)
 	countNormal := 0
 	countOrdered := 0
 	b.Run("Each", func(b *testing.B) {
@@ -62,9 +63,9 @@ func BenchmarkQuery_EachOrdered(b *testing.B) {
 	})
 	b.Run("EachOrdered", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			query.EachOrdered(world, func(entry *donburi.Entry) {
+			orderedQuery.EachOrdered(world, func(entry *donburi.Entry) {
 				countOrdered++
-			}, orderableTest)
+			})
 		}
 	})
 }

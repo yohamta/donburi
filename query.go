@@ -3,7 +3,6 @@ package donburi
 import (
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/internal/storage"
-	"reflect"
 	"sort"
 )
 
@@ -27,12 +26,61 @@ type Query struct {
 	filter        filter.LayoutFilter
 }
 
+type OrderedQuery[T any] struct {
+	Query
+
+	orderedBy *ComponentType[T]
+}
+
 // NewQuery creates a new query.
 // It receives arbitrary filters that are used to filter entities.
 func NewQuery(filter filter.LayoutFilter) *Query {
 	return &Query{
 		layoutMatches: make(map[WorldId]*cache),
 		filter:        filter,
+	}
+}
+
+func NewOrderedQuery[T any](filter filter.LayoutFilter, orderedBy *ComponentType[T]) *OrderedQuery[T] {
+	return &OrderedQuery[T]{
+		orderedBy: orderedBy,
+		Query: Query{
+			layoutMatches: make(map[WorldId]*cache),
+			filter:        filter,
+		},
+	}
+}
+
+func (q *OrderedQuery[T]) EachOrdered(w World, callback func(*Entry)) {
+	accessor := w.StorageAccessor()
+
+	iter := storage.NewEntityIterator(0, accessor.Archetypes, q.evaluateQuery(w, &accessor))
+
+	for iter.HasNext() {
+		archetype := iter.Next()
+		archetype.Lock()
+
+		ents := archetype.Entities()
+		orders := make([]int, len(ents))
+		for i, ent := range ents {
+			entry := w.Entry(ent)
+			if orderable, canOrder := any(*q.orderedBy.Get(entry)).(IOrderable); canOrder {
+				orders[i] = orderable.Order()
+			}
+		}
+
+		sort.Slice(ents, func(i, j int) bool {
+			return orders[i] < orders[j]
+		})
+
+		for _, entity := range ents {
+			entry := w.Entry(entity)
+			if entry.entity.IsReady() {
+				callback(entry)
+			}
+		}
+
+		archetype.Unlock()
 	}
 }
 
@@ -49,40 +97,6 @@ func (q *Query) Each(w World, callback func(*Entry)) {
 				callback(entry)
 			}
 		}
-		archetype.Unlock()
-	}
-}
-
-func (q *Query) EachOrdered(w World, callback func(*Entry), orderComponent IComponentType) {
-	accessor := w.StorageAccessor()
-	typ := orderComponent.Typ()
-	iter := storage.NewEntityIterator(0, accessor.Archetypes, q.evaluateQuery(w, &accessor))
-	for iter.HasNext() {
-		archetype := iter.Next()
-		archetype.Lock()
-
-		ents := archetype.Entities()
-		orders := make([]int, len(ents))
-		for i, ent := range ents {
-			entry := w.Entry(ent)
-			componentPtr := entry.Component(orderComponent)
-
-			if orderable, canOrder := (reflect.NewAt(typ, componentPtr).Interface()).(IOrderable); canOrder {
-				orders[i] = orderable.Order()
-			}
-		}
-
-		sort.Slice(ents, func(i, j int) bool {
-			return orders[i] < orders[j]
-		})
-
-		for _, entity := range ents {
-			entry := w.Entry(entity)
-			if entry.entity.IsReady() {
-				callback(entry)
-			}
-		}
-
 		archetype.Unlock()
 	}
 }
