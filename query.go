@@ -5,7 +5,6 @@ import (
 	"github.com/yohamta/donburi/internal/storage"
 	"reflect"
 	"sort"
-	"unsafe"
 )
 
 type cache struct {
@@ -56,6 +55,7 @@ func (q *Query) Each(w World, callback func(*Entry)) {
 
 func (q *Query) EachOrdered(w World, callback func(*Entry), orderComponent IComponentType) {
 	accessor := w.StorageAccessor()
+	typ := orderComponent.Typ()
 	iter := storage.NewEntityIterator(0, accessor.Archetypes, q.evaluateQuery(w, &accessor))
 	for iter.HasNext() {
 		archetype := iter.Next()
@@ -66,9 +66,9 @@ func (q *Query) EachOrdered(w World, callback func(*Entry), orderComponent IComp
 		for i, ent := range ents {
 			entry := w.Entry(ent)
 			componentPtr := entry.Component(orderComponent)
-			if orderable, canOrder := convertToOrderable(componentPtr, orderComponent.Typ()); canOrder {
+
+			if orderable, canOrder := (reflect.NewAt(typ, componentPtr).Interface()).(IOrderable); canOrder {
 				orders[i] = orderable.Order()
-				continue
 			}
 		}
 
@@ -85,15 +85,6 @@ func (q *Query) EachOrdered(w World, callback func(*Entry), orderComponent IComp
 
 		archetype.Unlock()
 	}
-}
-
-func convertToOrderable(ptr unsafe.Pointer, typ reflect.Type) (IOrderable, bool) {
-	if ptr == nil {
-		return nil, false
-	}
-
-	orderable, ok := (reflect.NewAt(typ, ptr).Interface()).(IOrderable)
-	return orderable, ok
 }
 
 // deprecated: use Each instead
