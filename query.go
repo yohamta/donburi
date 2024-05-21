@@ -1,10 +1,11 @@
 package donburi
 
 import (
-	"cmp"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/internal/storage"
-	"slices"
+	"reflect"
+	"sort"
+	"unsafe"
 )
 
 type cache struct {
@@ -61,25 +62,18 @@ func (q *Query) EachOrdered(w World, callback func(*Entry), orderComponent IComp
 		archetype.Lock()
 
 		ents := archetype.Entities()
-		slices.SortFunc(ents, func(firstEnt, secondEnt Entity) int {
-			first := w.Entry(firstEnt)
-			second := w.Entry(secondEnt)
-
-			var firstOrder, secondOrder int
-
-			// Convert first entry component
-			firstPtr := first.Component(orderComponent)
-			if firstOrderable, canOrder := convertToOrderable(firstPtr, orderComponent.Typ()); canOrder {
-				firstOrder = firstOrderable.Order()
+		orders := make([]int, len(ents))
+		for i, ent := range ents {
+			entry := w.Entry(ent)
+			componentPtr := entry.Component(orderComponent)
+			if orderable, canOrder := convertToOrderable(componentPtr, orderComponent.Typ()); canOrder {
+				orders[i] = orderable.Order()
+				continue
 			}
+		}
 
-			// Convert second entry component
-			secondPtr := second.Component(orderComponent)
-			if secondOrderable, canOrder := convertToOrderable(secondPtr, orderComponent.Typ()); canOrder {
-				secondOrder = secondOrderable.Order()
-			}
-
-			return cmp.Compare(firstOrder, secondOrder)
+		sort.Slice(ents, func(i, j int) bool {
+			return orders[i] < orders[j]
 		})
 
 		for _, entity := range ents {
@@ -91,6 +85,10 @@ func (q *Query) EachOrdered(w World, callback func(*Entry), orderComponent IComp
 
 		archetype.Unlock()
 	}
+}
+
+func convertToOrderable(ptr unsafe.Pointer, typ reflect.Type) (IOrderable, bool) {
+	return nil, false
 }
 
 // deprecated: use Each instead
