@@ -12,6 +12,8 @@ import (
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/layers"
 )
 
+var UsePositionOrdering bool
+
 type Spawn struct {
 	settings *component.SettingsData
 }
@@ -23,32 +25,40 @@ func NewSpawn() *Spawn {
 }
 
 func (s *Spawn) Update(ecs *ecs.ECS) {
+	if s.settings == nil {
+		if entry, ok := component.Settings.First(ecs.World); ok {
+			s.settings = component.Settings.Get(entry)
+		}
+	}
+
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		s.addBunnies(ecs)
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
+		UsePositionOrdering = !UsePositionOrdering
 	}
 
 	if ids := ebiten.AppendTouchIDs(nil); len(ids) > 0 {
 		s.addBunnies(ecs) // not accurate, cause no input manager for this
 	}
 
-	if _, offset := ebiten.Wheel(); offset != 0 {
-		s.settings.Amount += int(offset * 10)
-		if s.settings.Amount < 0 {
-			s.settings.Amount = 0
+	if s.settings != nil {
+		if _, offset := ebiten.Wheel(); offset != 0 {
+			s.settings.Amount += int(offset * 10)
+			if s.settings.Amount < 0 {
+				s.settings.Amount = 0
+			}
+		}
+
+		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
+			s.settings.Colorful = !s.settings.Colorful
 		}
 	}
 
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-		s.settings.Colorful = !s.settings.Colorful
-	}
 }
 
 func (s *Spawn) addBunnies(ecs *ecs.ECS) {
-	if s.settings == nil {
-		if entry, ok := component.Settings.First(ecs.World); ok {
-			s.settings = component.Settings.Get(entry)
-		}
-	}
 
 	entities := ecs.CreateMany(
 		layers.LayerBunnies,

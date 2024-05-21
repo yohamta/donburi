@@ -10,6 +10,10 @@ type cache struct {
 	seen       int
 }
 
+type IOrderable interface {
+	Order() int
+}
+
 // Query represents a query for entities.
 // It is used to filter entities based on their components.
 // It receives arbitrary filters that are used to filter entities.
@@ -27,6 +31,49 @@ func NewQuery(filter filter.LayoutFilter) *Query {
 	return &Query{
 		layoutMatches: make(map[WorldId]*cache),
 		filter:        filter,
+	}
+}
+
+// OrderedQuery is a special extension of Query which has a type parameter used
+// when running ordered queries using `EachOrdered`.
+type OrderedQuery[T IOrderable] struct {
+	Query
+}
+
+// NewOrderedQuery creates a new ordered query.
+// It takes a filter parameter that is used when evaluating the query.
+// Use `OrderedQuery.EachOrdered` to run a Each query in ordered mode.
+func NewOrderedQuery[T IOrderable](filter filter.LayoutFilter) *OrderedQuery[T] {
+	return &OrderedQuery[T]{
+		//orderedBy: orderedBy,
+		Query: Query{
+			layoutMatches: make(map[WorldId]*cache),
+			filter:        filter,
+		},
+	}
+}
+
+// EachOrdered iterates over all entities within the query filter, and uses the `orderBy` parameter to
+// figure out which property to order using.
+// `T` must implement `IOrderable`
+func (q *OrderedQuery[T]) EachOrdered(w World, orderBy *ComponentType[T], callback func(*Entry)) {
+	accessor := w.StorageAccessor()
+	iter := storage.NewEntityIterator(0, accessor.Archetypes, q.evaluateQuery(w, &accessor))
+
+	for iter.HasNext() {
+		archetype := iter.Next()
+		archetype.Lock()
+
+		ents := archetype.Entities()
+		entrIter := NewOrderedEntryIterator(0, w, ents, orderBy)
+		for entrIter.HasNext() {
+			e := entrIter.Next()
+			if e.entity.IsReady() {
+				callback(e)
+			}
+		}
+
+		archetype.Unlock()
 	}
 }
 

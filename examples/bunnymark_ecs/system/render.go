@@ -6,17 +6,22 @@ import (
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/ecs"
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/component"
-	"github.com/yohamta/donburi/examples/bunnymark_ecs/layers"
 	"github.com/yohamta/donburi/filter"
 )
 
 type render struct {
-	query *donburi.Query
+	query        *donburi.Query
+	orderedQuery *donburi.OrderedQuery[component.PositionData]
 }
 
 var Render = &render{
-	query: ecs.NewQuery(
-		layers.LayerBunnies,
+	query: donburi.NewQuery(
+		filter.Contains(
+			component.Position,
+			component.Hue,
+			component.Sprite,
+		)),
+	orderedQuery: donburi.NewOrderedQuery[component.PositionData](
 		filter.Contains(
 			component.Position,
 			component.Hue,
@@ -25,17 +30,33 @@ var Render = &render{
 }
 
 func (r *render) Draw(ecs *ecs.ECS, screen *ebiten.Image) {
-	r.query.Each(ecs.World, func(entry *donburi.Entry) {
-		position := component.Position.Get(entry)
-		hue := component.Hue.Get(entry)
-		sprite := component.Sprite.Get(entry)
+	if !UsePositionOrdering {
+		r.query.Each(ecs.World, func(entry *donburi.Entry) {
+			position := component.Position.Get(entry)
+			hue := component.Hue.Get(entry)
+			sprite := component.Sprite.Get(entry)
 
-		op := &ebiten.DrawImageOptions{}
-		sw, sh := float64(screen.Bounds().Dx()), float64(screen.Bounds().Dy())
-		op.GeoM.Translate(position.X*sw, position.Y*sh)
-		if *hue.Colorful {
-			op.ColorM.RotateHue(hue.Value)
-		}
-		screen.DrawImage(sprite.Image, op)
-	})
+			op := &ebiten.DrawImageOptions{}
+			sw, sh := float64(screen.Bounds().Dx()), float64(screen.Bounds().Dy())
+			op.GeoM.Translate(position.X*sw, position.Y*sh)
+			if *hue.Colorful {
+				op.ColorM.RotateHue(hue.Value)
+			}
+			screen.DrawImage(sprite.Image, op)
+		})
+	} else {
+		r.orderedQuery.EachOrdered(ecs.World, component.Position, func(entry *donburi.Entry) {
+			position := component.Position.Get(entry)
+			hue := component.Hue.Get(entry)
+			sprite := component.Sprite.Get(entry)
+
+			op := &ebiten.DrawImageOptions{}
+			sw, sh := float64(screen.Bounds().Dx()), float64(screen.Bounds().Dy())
+			op.GeoM.Translate(position.X*sw, position.Y*sh)
+			if *hue.Colorful {
+				op.ColorM.RotateHue(hue.Value)
+			}
+			screen.DrawImage(sprite.Image, op)
+		})
+	}
 }
