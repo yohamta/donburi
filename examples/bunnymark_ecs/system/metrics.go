@@ -42,10 +42,10 @@ func (m *Metrics) Update(ecs *ecs.ECS) {
 
 func (m *Metrics) Draw(ecs *ecs.ECS, screen *ebiten.Image) {
 	str := fmt.Sprintf(
-		"GPU: %s\nTPS: %.2f, FPS: %.2f, Objects: %.f\nBatching: %t, Amount: %d\nResolution: %dx%d",
+		"GPU: %s\nTPS: %.2f, FPS: %.2f, Objects: %.f\nBatching: %t, Amount: %d\nResolution: %dx%d\nUsePositionOrdering: %t",
 		m.settings.Gpu, m.settings.Tps.Last(), m.settings.Fps.Last(), m.settings.Objects.Last(),
 		!m.settings.Colorful, m.settings.Amount,
-		m.bounds.Dx(), m.bounds.Dy(),
+		m.bounds.Dx(), m.bounds.Dy(), UsePositionOrdering,
 	)
 
 	rect := text.BoundString(basicfont.Face7x13, str)

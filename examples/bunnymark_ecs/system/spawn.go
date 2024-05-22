@@ -12,6 +12,8 @@ import (
 	"github.com/yohamta/donburi/examples/bunnymark_ecs/layers"
 )
 
+var UsePositionOrdering bool
+
 type Spawn struct {
 	settings *component.SettingsData
 }
@@ -25,6 +27,10 @@ func NewSpawn() *Spawn {
 func (s *Spawn) Update(ecs *ecs.ECS) {
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		s.addBunnies(ecs)
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
+		UsePositionOrdering = !UsePositionOrdering
 	}
 
 	if ids := ebiten.AppendTouchIDs(nil); len(ids) > 0 {

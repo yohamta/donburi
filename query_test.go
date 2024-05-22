@@ -11,7 +11,7 @@ type orderableComponentTest struct {
 	time.Time
 }
 
-func (o *orderableComponentTest) Order() int {
+func (o orderableComponentTest) Order() int {
 	return int(time.Since(o.Time).Milliseconds())
 }
 
@@ -51,7 +51,7 @@ func BenchmarkQuery_EachOrdered(b *testing.B) {
 	}
 
 	query := donburi.NewQuery(filter.Contains(orderableTest))
-	orderedQuery := donburi.NewOrderedQuery(filter.Contains(orderableTest), orderableTest)
+	orderedQuery := donburi.NewOrderedQuery[orderableComponentTest](filter.Contains(orderableTest))
 	countNormal := 0
 	countOrdered := 0
 	b.Run("Each", func(b *testing.B) {
@@ -63,7 +63,26 @@ func BenchmarkQuery_EachOrdered(b *testing.B) {
 	})
 	b.Run("EachOrdered", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			orderedQuery.EachOrdered(world, func(entry *donburi.Entry) {
+			orderedQuery.EachOrdered(world, orderableTest, func(entry *donburi.Entry) {
+				countOrdered++
+			})
+		}
+	})
+}
+
+func BenchmarkQuery_OnlyEachOrdered(b *testing.B) {
+	world := donburi.NewWorld()
+	for i := 0; i < 30000; i++ {
+		e := world.Create(orderableTest)
+		entr := world.Entry(e)
+		donburi.SetValue(entr, orderableTest, orderableComponentTest{time.Now()})
+	}
+
+	orderedQuery := donburi.NewOrderedQuery[orderableComponentTest](filter.Contains(orderableTest))
+	countOrdered := 0
+	b.Run("EachOrdered", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			orderedQuery.EachOrdered(world, orderableTest, func(entry *donburi.Entry) {
 				countOrdered++
 			})
 		}
