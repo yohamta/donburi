@@ -1,16 +1,25 @@
 package donburi_test
 
 import (
-	"testing"
-
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
+	"testing"
+	"time"
 )
 
+type orderableComponentTest struct {
+	time.Time
+}
+
+func (o orderableComponentTest) Order() int {
+	return int(time.Since(o.Time).Milliseconds())
+}
+
 var (
-	queryTagA = donburi.NewTag()
-	queryTagB = donburi.NewTag()
-	queryTagC = donburi.NewTag()
+	queryTagA     = donburi.NewTag()
+	queryTagB     = donburi.NewTag()
+	queryTagC     = donburi.NewTag()
+	orderableTest = donburi.NewComponentType[orderableComponentTest]()
 )
 
 func TestQuery(t *testing.T) {
@@ -31,6 +40,53 @@ func TestQuery(t *testing.T) {
 	if count != 2 {
 		t.Errorf("counter should be 2, but got %d", count)
 	}
+}
+
+func BenchmarkQuery_EachOrdered(b *testing.B) {
+	world := donburi.NewWorld()
+	for i := 0; i < 30000; i++ {
+		e := world.Create(orderableTest)
+		entr := world.Entry(e)
+		donburi.SetValue(entr, orderableTest, orderableComponentTest{time.Now()})
+	}
+
+	query := donburi.NewQuery(filter.Contains(orderableTest))
+	orderedQuery := donburi.NewOrderedQuery[orderableComponentTest](filter.Contains(orderableTest))
+	countNormal := 0
+	countOrdered := 0
+	b.Run("Each", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			query.Each(world, func(entry *donburi.Entry) {
+				countNormal++
+			})
+		}
+	})
+	b.Run("EachOrdered", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			orderedQuery.EachOrdered(world, orderableTest, func(entry *donburi.Entry) {
+				countOrdered++
+			})
+		}
+	})
+}
+
+func BenchmarkQuery_OnlyEachOrdered(b *testing.B) {
+	world := donburi.NewWorld()
+	for i := 0; i < 30000; i++ {
+		e := world.Create(orderableTest)
+		entr := world.Entry(e)
+		donburi.SetValue(entr, orderableTest, orderableComponentTest{time.Now()})
+	}
+
+	orderedQuery := donburi.NewOrderedQuery[orderableComponentTest](filter.Contains(orderableTest))
+	countOrdered := 0
+	b.Run("EachOrdered", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			orderedQuery.EachOrdered(world, orderableTest, func(entry *donburi.Entry) {
+				countOrdered++
+			})
+		}
+	})
 }
 
 func TestQueryMultipleComponent(t *testing.T) {
