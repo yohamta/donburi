@@ -47,7 +47,7 @@ func TestGetComponents(t *testing.T) {
 	donburi.SetValue(entryA, velocity, veData)
 
 	gots := donburi.GetComponents(entryA)
-	wants := []interface{}{trData, veData, struct{}{}}
+	wants := []interface{}{trData, veData, donburi.Tag("")}
 
 	if len(gots) != len(wants) {
 		t.Fatalf("got: %v, want: %v", gots, wants)

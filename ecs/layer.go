@@ -68,7 +68,7 @@ func getLayer(layerID LayerID) *layer {
 	if layers[layerID] == nil {
 		layers[layerID] = &layer{
 			id:  layerID,
-			tag: donburi.NewTag().SetName(fmt.Sprintf("Layer%d", layerID)),
+			tag: donburi.NewTag(fmt.Sprintf("Layer%d", layerID)),
 		}
 	}
 	return layers[layerID]

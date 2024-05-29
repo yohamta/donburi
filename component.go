@@ -139,14 +139,16 @@ func (c *ComponentType[T]) validateDefaultVal() {
 }
 
 var nextComponentTypeId component.ComponentTypeId = 1
+var globalComponentTypes []component.IComponentType
 
 // NewComponentType creates a new component type.
 // The argument is a struct that represents a data of the component.
 func newComponentType[T any](s T, defaultVal interface{}) *ComponentType[T] {
+	typ := reflect.TypeOf(s)
 	componentType := &ComponentType[T]{
 		id:         nextComponentTypeId,
-		typ:        reflect.TypeOf(s),
-		name:       reflect.TypeOf(s).Name(),
+		typ:        typ,
+		name:       typ.Name(),
 		defaultVal: defaultVal,
 	}
 	componentType.query = NewQuery(filter.Contains(componentType))
@@ -154,5 +156,14 @@ func newComponentType[T any](s T, defaultVal interface{}) *ComponentType[T] {
 		componentType.validateDefaultVal()
 	}
 	nextComponentTypeId++
+	globalComponentTypes = append(globalComponentTypes, componentType)
 	return componentType
+}
+
+// AllComponentTypes returns all IComponentTypes created at that point in time.
+// All types created using `donburi.NewComponentType()` will be in this list.
+// This is useful if you want to use introspection on the ECS, such as when doing (de)serialization.
+// This includes components which are not in any archetypes or on any entity.
+func AllComponentTypes() []IComponentType {
+	return globalComponentTypes
 }
