@@ -230,25 +230,44 @@ query.Each(world, func(entry *donburi.Entry) {
   }
   
 })
+```
 
+## Ordered Queries
+Sometimes you may need to iterate a query in a specific order. Donburi supports this through the `OrderedQuery[T]` type.
+In order to use this, the component must implement the IOrderable interface:
+```go
+type IOrderable interface {
+	Order() int
+}
+```
+
+Example:
+Here we assume the `spatial.TransformComponent` implements `Order()`.
+```go
+q := donburi.NewOrderedQuery[spatial.Transform](
+filter.Contains(sprite.Component, spatial.TransformComponent))
+
+q.EachOrdered(w, spatial.TransformComponent, func(entry *donburi.Entry) {
+	// This will be iterated according to the spatial.TransformComponent's Order() function.
+})
 ```
 
 ### Tags
 
-One or multiple "Tag" components can be attached to an entity. "Tag"s are just components with no data.
+One or multiple "Tag" components can be attached to an entity. "Tag"s are just components with a single name string as data.
 
 Here is the utility function to create a tag component.
 
 ```go
 // This is the utility function to make tag component
-func NewTag() *ComponentType {
-  return NewComponentType(struct{}{})
+func NewTag(name string) *ComponentType {
+  return NewComponentType(Tag(name))
 }
 ```
 Since "Tags" are components, they can be used in queries in the same way as components as follows:
 
 ```go
-var EnemyTag = donburi.NewTag()
+var EnemyTag = donburi.NewTag("Enemy")
 world.CreateMany(100, EnemyTag, Position, Velocity)
 
 // Search entities with EnemyTag
