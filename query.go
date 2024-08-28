@@ -1,6 +1,8 @@
 package donburi
 
 import (
+	"iter"
+
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/internal/storage"
 )
@@ -53,44 +55,67 @@ func NewOrderedQuery[T IOrderable](filter filter.LayoutFilter) *OrderedQuery[T] 
 	}
 }
 
+// IterOrdered returns an iterator over all entities within the query filter,
+// ordered by the specified component.
+func (q *OrderedQuery[T]) IterOrdered(w World, orderBy *ComponentType[T]) iter.Seq[*Entry] {
+	return func(yield func(*Entry) bool) {
+		accessor := w.StorageAccessor()
+		iter := storage.NewEntityIterator(0, accessor.Archetypes, q.evaluateQuery(w, &accessor))
+
+		for iter.HasNext() {
+			archetype := iter.Next()
+			archetype.Lock()
+			defer archetype.Unlock()
+
+			ents := archetype.Entities()
+			entrIter := NewOrderedEntryIterator(0, w, ents, orderBy)
+			for entrIter.HasNext() {
+				e := entrIter.Next()
+				if e.entity.IsReady() {
+					if !yield(e) {
+						return
+					}
+				}
+			}
+		}
+	}
+}
+
 // EachOrdered iterates over all entities within the query filter, and uses the `orderBy` parameter to
 // figure out which property to order using.
 // `T` must implement `IOrderable`
 func (q *OrderedQuery[T]) EachOrdered(w World, orderBy *ComponentType[T], callback func(*Entry)) {
-	accessor := w.StorageAccessor()
-	iter := storage.NewEntityIterator(0, accessor.Archetypes, q.evaluateQuery(w, &accessor))
+	for entry := range q.IterOrdered(w, orderBy) {
+		callback(entry)
+	}
+}
 
-	for iter.HasNext() {
-		archetype := iter.Next()
-		archetype.Lock()
+func (q *Query) Iter(w World) iter.Seq[*Entry] {
+	return func(yield func(*Entry) bool) {
+		accessor := w.StorageAccessor()
+		iter := storage.NewEntityIterator(0, accessor.Archetypes, q.evaluateQuery(w, &accessor))
 
-		ents := archetype.Entities()
-		entrIter := NewOrderedEntryIterator(0, w, ents, orderBy)
-		for entrIter.HasNext() {
-			e := entrIter.Next()
-			if e.entity.IsReady() {
-				callback(e)
+		for iter.HasNext() {
+			archetype := iter.Next()
+			archetype.Lock()
+			for _, entity := range archetype.Entities() {
+				entry := w.Entry(entity)
+				if entry.entity.IsReady() {
+					if !yield(entry) {
+						archetype.Unlock()
+						return
+					}
+				}
 			}
+			archetype.Unlock()
 		}
-
-		archetype.Unlock()
 	}
 }
 
 // Each iterates over all entities that match the query.
 func (q *Query) Each(w World, callback func(*Entry)) {
-	accessor := w.StorageAccessor()
-	iter := storage.NewEntityIterator(0, accessor.Archetypes, q.evaluateQuery(w, &accessor))
-	for iter.HasNext() {
-		archetype := iter.Next()
-		archetype.Lock()
-		for _, entity := range archetype.Entities() {
-			entry := w.Entry(entity)
-			if entry.entity.IsReady() {
-				callback(entry)
-			}
-		}
-		archetype.Unlock()
+	for entry := range q.Iter(w) {
+		callback(entry)
 	}
 }
 
