@@ -65,7 +65,6 @@ func (q *OrderedQuery[T]) IterOrdered(w World, orderBy *ComponentType[T]) iter.S
 		for iter.HasNext() {
 			archetype := iter.Next()
 			archetype.Lock()
-			defer archetype.Unlock()
 
 			ents := archetype.Entities()
 			entrIter := NewOrderedEntryIterator(0, w, ents, orderBy)
@@ -73,10 +72,13 @@ func (q *OrderedQuery[T]) IterOrdered(w World, orderBy *ComponentType[T]) iter.S
 				e := entrIter.Next()
 				if e.entity.IsReady() {
 					if !yield(e) {
+						archetype.Unlock()
 						return
 					}
 				}
 			}
+
+			archetype.Unlock()
 		}
 	}
 }
