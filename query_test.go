@@ -1,10 +1,11 @@
 package donburi_test
 
 import (
-	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/filter"
 	"testing"
 	"time"
+
+	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/filter"
 )
 
 type orderableComponentTest struct {
@@ -30,12 +31,13 @@ func TestQuery(t *testing.T) {
 
 	query := donburi.NewQuery(filter.Contains(queryTagA))
 	count := 0
-	query.Each(world, func(entry *donburi.Entry) {
+
+	for entry := range query.Iter(world) {
 		count++
 		if entry.Archetype().Layout().HasComponent(queryTagA) == false {
 			t.Errorf("PlayerTag should be in ent archetype")
 		}
-	})
+	}
 
 	if count != 2 {
 		t.Errorf("counter should be 2, but got %d", count)
@@ -56,9 +58,9 @@ func BenchmarkQuery_EachOrdered(b *testing.B) {
 	countOrdered := 0
 	b.Run("Each", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			query.Each(world, func(entry *donburi.Entry) {
+			for _ = range query.Iter(world) {
 				countNormal++
-			})
+			}
 		}
 	})
 	b.Run("EachOrdered", func(b *testing.B) {

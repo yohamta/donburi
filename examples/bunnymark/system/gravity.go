@@ -17,10 +17,10 @@ func NewGravity() *Gravity {
 }
 
 func (g *Gravity) Update(w donburi.World) {
-	g.query.Each(w, func(entry *donburi.Entry) {
+	for entry := range g.query.Iter(w) {
 		gravity := component.Gravity.Get(entry)
 		velocity := component.Velocity.Get(entry)
 
 		velocity.Y += gravity.Value
-	})
+	}
 }

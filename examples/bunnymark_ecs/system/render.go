@@ -31,7 +31,7 @@ var Render = &render{
 
 func (r *render) Draw(ecs *ecs.ECS, screen *ebiten.Image) {
 	if !UsePositionOrdering {
-		r.query.Each(ecs.World, func(entry *donburi.Entry) {
+		for entry := range r.query.Iter(ecs.World) {
 			position := component.Position.Get(entry)
 			hue := component.Hue.Get(entry)
 			sprite := component.Sprite.Get(entry)
@@ -43,9 +43,9 @@ func (r *render) Draw(ecs *ecs.ECS, screen *ebiten.Image) {
 				op.ColorM.RotateHue(hue.Value)
 			}
 			screen.DrawImage(sprite.Image, op)
-		})
+		}
 	} else {
-		r.orderedQuery.EachOrdered(ecs.World, component.Position, func(entry *donburi.Entry) {
+		for entry := range r.orderedQuery.IterOrdered(ecs.World, component.Position) {
 			position := component.Position.Get(entry)
 			hue := component.Hue.Get(entry)
 			sprite := component.Sprite.Get(entry)
@@ -57,6 +57,6 @@ func (r *render) Draw(ecs *ecs.ECS, screen *ebiten.Image) {
 				op.ColorM.RotateHue(hue.Value)
 			}
 			screen.DrawImage(sprite.Image, op)
-		})
+		}
 	}
 }

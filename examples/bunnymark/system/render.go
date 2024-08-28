@@ -22,7 +22,7 @@ func NewRender() *Render {
 }
 
 func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
-	r.query.Each(w, func(entry *donburi.Entry) {
+	for entry := range r.query.Iter(w) {
 		position := component.Position.Get(entry)
 		hue := component.Hue.Get(entry)
 		sprite := component.Sprite.Get(entry)
@@ -34,5 +34,5 @@ func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
 			op.ColorM.RotateHue(hue.Value)
 		}
 		screen.DrawImage(sprite.Image, op)
-	})
+	}
 }

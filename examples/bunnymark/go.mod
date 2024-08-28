@@ -1,6 +1,8 @@
 module github.com/yohamta/donburi/examples/bunnymark
 
-go 1.21
+go 1.23
+
+toolchain go1.23.0
 
 replace github.com/yohamta/donburi => ../../
 
@@ -15,7 +17,6 @@ require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/ebitengine/purego v0.6.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/jaypipes/pcidb v1.0.0 // indirect
 	github.com/jezek/xgb v1.1.0 // indirect

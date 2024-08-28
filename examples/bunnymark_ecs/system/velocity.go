@@ -20,11 +20,11 @@ var Velocity = &velocity{
 }
 
 func (v *velocity) Update(ecs *ecs.ECS) {
-	v.query.Each(ecs.World, func(entry *donburi.Entry) {
+	for entry := range v.query.Iter(ecs.World) {
 		position := component.Position.Get(entry)
 		velocity := component.Velocity.Get(entry)
 
 		position.X += velocity.X
 		position.Y += velocity.Y
-	})
+	}
 }

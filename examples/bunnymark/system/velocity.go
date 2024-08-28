@@ -17,11 +17,12 @@ func NewVelocity() *Velocity {
 }
 
 func (v *Velocity) Update(w donburi.World) {
-	v.query.Each(w, func(entry *donburi.Entry) {
+	for entry := range v.query.Iter(w) {
+
 		position := component.Position.Get(entry)
 		velocity := component.Velocity.Get(entry)
 
 		position.X += velocity.X
 		position.Y += velocity.Y
-	})
+	}
 }

@@ -2,6 +2,7 @@ package donburi
 
 import (
 	"fmt"
+	"iter"
 	"reflect"
 	"unsafe"
 
@@ -57,6 +58,11 @@ func (c *ComponentType[T]) Set(entry *Entry, component *T) {
 // Each iterates over the entities that have the component.
 func (c *ComponentType[T]) Each(w World, callback func(*Entry)) {
 	c.query.Each(w, callback)
+}
+
+// Iter returns an iterator for the entities that have the component.
+func (c *ComponentType[T]) Iter(w World) iter.Seq[*Entry] {
+	return c.query.Iter(w)
 }
 
 // deprecated: use Each instead
