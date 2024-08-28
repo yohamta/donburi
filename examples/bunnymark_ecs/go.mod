@@ -1,6 +1,8 @@
 module github.com/yohamta/donburi/examples/bunnymark_ecs
 
-go 1.21
+go 1.23
+
+toolchain go1.23.0
 
 replace github.com/yohamta/donburi => ../../
 
