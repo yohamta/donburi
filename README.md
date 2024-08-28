@@ -15,6 +15,7 @@ It aims to be a feature rich and high-performance [ECS](https://en.wikipedia.org
 - [Getting Started](#getting-started)
   - [Worlds](#worlds)
   - [Queries](#queries)
+- [Ordered Queries](#ordered-queries)
   - [Tags](#tags)
   - [Systems (Experimental)](#systems-experimental)
   - [Debug](#debug)
@@ -127,7 +128,7 @@ if SomeLogic.IsDead(world, someEntity) {
 }
 ```
 
-Entities can be retrieved using the `First` and `Each` methods of Components as follows:
+Entities can be retrieved using the `First` and `Iter` methods of Components as follows:
 
 ```go
 // GameState Component
@@ -154,10 +155,10 @@ if entry, ok := GameState.First(world); ok {
 }
 
 // Query all Bullet entities
-Bullet.Each(world, func(entry *donburi.Entry) {
+for entry := range Bullet.Iter(world) {
   bullet := Bullet.Get(entry)
   // .. do stuff with the bullet entity
-})
+}
 ```
 
 ### Queries
@@ -169,14 +170,14 @@ Queries allow for high performance and expressive iteration through the entities
 query := donburi.NewQuery(filter.Contains(Position, Velocity))
 
 // Iterate through the entities found in the world
-query.Each(world, func(entry *donburi.Entry) {
+for entry := range query.Iter(world) {
   // An entry is an accessor to entity and its components.
   position := Position.Get(entry)
   velocity := Velocity.Get(entry)
   
   position.X += velocity.X
   position.Y += velocity.Y
-})
+}
 ```
 
 There are other types of filters such as `And`, `Or`, `Exact` and `Not`. Filters can be combined wth to find the target entities.
@@ -208,11 +209,10 @@ query := donburi.NewQuery(
 )
 
 // In our query we can check if the entity has some of the optional components before attempting to retrieve them
-query.Each(world, func(entry *donburi.Entry) {
+for entry := range query.Iter(world) {
   // We'll always be able to access Position and Size
   position := Position.Get(entry)
   size := Size.Get(entry)
-  
   
   if entry.HasComponent(Sprite) {
     sprite := Sprite.Get(entry)
@@ -228,8 +228,7 @@ query.Each(world, func(entry *donburi.Entry) {
     shape := Shape.Get(entry)
     // .. do shape things
   }
-  
-})
+}
 ```
 
 ## Ordered Queries
@@ -247,9 +246,9 @@ Here we assume the `spatial.TransformComponent` implements `Order()`.
 q := donburi.NewOrderedQuery[spatial.Transform](
 filter.Contains(sprite.Component, spatial.TransformComponent))
 
-q.EachOrdered(w, spatial.TransformComponent, func(entry *donburi.Entry) {
-	// This will be iterated according to the spatial.TransformComponent's Order() function.
-})
+for entry := range q.IterOrdered(w) {
+  // This will be iterated according to the spatial.TransformComponent's Order() function.
+}
 ```
 
 ### Tags
@@ -271,7 +270,7 @@ var EnemyTag = donburi.NewTag("Enemy")
 world.CreateMany(100, EnemyTag, Position, Velocity)
 
 // Search entities with EnemyTag
-EnemyTag.Each(world, func(entry *donburi.Entry) {
+for entry := range EnemyTag.Iter(world) {
   // Perform some operation on the Entities with the EnemyTag component.
 }
 ```
