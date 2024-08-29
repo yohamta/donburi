@@ -1,8 +1,9 @@
 package donburi
 
 import (
+	"cmp"
 	"iter"
-	"sort"
+	"slices"
 	"sync"
 
 	"github.com/yohamta/donburi/filter"
@@ -87,9 +88,12 @@ func (q *OrderedQuery[T]) IterOrdered(w World, orderBy *ComponentType[T]) iter.S
 			archetype.Unlock()
 		}
 
-		// Sort all entries
-		sort.Slice(q.entries, func(i, j int) bool {
-			return orderBy.GetValue(q.entries[i]).Order() < orderBy.GetValue(q.entries[j]).Order()
+		// Sort all entries using a stable sort
+		slices.SortStableFunc(q.entries, func(a, b *Entry) int {
+			return cmp.Compare(
+				orderBy.GetValue(a).Order(),
+				orderBy.GetValue(b).Order(),
+			)
 		})
 
 		// Yield sorted entries
