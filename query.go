@@ -3,6 +3,7 @@ package donburi
 import (
 	"iter"
 	"sort"
+	"sync"
 
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/internal/storage"
@@ -41,6 +42,8 @@ func NewQuery(filter filter.LayoutFilter) *Query {
 // when running ordered queries using `EachOrdered`.
 type OrderedQuery[T IOrderable] struct {
 	Query
+	entries []*Entry
+	lock    sync.Mutex
 }
 
 // NewOrderedQuery creates a new ordered query.
@@ -60,10 +63,14 @@ func NewOrderedQuery[T IOrderable](filter filter.LayoutFilter) *OrderedQuery[T] 
 // ordered by the specified component.
 func (q *OrderedQuery[T]) IterOrdered(w World, orderBy *ComponentType[T]) iter.Seq[*Entry] {
 	return func(yield func(*Entry) bool) {
+		q.lock.Lock()
+		defer q.lock.Unlock()
+
 		accessor := w.StorageAccessor()
 		iter := storage.NewEntityIterator(0, accessor.Archetypes, q.evaluateQuery(w, &accessor))
 
-		var allEntries []*Entry
+		// Clear the slice while keeping the underlying array
+		q.entries = q.entries[:0]
 
 		for iter.HasNext() {
 			archetype := iter.Next()
@@ -73,20 +80,20 @@ func (q *OrderedQuery[T]) IterOrdered(w World, orderBy *ComponentType[T]) iter.S
 			for _, entity := range ents {
 				entry := w.Entry(entity)
 				if entry.entity.IsReady() {
-					allEntries = append(allEntries, entry)
+					q.entries = append(q.entries, entry)
 				}
 			}
 
 			archetype.Unlock()
 		}
 
-		// Sort all entries at once
-		sort.Slice(allEntries, func(i, j int) bool {
-			return orderBy.GetValue(allEntries[i]).Order() < orderBy.GetValue(allEntries[j]).Order()
+		// Sort all entries
+		sort.Slice(q.entries, func(i, j int) bool {
+			return orderBy.GetValue(q.entries[i]).Order() < orderBy.GetValue(q.entries[j]).Order()
 		})
 
 		// Yield sorted entries
-		for _, entry := range allEntries {
+		for _, entry := range q.entries {
 			if !yield(entry) {
 				return
 			}

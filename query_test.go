@@ -71,11 +71,10 @@ func TestOrderedQuery(t *testing.T) {
 	var i int
 	for e := range orderedEntitiesQuery.IterOrdered(world, orderable) {
 		o := orderable.GetValue(e)
-		println(o.Index)
-		if o.Index != i+1 {
-			t.Errorf("expected %d, but got %d", i+1, o.Index)
+		i += 1
+		if o.Index != i {
+			t.Errorf("expected %d, but got %d", i, o.Index)
 		}
-		i++
 	}
 }
 
