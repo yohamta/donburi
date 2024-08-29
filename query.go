@@ -2,6 +2,7 @@ package donburi
 
 import (
 	"iter"
+	"sort"
 
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/internal/storage"
@@ -62,23 +63,33 @@ func (q *OrderedQuery[T]) IterOrdered(w World, orderBy *ComponentType[T]) iter.S
 		accessor := w.StorageAccessor()
 		iter := storage.NewEntityIterator(0, accessor.Archetypes, q.evaluateQuery(w, &accessor))
 
+		var allEntries []*Entry
+
 		for iter.HasNext() {
 			archetype := iter.Next()
 			archetype.Lock()
 
 			ents := archetype.Entities()
-			entrIter := NewOrderedEntryIterator(0, w, ents, orderBy)
-			for entrIter.HasNext() {
-				e := entrIter.Next()
-				if e.entity.IsReady() {
-					if !yield(e) {
-						archetype.Unlock()
-						return
-					}
+			for _, entity := range ents {
+				entry := w.Entry(entity)
+				if entry.entity.IsReady() {
+					allEntries = append(allEntries, entry)
 				}
 			}
 
 			archetype.Unlock()
+		}
+
+		// Sort all entries at once
+		sort.Slice(allEntries, func(i, j int) bool {
+			return orderBy.GetValue(allEntries[i]).Order() < orderBy.GetValue(allEntries[j]).Order()
+		})
+
+		// Yield sorted entries
+		for _, entry := range allEntries {
+			if !yield(entry) {
+				return
+			}
 		}
 	}
 }
