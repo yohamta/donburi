@@ -16,6 +16,7 @@ var UsePositionOrdering bool
 
 type Spawn struct {
 	settings *component.SettingsData
+	nextID   int
 }
 
 func NewSpawn() *Spawn {
@@ -73,8 +74,10 @@ func (s *Spawn) addBunnies(ecs *ecs.ECS) {
 		entry := ecs.World.Entry(entity)
 		position := component.Position.Get(entry)
 		*position = component.PositionData{
-			X: float64(i % 2), // Alternate screen edges
+			ID: s.nextID,
+			X:  float64(i % 2), // Alternate screen edges
 		}
+		s.nextID++
 		donburi.SetValue(
 			entry, component.Velocity, component.VelocityData{
 				X: helper.RangeFloat(0, 0.005),

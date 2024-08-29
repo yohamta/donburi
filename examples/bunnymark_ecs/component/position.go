@@ -6,10 +6,11 @@ import (
 
 type PositionData struct {
 	X, Y float64
+	ID   int
 }
 
 func (p PositionData) Order() int {
-	return int(p.Y * 600)
+	return -p.ID
 }
 
 var Position = donburi.NewComponentType[PositionData]()

@@ -44,6 +44,40 @@ func TestQuery(t *testing.T) {
 	}
 }
 
+var _ donburi.IOrderable = orderableData{}
+
+type orderableData struct {
+	Index int
+}
+
+func (o orderableData) Order() int {
+	return o.Index
+}
+
+var orderable = donburi.NewComponentType[orderableData]()
+
+func TestOrderedQuery(t *testing.T) {
+	orderedEntitiesQuery := donburi.NewOrderedQuery[orderableData](
+		filter.Contains(orderable),
+	)
+
+	world := donburi.NewWorld()
+	for _, i := range []int{3, 1, 2} {
+		e := world.Create(orderable)
+		entr := world.Entry(e)
+		donburi.SetValue(entr, orderable, orderableData{i})
+	}
+
+	var i int
+	for e := range orderedEntitiesQuery.IterOrdered(world, orderable) {
+		o := orderable.GetValue(e)
+		i += 1
+		if o.Index != i {
+			t.Errorf("expected %d, but got %d", i, o.Index)
+		}
+	}
+}
+
 func BenchmarkQuery_EachOrdered(b *testing.B) {
 	world := donburi.NewWorld()
 	for i := 0; i < 30000; i++ {
