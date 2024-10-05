@@ -1,3 +1,6 @@
+// donburi is an Entity Component System library for Go/Ebitengine inspired by legion.
+//
+// It aims to be a feature rich and high-performance ECS Library.
 package donburi
 
 import (
