@@ -42,11 +42,11 @@ It aims to be a feature rich and high-performance [ECS](https://en.wikipedia.org
 
 ## Examples
 
-To check all examples, visit [this](https://github.com/yohamta/donburi/tree/master/examples) page.
+To check all examples, visit [this](https://github.com/yohamta/donburi/tree/main/examples) page.
 
 The bunnymark example was adapted from [mizu](https://github.com/sedyh/mizu)'s code, which is made by [sedyh](https://github.com/sedyh). 
 
-<a href="https://github.com/yohamta/donburi/tree/master/examples/bunnymark"> <img width="200" src="https://user-images.githubusercontent.com/1475839/150521292-9d3ec2c9-b96f-4cc1-a778-57dabfbd46b6.gif"></a> <a href="https://github.com/yohamta/donburi/tree/master/examples/platformer"> <img width="200" src="./examples/platformer/assets/images/example.gif"></a> 
+<a href="https://github.com/yohamta/donburi/tree/main/examples/bunnymark"> <img width="200" src="https://user-images.githubusercontent.com/1475839/150521292-9d3ec2c9-b96f-4cc1-a778-57dabfbd46b6.gif"></a> <a href="https://github.com/yohamta/donburi/tree/main/examples/platformer"> <img width="200" src="./examples/platformer/assets/images/example.gif"></a> 
 
 ## Installation
 
@@ -281,7 +281,7 @@ for entry := range EnemyTag.Iter(world) {
 
 The [ECS package](https://github.com/yohamta/donburi/tree/main/ecs) provides so-called **System** feature in ECS which can be used together with a `World` instance.
 
-See the [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) and [Example](https://github.com/yohamta/donburi/tree/master/examples/bunnymark_ecs).
+See the [GoDoc](https://pkg.go.dev/github.com/yohamta/donburi/ecs) and [Example](https://github.com/yohamta/donburi/tree/main/examples/bunnymark_ecs).
 
 How to create an ECS instance:
 
