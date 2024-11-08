@@ -41,9 +41,36 @@ func RemoveChildrenRecursive(entry *donburi.Entry) {
 	}
 }
 
+func RemoveParent(entry *donburi.Entry) {
+	if !HasParent(entry) {
+		return
+	}
+
+	parent, ok := GetParent(entry)
+	if !ok || !parent.Valid() {
+		entry.RemoveComponent(parentComponent)
+		return
+	}
+
+	if children, ok := GetChildren(parent); ok {
+		newChildren := make([]*donburi.Entry, 0, len(children))
+		for _, child := range children {
+			if child != entry {
+				newChildren = append(newChildren, child)
+			}
+		}
+		donburi.SetValue(parent, childrenComponent, childrenData{
+			Children: newChildren,
+		})
+	}
+
+	entry.RemoveComponent(parentComponent)
+}
+
 // RemoveRecursive removes the entry recursively.
 func RemoveRecursive(entry *donburi.Entry) {
 	RemoveChildrenRecursive(entry)
+	RemoveParent(entry)
 	entry.Remove()
 }
 
