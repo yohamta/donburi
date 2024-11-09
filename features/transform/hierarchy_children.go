@@ -10,27 +10,21 @@ type hierarchyChildrenData struct {
 
 var hierarchyChildrenComponent = donburi.NewComponentType[hierarchyChildrenData]()
 
-// GetHierarchyChildren returns children of the entry.
-func GetHierarchyChildren(entry *donburi.Entry) ([]*donburi.Entry, bool) {
+// getHierarchyChildren returns children of the entry.
+func getHierarchyChildren(entry *donburi.Entry) ([]*donburi.Entry, bool) {
 	if cd, ok := getHierarchyChildrenData(entry); ok {
 		return cd.Children, true
 	}
 	return nil, false
 }
 
-// MustGetHierarchyChildren returns children of the entry.
-func MustGetHierarchyChildren(entry *donburi.Entry) []*donburi.Entry {
-	c := donburi.Get[hierarchyChildrenData](entry, hierarchyChildrenComponent)
-	return c.Children
-}
-
-// HasHierarchyChildren returns true if the entry has children.
-func HasHierarchyChildren(entry *donburi.Entry) bool {
+// hasHierarchyChildren returns true if the entry has children.
+func hasHierarchyChildren(entry *donburi.Entry) bool {
 	return entry.HasComponent(hierarchyChildrenComponent)
 }
 
 func getHierarchyChildrenData(entry *donburi.Entry) (*hierarchyChildrenData, bool) {
-	if HasHierarchyChildren(entry) {
+	if hasHierarchyChildren(entry) {
 		c := donburi.Get[hierarchyChildrenData](entry, hierarchyChildrenComponent)
 		return c, true
 	}

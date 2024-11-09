@@ -28,10 +28,10 @@ func (hs *hierarchySystem) RemoveHierarchyChildren(ecs *ecs.ECS) {
 			if pd.Parent.Valid() {
 				return
 			}
-			c, ok := GetHierarchyChildren(entry)
+			c, ok := getHierarchyChildren(entry)
 			if ok {
 				for _, e := range c {
-					RemoveHierarchyRecursive(e)
+					removeHierarchyRecursive(e)
 				}
 			}
 			entry.Remove()
