@@ -11,7 +11,7 @@ func TestHierarchy(t *testing.T) {
 	w := donburi.NewWorld()
 	ecs := ecslib.NewECS(w)
 
-	ecs.AddSystem(HierarchySystem.RemoveChildren)
+	ecs.AddSystem(HierarchySystem.RemoveHierarchyChildren)
 
 	parent := donburi.NewTag().SetName("parent")
 	child := donburi.NewTag().SetName("child")
@@ -21,8 +21,8 @@ func TestHierarchy(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 	ge := w.Entry(w.Create(grandChild))
 
-	SetParent(ce, pe)
-	SetParent(ge, ce)
+	SetHierarchyParent(ce, pe)
+	SetHierarchyParent(ge, ce)
 
 	testChildren(t, []childrenTest{
 		{
@@ -35,19 +35,19 @@ func TestHierarchy(t *testing.T) {
 		},
 	})
 
-	if p, ok := GetParent(ce); p.Entity() != pe.Entity() || !ok {
+	if p, ok := GetHierarchyParent(ce); p.Entity() != pe.Entity() || !ok {
 		t.Errorf("expected parent entity %d, got %d", pe.Entity(), p.Entity())
 	}
 
-	if p, ok := GetParent(ge); p.Entity() != ce.Entity() || !ok {
+	if p, ok := GetHierarchyParent(ge); p.Entity() != ce.Entity() || !ok {
 		t.Errorf("expected parent entity %d, got %d", ce.Entity(), p.Entity())
 	}
 
-	if HasParent(pe) {
+	if HasHierarchyParent(pe) {
 		t.Errorf("expected parent entity %d, got %d", donburi.Null, pe.Entity())
 	}
 
-	children, ok := GetChildren(pe)
+	children, ok := GetHierarchyChildren(pe)
 	if !ok {
 		t.Errorf("expected children, got nil")
 	}
@@ -55,7 +55,7 @@ func TestHierarchy(t *testing.T) {
 		t.Errorf("expected child entity %d, got %d", ce.Entity(), children[0].Entity())
 	}
 
-	children, ok = GetChildren(ce)
+	children, ok = GetHierarchyChildren(ce)
 	if children[0].Entity() != ge.Entity() {
 		t.Errorf("expected child entity %d, got %d", ge.Entity(), children[0].Entity())
 	}
@@ -85,8 +85,8 @@ func TestRemoveChildrenRecursive(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 	ge := w.Entry(w.Create(grandChild))
 
-	SetParent(ce, pe)
-	SetParent(ge, ce)
+	SetHierarchyParent(ce, pe)
+	SetHierarchyParent(ge, ce)
 
 	testChildren(t, []childrenTest{
 		{
@@ -99,7 +99,7 @@ func TestRemoveChildrenRecursive(t *testing.T) {
 		},
 	})
 
-	RemoveChildrenRecursive(pe)
+	RemoveHierarchyChildrenRecursive(pe)
 
 	if w.Valid(ce.Entity()) {
 		t.Errorf("expected child entity %d to be removed", ce.Entity())
@@ -123,8 +123,8 @@ func TestRemoveRecursive(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 	ge := w.Entry(w.Create(grandChild))
 
-	AppendChild(pe, ce)
-	AppendChild(ce, ge)
+	AppendHierarchyChild(pe, ce)
+	AppendHierarchyChild(ce, ge)
 
 	testChildren(t, []childrenTest{
 		{
@@ -137,7 +137,7 @@ func TestRemoveRecursive(t *testing.T) {
 		},
 	})
 
-	RemoveRecursive(pe)
+	RemoveHierarchyRecursive(pe)
 
 	if w.Valid(ce.Entity()) {
 		t.Errorf("expected child entity %d to be removed", ce.Entity())
@@ -161,9 +161,9 @@ func TestFindChildren(t *testing.T) {
 	pe := w.Entry(w.Create(parent))
 	ce := w.Entry(w.Create(child, tagToFind))
 
-	SetParent(ce, pe)
+	SetHierarchyParent(ce, pe)
 
-	found, ok := FindChildWithComponent(pe, tagToFind)
+	found, ok := FindHierarchyChildWithComponent(pe, tagToFind)
 	if !ok {
 		t.Errorf("expected to find child with component")
 	}
@@ -184,7 +184,7 @@ func TestChangeParent(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 
 	// no parent exists
-	ChangeParent(ce, p1e)
+	ChangeHierarchyParent(ce, p1e)
 	testChildren(t, []childrenTest{
 		{
 			Parent:   p1e,
@@ -193,7 +193,7 @@ func TestChangeParent(t *testing.T) {
 	})
 
 	// change to same parent
-	ChangeParent(ce, p1e)
+	ChangeHierarchyParent(ce, p1e)
 	testChildren(t, []childrenTest{
 		{
 			Parent:   p1e,
@@ -202,7 +202,7 @@ func TestChangeParent(t *testing.T) {
 	})
 
 	// change parent
-	ChangeParent(ce, p2e)
+	ChangeHierarchyParent(ce, p2e)
 	testChildren(t, []childrenTest{
 		{
 			Parent:   p1e,
@@ -222,7 +222,7 @@ type childrenTest struct {
 
 func testChildren(t *testing.T, tests []childrenTest) {
 	for _, test := range tests {
-		children, ok := GetChildren(test.Parent)
+		children, ok := GetHierarchyChildren(test.Parent)
 		if !ok {
 			t.Errorf("expected children, got nil")
 		}

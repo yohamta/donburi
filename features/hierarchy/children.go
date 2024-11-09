@@ -4,34 +4,34 @@ import (
 	"github.com/yohamta/donburi"
 )
 
-type childrenData struct {
+type hierarchyChildrenData struct {
 	Children []*donburi.Entry
 }
 
-var childrenComponent = donburi.NewComponentType[childrenData]()
+var hierarchyChildrenComponent = donburi.NewComponentType[hierarchyChildrenData]()
 
-// GetChildren returns children of the entry.
-func GetChildren(entry *donburi.Entry) ([]*donburi.Entry, bool) {
-	if cd, ok := getChildrenData(entry); ok {
+// GetHierarchyChildren returns children of the entry.
+func GetHierarchyChildren(entry *donburi.Entry) ([]*donburi.Entry, bool) {
+	if cd, ok := getHierarchyChildrenData(entry); ok {
 		return cd.Children, true
 	}
 	return nil, false
 }
 
-// MustGetChildren returns children of the entry.
-func MustGetChildren(entry *donburi.Entry) []*donburi.Entry {
-	c := donburi.Get[childrenData](entry, childrenComponent)
+// MustGetHierarchyChildren returns children of the entry.
+func MustGetHierarchyChildren(entry *donburi.Entry) []*donburi.Entry {
+	c := donburi.Get[hierarchyChildrenData](entry, hierarchyChildrenComponent)
 	return c.Children
 }
 
-// HasChildren returns true if the entry has children.
-func HasChildren(entry *donburi.Entry) bool {
-	return entry.HasComponent(childrenComponent)
+// HasHierarchyChildren returns true if the entry has children.
+func HasHierarchyChildren(entry *donburi.Entry) bool {
+	return entry.HasComponent(hierarchyChildrenComponent)
 }
 
-func getChildrenData(entry *donburi.Entry) (*childrenData, bool) {
-	if HasChildren(entry) {
-		c := donburi.Get[childrenData](entry, childrenComponent)
+func getHierarchyChildrenData(entry *donburi.Entry) (*hierarchyChildrenData, bool) {
+	if HasHierarchyChildren(entry) {
+		c := donburi.Get[hierarchyChildrenData](entry, hierarchyChildrenComponent)
 		return c, true
 	}
 	return nil, false

@@ -37,7 +37,7 @@ func AppendChild(parent, child *donburi.Entry, keepWorldPosition bool) {
 	if !parent.HasComponent(Transform) {
 		panic("parent does not have transform component")
 	}
-	hierarchy.AppendChild(parent, child)
+	hierarchy.AppendHierarchyChild(parent, child)
 	SetParent(child, parent, keepWorldPosition)
 }
 
@@ -47,7 +47,7 @@ func ChangeParent(child, parent *donburi.Entry, keepWorldPosition bool) {
 		panic("entry does not have transform component")
 	}
 	RemoveParent(child, keepWorldPosition)
-	hierarchy.ChangeParent(child, parent)
+	hierarchy.ChangeHierarchyParent(child, parent)
 	SetParent(child, parent, keepWorldPosition)
 }
 
@@ -80,7 +80,7 @@ func GetParent(entry *donburi.Entry) (*donburi.Entry, bool) {
 	if !d.hasParent {
 		return nil, false
 	}
-	return hierarchy.GetParent(entry)
+	return hierarchy.GetHierarchyParent(entry)
 }
 
 // RemoveParent removes parent of the entry.
@@ -90,7 +90,7 @@ func RemoveParent(entry *donburi.Entry, keepWorldPosition bool) {
 		return
 	}
 	parent, _ := GetParent(entry)
-	hierarchy.RemoveParent(entry)
+	hierarchy.RemoveHierarchyParent(entry)
 	d.hasParent = false
 	if keepWorldPosition {
 		parentPos := WorldPosition(parent)
@@ -110,22 +110,22 @@ func RemoveParent(entry *donburi.Entry, keepWorldPosition bool) {
 
 // GetChildren returns children of the entry.
 func GetChildren(entry *donburi.Entry) ([]*donburi.Entry, bool) {
-	return hierarchy.GetChildren(entry)
+	return hierarchy.GetHierarchyChildren(entry)
 }
 
 // RemoveRecursive removes the entry and its children recursively.
 func RemoveRecursive(entry *donburi.Entry) {
-	hierarchy.RemoveRecursive(entry)
+	hierarchy.RemoveHierarchyRecursive(entry)
 }
 
 // RemoveChildrenRecursive removes children recursively.
 func RemoveChildrenRecursive(entry *donburi.Entry) {
-	hierarchy.RemoveChildrenRecursive(entry)
+	hierarchy.RemoveHierarchyChildrenRecursive(entry)
 }
 
 // FindChildWithComponent finds child with specified component.
 func FindChildWithComponent(entry *donburi.Entry, componentType donburi.IComponentType) (*donburi.Entry, bool) {
-	return hierarchy.FindChildWithComponent(entry, componentType)
+	return hierarchy.FindHierarchyChildWithComponent(entry, componentType)
 }
 
 // SetWorldPosition sets world position to the entry.
@@ -136,7 +136,7 @@ func SetWorldPosition(entry *donburi.Entry, pos dmath.Vec2) {
 		return
 	}
 
-	parent := hierarchy.MustGetParent(entry)
+	parent := hierarchy.MustGetHierarchyParent(entry)
 	parentPos := WorldPosition(parent)
 	d.LocalPosition.X = pos.X - parentPos.X
 	d.LocalPosition.Y = pos.Y - parentPos.Y
@@ -149,7 +149,7 @@ func WorldPosition(entry *donburi.Entry) dmath.Vec2 {
 		return d.LocalPosition
 	}
 
-	parent := hierarchy.MustGetParent(entry)
+	parent := hierarchy.MustGetHierarchyParent(entry)
 	parentPos := WorldPosition(parent)
 	return parentPos.Add(d.LocalPosition)
 }
@@ -162,7 +162,7 @@ func SetWorldRotation(entry *donburi.Entry, rotation float64) {
 		return
 	}
 
-	parent := hierarchy.MustGetParent(entry)
+	parent := hierarchy.MustGetHierarchyParent(entry)
 	d.LocalRotation = rotation - WorldRotation(parent)
 }
 
@@ -174,7 +174,7 @@ func SetWorldScale(entry *donburi.Entry, scale dmath.Vec2) {
 		return
 	}
 
-	parent := hierarchy.MustGetParent(entry)
+	parent := hierarchy.MustGetHierarchyParent(entry)
 	parentScale := WorldScale(parent)
 	d.LocalScale.X = scale.X / parentScale.X
 	d.LocalScale.Y = scale.Y / parentScale.Y
@@ -187,7 +187,7 @@ func WorldRotation(entry *donburi.Entry) float64 {
 		return d.LocalRotation
 	}
 
-	parent := hierarchy.MustGetParent(entry)
+	parent := hierarchy.MustGetHierarchyParent(entry)
 	rot := WorldRotation(parent)
 	return rot + d.LocalRotation
 }
@@ -199,7 +199,7 @@ func WorldScale(entry *donburi.Entry) dmath.Vec2 {
 		return d.LocalScale
 	}
 
-	parent := hierarchy.MustGetParent(entry)
+	parent := hierarchy.MustGetHierarchyParent(entry)
 	parentScale := WorldScale(parent)
 	return parentScale.Mul(d.LocalScale)
 }

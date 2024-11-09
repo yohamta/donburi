@@ -4,15 +4,15 @@ import (
 	"github.com/yohamta/donburi"
 )
 
-type parentData struct {
+type hierarchyParentData struct {
 	Parent *donburi.Entry
 }
 
-var parentComponent = donburi.NewComponentType[parentData]()
+var hierarchyParentComponent = donburi.NewComponentType[hierarchyParentData]()
 
-// GetParent returns a parent of the entry.
-func GetParent(entry *donburi.Entry) (*donburi.Entry, bool) {
-	if pd, ok := getParentData(entry); ok {
+// GetHierarchyParent returns a parent of the entry.
+func GetHierarchyParent(entry *donburi.Entry) (*donburi.Entry, bool) {
+	if pd, ok := getHierarchyParentData(entry); ok {
 		if pd.Parent.Valid() {
 			return pd.Parent, true
 		}
@@ -20,20 +20,20 @@ func GetParent(entry *donburi.Entry) (*donburi.Entry, bool) {
 	return nil, false
 }
 
-// MustGetParent returns a parent of the entry.
-func MustGetParent(entry *donburi.Entry) *donburi.Entry {
-	p := donburi.Get[parentData](entry, parentComponent)
+// MustGetHierarchyParent returns a parent of the entry.
+func MustGetHierarchyParent(entry *donburi.Entry) *donburi.Entry {
+	p := donburi.Get[hierarchyParentData](entry, hierarchyParentComponent)
 	return p.Parent
 }
 
-// RemoveChildrenRecursive removes children of the entry recursively.
-func RemoveChildrenRecursive(entry *donburi.Entry) {
-	if HasChildren(entry) {
-		children, ok := GetChildren(entry)
+// RemoveHierarchyChildrenRecursive removes children of the entry recursively.
+func RemoveHierarchyChildrenRecursive(entry *donburi.Entry) {
+	if HasHierarchyChildren(entry) {
+		children, ok := GetHierarchyChildren(entry)
 		if ok {
 			for _, c := range children {
 				if c.Valid() {
-					RemoveChildrenRecursive(c)
+					RemoveHierarchyChildrenRecursive(c)
 					c.Remove()
 				}
 			}
@@ -41,47 +41,47 @@ func RemoveChildrenRecursive(entry *donburi.Entry) {
 	}
 }
 
-func RemoveParent(entry *donburi.Entry) {
-	if !HasParent(entry) {
+func RemoveHierarchyParent(entry *donburi.Entry) {
+	if !HasHierarchyParent(entry) {
 		return
 	}
 
-	parent, ok := GetParent(entry)
+	parent, ok := GetHierarchyParent(entry)
 	if !ok || !parent.Valid() {
-		entry.RemoveComponent(parentComponent)
+		entry.RemoveComponent(hierarchyParentComponent)
 		return
 	}
 
-	if children, ok := GetChildren(parent); ok {
+	if children, ok := GetHierarchyChildren(parent); ok {
 		newChildren := make([]*donburi.Entry, 0, len(children))
 		for _, child := range children {
 			if child != entry {
 				newChildren = append(newChildren, child)
 			}
 		}
-		donburi.SetValue(parent, childrenComponent, childrenData{
+		donburi.SetValue(parent, hierarchyChildrenComponent, hierarchyChildrenData{
 			Children: newChildren,
 		})
 	}
 
-	entry.RemoveComponent(parentComponent)
+	entry.RemoveComponent(hierarchyParentComponent)
 }
 
-// RemoveRecursive removes the entry recursively.
-func RemoveRecursive(entry *donburi.Entry) {
-	RemoveChildrenRecursive(entry)
-	RemoveParent(entry)
+// RemoveHierarchyRecursive removes the entry recursively.
+func RemoveHierarchyRecursive(entry *donburi.Entry) {
+	RemoveHierarchyChildrenRecursive(entry)
+	RemoveHierarchyParent(entry)
 	entry.Remove()
 }
 
-// AppendChild appends a child to the entry.
-func AppendChild(parent *donburi.Entry, child *donburi.Entry) {
-	SetParent(child, parent)
+// AppendHierarchyChild appends a child to the entry.
+func AppendHierarchyChild(parent *donburi.Entry, child *donburi.Entry) {
+	SetHierarchyParent(child, parent)
 }
 
 // FindChildrenWithComponent
-func FindChildWithComponent(entry *donburi.Entry, componentType donburi.IComponentType) (*donburi.Entry, bool) {
-	if children, ok := GetChildren(entry); ok {
+func FindHierarchyChildWithComponent(entry *donburi.Entry, componentType donburi.IComponentType) (*donburi.Entry, bool) {
+	if children, ok := GetHierarchyChildren(entry); ok {
 		for _, c := range children {
 			if c.Valid() && c.HasComponent(componentType) {
 				return c, true
@@ -91,50 +91,50 @@ func FindChildWithComponent(entry *donburi.Entry, componentType donburi.ICompone
 	return nil, false
 }
 
-// SetParent sets a parent of the entry.
-func SetParent(child *donburi.Entry, parent *donburi.Entry) {
+// SetHierarchyParent sets a parent of the entry.
+func SetHierarchyParent(child *donburi.Entry, parent *donburi.Entry) {
 	if !parent.Valid() {
 		panic("parent is not valid")
 	}
 	if !child.Valid() {
 		panic("child is not valid")
 	}
-	if child.HasComponent(parentComponent) {
+	if child.HasComponent(hierarchyParentComponent) {
 		panic("child already has a parent")
 	}
-	if !parent.HasComponent(childrenComponent) {
-		parent.AddComponent(childrenComponent)
+	if !parent.HasComponent(hierarchyChildrenComponent) {
+		parent.AddComponent(hierarchyChildrenComponent)
 	}
-	child.AddComponent(parentComponent)
-	donburi.SetValue(child, parentComponent, parentData{Parent: parent})
-	children := donburi.Get[childrenData](parent, childrenComponent)
+	child.AddComponent(hierarchyParentComponent)
+	donburi.SetValue(child, hierarchyParentComponent, hierarchyParentData{Parent: parent})
+	children := donburi.Get[hierarchyChildrenData](parent, hierarchyChildrenComponent)
 	children.Children = append(children.Children, child)
 }
 
-// HasParent returns true if the entry has a parent.
-func HasParent(entry *donburi.Entry) bool {
-	return entry.HasComponent(parentComponent)
+// HasHierarchyParent returns true if the entry has a parent.
+func HasHierarchyParent(entry *donburi.Entry) bool {
+	return entry.HasComponent(hierarchyParentComponent)
 }
 
-// ChangeParent changes a parent of the entry.
-func ChangeParent(child *donburi.Entry, newParent *donburi.Entry) {
+// ChangeHierarchyParent changes a parent of the entry.
+func ChangeHierarchyParent(child *donburi.Entry, newParent *donburi.Entry) {
 	if !newParent.Valid() {
 		panic("newParent is not valid")
 	}
 	if !child.Valid() {
 		panic("child is not valid")
 	}
-	if !newParent.HasComponent(childrenComponent) {
-		newParent.AddComponent(childrenComponent)
+	if !newParent.HasComponent(hierarchyChildrenComponent) {
+		newParent.AddComponent(hierarchyChildrenComponent)
 	}
 
-	if oldParent, ok := GetParent(child); ok {
+	if oldParent, ok := GetHierarchyParent(child); ok {
 		if oldParent == newParent {
 			return
 		}
 
 		if oldParent.Valid() {
-			oldChildren := donburi.Get[childrenData](oldParent, childrenComponent)
+			oldChildren := donburi.Get[hierarchyChildrenData](oldParent, hierarchyChildrenComponent)
 			for i, c := range oldChildren.Children {
 				if c == child {
 					oldChildren.Children = append(oldChildren.Children[:i], oldChildren.Children[i+1:]...)
@@ -143,15 +143,15 @@ func ChangeParent(child *donburi.Entry, newParent *donburi.Entry) {
 			}
 		}
 
-		child.RemoveComponent(parentComponent)
+		child.RemoveComponent(hierarchyParentComponent)
 	}
 
-	SetParent(child, newParent)
+	SetHierarchyParent(child, newParent)
 }
 
-func getParentData(entry *donburi.Entry) (*parentData, bool) {
-	if HasParent(entry) {
-		p := donburi.Get[parentData](entry, parentComponent)
+func getHierarchyParentData(entry *donburi.Entry) (*hierarchyParentData, bool) {
+	if HasHierarchyParent(entry) {
+		p := donburi.Get[hierarchyParentData](entry, hierarchyParentComponent)
 		return p, true
 	}
 	return nil, false
