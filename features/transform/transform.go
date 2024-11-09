@@ -90,6 +90,7 @@ func RemoveParent(entry *donburi.Entry, keepWorldPosition bool) {
 		return
 	}
 	parent, _ := GetParent(entry)
+	hierarchy.RemoveParent(entry)
 	d.hasParent = false
 	if keepWorldPosition {
 		parentPos := WorldPosition(parent)
