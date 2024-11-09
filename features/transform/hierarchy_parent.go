@@ -1,4 +1,4 @@
-package hierarchy
+package transform
 
 import (
 	"github.com/yohamta/donburi"
