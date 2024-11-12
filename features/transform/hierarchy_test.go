@@ -1,4 +1,4 @@
-package hierarchy
+package transform
 
 import (
 	"testing"
@@ -11,7 +11,7 @@ func TestHierarchy(t *testing.T) {
 	w := donburi.NewWorld()
 	ecs := ecslib.NewECS(w)
 
-	ecs.AddSystem(HierarchySystem.RemoveChildren)
+	ecs.AddSystem(HierarchySystem.RemoveHierarchyChildren)
 
 	parent := donburi.NewTag().SetName("parent")
 	child := donburi.NewTag().SetName("child")
@@ -21,8 +21,8 @@ func TestHierarchy(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 	ge := w.Entry(w.Create(grandChild))
 
-	SetParent(ce, pe)
-	SetParent(ge, ce)
+	setHierarchyParent(ce, pe)
+	setHierarchyParent(ge, ce)
 
 	testChildren(t, []childrenTest{
 		{
@@ -35,19 +35,19 @@ func TestHierarchy(t *testing.T) {
 		},
 	})
 
-	if p, ok := GetParent(ce); p.Entity() != pe.Entity() || !ok {
+	if p, ok := getHierarchyParent(ce); p.Entity() != pe.Entity() || !ok {
 		t.Errorf("expected parent entity %d, got %d", pe.Entity(), p.Entity())
 	}
 
-	if p, ok := GetParent(ge); p.Entity() != ce.Entity() || !ok {
+	if p, ok := getHierarchyParent(ge); p.Entity() != ce.Entity() || !ok {
 		t.Errorf("expected parent entity %d, got %d", ce.Entity(), p.Entity())
 	}
 
-	if HasParent(pe) {
+	if hasHierarchyParent(pe) {
 		t.Errorf("expected parent entity %d, got %d", donburi.Null, pe.Entity())
 	}
 
-	children, ok := GetChildren(pe)
+	children, ok := getHierarchyChildren(pe)
 	if !ok {
 		t.Errorf("expected children, got nil")
 	}
@@ -55,7 +55,11 @@ func TestHierarchy(t *testing.T) {
 		t.Errorf("expected child entity %d, got %d", ce.Entity(), children[0].Entity())
 	}
 
-	children, ok = GetChildren(ce)
+	children, ok = getHierarchyChildren(ce)
+	if !ok {
+		t.Errorf("expected children, got nil")
+	}
+
 	if children[0].Entity() != ge.Entity() {
 		t.Errorf("expected child entity %d, got %d", ge.Entity(), children[0].Entity())
 	}
@@ -85,8 +89,8 @@ func TestRemoveChildrenRecursive(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 	ge := w.Entry(w.Create(grandChild))
 
-	SetParent(ce, pe)
-	SetParent(ge, ce)
+	setHierarchyParent(ce, pe)
+	setHierarchyParent(ge, ce)
 
 	testChildren(t, []childrenTest{
 		{
@@ -99,7 +103,7 @@ func TestRemoveChildrenRecursive(t *testing.T) {
 		},
 	})
 
-	RemoveChildrenRecursive(pe)
+	removeHierarchyChildrenRecursive(pe)
 
 	if w.Valid(ce.Entity()) {
 		t.Errorf("expected child entity %d to be removed", ce.Entity())
@@ -123,8 +127,8 @@ func TestRemoveRecursive(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 	ge := w.Entry(w.Create(grandChild))
 
-	AppendChild(pe, ce)
-	AppendChild(ce, ge)
+	appendHierarchyChild(pe, ce)
+	appendHierarchyChild(ce, ge)
 
 	testChildren(t, []childrenTest{
 		{
@@ -137,7 +141,7 @@ func TestRemoveRecursive(t *testing.T) {
 		},
 	})
 
-	RemoveRecursive(pe)
+	removeHierarchyRecursive(pe)
 
 	if w.Valid(ce.Entity()) {
 		t.Errorf("expected child entity %d to be removed", ce.Entity())
@@ -161,9 +165,9 @@ func TestFindChildren(t *testing.T) {
 	pe := w.Entry(w.Create(parent))
 	ce := w.Entry(w.Create(child, tagToFind))
 
-	SetParent(ce, pe)
+	setHierarchyParent(ce, pe)
 
-	found, ok := FindChildWithComponent(pe, tagToFind)
+	found, ok := findHierarchyChildWithComponent(pe, tagToFind)
 	if !ok {
 		t.Errorf("expected to find child with component")
 	}
@@ -184,7 +188,7 @@ func TestChangeParent(t *testing.T) {
 	ce := w.Entry(w.Create(child))
 
 	// no parent exists
-	ChangeParent(ce, p1e)
+	changeHierarchyParent(ce, p1e)
 	testChildren(t, []childrenTest{
 		{
 			Parent:   p1e,
@@ -193,7 +197,7 @@ func TestChangeParent(t *testing.T) {
 	})
 
 	// change to same parent
-	ChangeParent(ce, p1e)
+	changeHierarchyParent(ce, p1e)
 	testChildren(t, []childrenTest{
 		{
 			Parent:   p1e,
@@ -202,7 +206,7 @@ func TestChangeParent(t *testing.T) {
 	})
 
 	// change parent
-	ChangeParent(ce, p2e)
+	changeHierarchyParent(ce, p2e)
 	testChildren(t, []childrenTest{
 		{
 			Parent:   p1e,
@@ -222,7 +226,7 @@ type childrenTest struct {
 
 func testChildren(t *testing.T, tests []childrenTest) {
 	for _, test := range tests {
-		children, ok := GetChildren(test.Parent)
+		children, ok := getHierarchyChildren(test.Parent)
 		if !ok {
 			t.Errorf("expected children, got nil")
 		}
