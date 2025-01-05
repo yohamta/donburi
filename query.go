@@ -125,10 +125,11 @@ func (q *Query) Iter(w World) iter.Seq[*Entry] {
 			for _, entity := range archetype.Entities() {
 				entry := w.Entry(entity)
 				if entry.entity.IsReady() {
+					archetype.Unlock()
 					if !yield(entry) {
-						archetype.Unlock()
 						return
 					}
+					archetype.Lock()
 				}
 			}
 			archetype.Unlock()
