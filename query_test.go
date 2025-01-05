@@ -23,6 +23,35 @@ var (
 	orderableTest = donburi.NewComponentType[orderableComponentTest]()
 )
 
+func TestQueryInQuery(t *testing.T) {
+	world := donburi.NewWorld()
+	world.Create(queryTagA)
+	world.Create(queryTagC)
+	world.Create(queryTagA, queryTagB)
+	world.Create(queryTagA, queryTagB, queryTagC)
+
+	query := donburi.NewQuery(filter.Contains(queryTagA, queryTagB))
+	count := 0
+
+	for entry := range query.Iter(world) {
+		count++
+		if entry.Archetype().Layout().HasComponent(queryTagA) == false {
+			t.Errorf("PlayerTag should be in ent archetype")
+		}
+		innerQuery := donburi.NewQuery(filter.Contains(queryTagA, queryTagB, queryTagC))
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("panic should not happen")
+			}
+		}()
+		for innerEntry := range innerQuery.Iter(world) {
+			if innerEntry.Archetype().Layout().HasComponent(queryTagA) == false {
+				t.Errorf("PlayerTag should be in ent archetype")
+			}
+		}
+	}
+}
+
 func TestQuery(t *testing.T) {
 	world := donburi.NewWorld()
 	world.Create(queryTagA)
@@ -92,7 +121,7 @@ func BenchmarkQuery_EachOrdered(b *testing.B) {
 	countOrdered := 0
 	b.Run("Each", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			for _ = range query.Iter(world) {
+			for range query.Iter(world) {
 				countNormal++
 			}
 		}
