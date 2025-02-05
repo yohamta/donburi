@@ -2,14 +2,20 @@ package ecs
 
 import "time"
 
-const maxDaltaTime = time.Second / 30
+const maxDefaultDeltaTime = time.Second / 30
 
 // Time manages the time of the world.
 type Time struct {
 	// timeScale is the scale of the time.
 	timeScale float64
+
 	// deltaTime is the time between the last update and the current update
 	deltaTime time.Duration
+
+	// maxDeltaTime is the *maximum* time between the last update and the current update.
+	// default is time.Second / 30 (33.333ms)
+	maxDeltaTime time.Duration
+
 	// sleep is the time to sleep
 	sleep time.Duration
 
@@ -17,11 +23,12 @@ type Time struct {
 	isPaused bool
 }
 
-// NewTIme creates a new Time.
+// NewTime creates a new Time.
 func NewTime() *Time {
 	return &Time{
-		prevTime:  time.Now(),
-		timeScale: 1,
+		prevTime:     time.Now(),
+		timeScale:    1,
+		maxDeltaTime: maxDefaultDeltaTime,
 	}
 }
 
@@ -40,8 +47,8 @@ func (t *Time) Update() {
 		t.deltaTime = time.Duration(ms) * time.Millisecond
 	}
 
-	if t.deltaTime > maxDaltaTime {
-		t.deltaTime = maxDaltaTime
+	if t.deltaTime > t.maxDeltaTime {
+		t.deltaTime = t.maxDeltaTime
 	}
 
 	if t.sleep > 0 {
@@ -67,6 +74,11 @@ func (t *Time) SetSleep(d time.Duration) {
 // SetTimeScale sets the time scale.
 func (t *Time) SetTimeScale(scale float64) {
 	t.timeScale = scale
+}
+
+// SetMaxDeltaTime sets the max delta time.
+func (t *Time) SetMaxDeltaTime(d time.Duration) {
+	t.maxDeltaTime = d
 }
 
 // TimeScale returns the time scale.
