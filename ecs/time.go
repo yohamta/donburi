@@ -76,6 +76,11 @@ func (t *Time) SetTimeScale(scale float64) {
 	t.timeScale = scale
 }
 
+// SetMaxDeltaTime sets the max delta time.
+func (t *Time) SetMaxDeltaTime(d time.Duration) {
+	t.maxDeltaTime = d
+}
+
 // TimeScale returns the time scale.
 func (t *Time) TimeScale() float64 {
 	return t.timeScale
